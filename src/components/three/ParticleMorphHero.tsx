@@ -143,49 +143,87 @@ function getLetterGroup(svgX: number, svgY: number): number {
   return 0; // Default to W group
 }
 
-// Signal rings that emanate from the tool
-function SignalRings({ progress }: { progress: number }) {
-  const ringsRef = useRef<THREE.Group>(null);
-  const ringCount = 3;
+// Dramatic signal beams emanating from the tool
+function SignalBeams({ progress }: { progress: number }) {
+  const groupRef = useRef<THREE.Group>(null);
+  
+  // Multiple emission points along the tool
+  const emissionPoints = [
+    { y: 2.8, delay: 0 },      // Top
+    { y: 1.0, delay: 0.2 },    // Upper-mid
+    { y: -1.0, delay: 0.4 },   // Lower-mid
+    { y: -2.8, delay: 0.6 },   // Bottom
+  ];
+  
+  const ringsPerPoint = 4;
   
   useFrame((state) => {
-    if (!ringsRef.current || progress < 0.7) return;
+    if (!groupRef.current || progress < 0.6) return;
     
     const time = state.clock.getElapsedTime();
-    const fadeIn = Math.min(1, (progress - 0.7) / 0.2); // Fade in from 70-90%
+    const fadeIn = Math.min(1, (progress - 0.6) / 0.15); // Fade in at 60-75%
     
-    ringsRef.current.children.forEach((ring, i) => {
-      const mesh = ring as THREE.Mesh;
-      const mat = mesh.material as THREE.MeshBasicMaterial;
+    let ringIndex = 0;
+    groupRef.current.children.forEach((group) => {
+      const emitGroup = group as THREE.Group;
+      const emitY = emissionPoints[Math.floor(ringIndex / ringsPerPoint)]?.delay || 0;
       
-      // Stagger the rings with different phases
-      const phase = (time * 0.8 + i * 0.33) % 1;
-      const scale = 0.8 + phase * 2.5; // Expand from 0.8 to 3.3
-      const opacity = (1 - phase) * 0.6 * fadeIn; // Fade as it expands
-      
-      mesh.scale.setScalar(scale);
-      mat.opacity = opacity;
+      emitGroup.children.forEach((ring, localIdx) => {
+        const mesh = ring as THREE.Mesh;
+        const mat = mesh.material as THREE.MeshBasicMaterial;
+        
+        // Stagger rings with emission point delay
+        const phase = (time * 1.2 + localIdx * 0.25 + emitY) % 1;
+        const scale = 0.6 + phase * 4.0; // Bigger expansion
+        const opacity = (1 - phase * phase) * 0.9 * fadeIn; // Quadratic falloff for longer visibility
+        
+        mesh.scale.setScalar(scale);
+        mat.opacity = Math.max(0, opacity);
+        
+        ringIndex++;
+      });
     });
   });
   
   if (progress < 0.5) return null;
   
   return (
-    <group ref={ringsRef} position={[0, 2.5, 0]} rotation={[Math.PI / 2, 0, 0]}>
-      {Array.from({ length: ringCount }).map((_, i) => (
-        <mesh key={i}>
-          <ringGeometry args={[0.5, 0.55, 32]} />
-          <meshBasicMaterial 
-            color="#22d3ee" 
-            transparent 
-            opacity={0}
-            side={THREE.DoubleSide}
-          />
-        </mesh>
+    <group ref={groupRef}>
+      {emissionPoints.map((point, pointIdx) => (
+        <group key={pointIdx} position={[0, point.y, 0]} rotation={[Math.PI / 2, 0, 0]}>
+          {Array.from({ length: ringsPerPoint }).map((_, ringIdx) => (
+            <mesh key={ringIdx}>
+              <ringGeometry args={[0.55, 0.7, 48]} />
+              <meshBasicMaterial 
+                color="#22d3ee" 
+                transparent 
+                opacity={0}
+                side={THREE.DoubleSide}
+                blending={THREE.AdditiveBlending}
+              />
+            </mesh>
+          ))}
+        </group>
       ))}
+      
+      {/* WiFi-style arc signals at top */}
+      <group position={[0, 3.2, 0]}>
+        {[1, 2, 3].map((arc) => (
+          <mesh key={arc} position={[0, arc * 0.3, 0]} rotation={[0, 0, 0]}>
+            <torusGeometry args={[arc * 0.35, 0.03, 8, 32, Math.PI]} />
+            <meshBasicMaterial 
+              color="#22d3ee" 
+              transparent 
+              opacity={progress > 0.75 ? Math.sin((progress - 0.75) * 20 + arc) * 0.5 + 0.5 : 0}
+              blending={THREE.AdditiveBlending}
+            />
+          </mesh>
+        ))}
+      </group>
     </group>
   );
 }
+
 
 export function ParticleMorphHero() {
   const pointsRef = useRef<THREE.Points>(null);
@@ -680,8 +718,8 @@ export function ParticleMorphHero() {
         />
       </mesh>
       
-      {/* Signal rings emanating from tool */}
-      <SignalRings progress={uniforms.uProgress.value} />
+      {/* Signal beams emanating from tool */}
+      <SignalBeams progress={uniforms.uProgress.value} />
     </group>
   );
 }
