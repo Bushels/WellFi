@@ -12,16 +12,24 @@ gsap.registerPlugin(ScrollTrigger);
 const fragmentShader = `
   varying vec3 vColor;
   varying float vAlpha;
+  varying float vBrightness; // Extra brightness for WiFi particles on tool
   
   void main() {
     float r = distance(gl_PointCoord, vec2(0.5));
     if (r > 0.5) discard;
     
-    // Soft glow
+    // Soft glow with brightness boost
     float glow = 1.0 - (r * 2.0);
     glow = pow(glow, 1.5);
     
-    gl_FragColor = vec4(vColor, vAlpha * glow);
+    // Apply brightness boost (WiFi particles get extra glow)
+    float brightness = 1.0 + vBrightness * 2.0;
+    vec3 finalColor = vColor * brightness;
+    
+    // Clamp to prevent over-saturation
+    finalColor = min(finalColor, vec3(1.2));
+    
+    gl_FragColor = vec4(finalColor, vAlpha * glow);
   }
 `;
 
@@ -38,6 +46,7 @@ const vertexShader = `
   
   varying vec3 vColor;
   varying float vAlpha;
+  varying float vBrightness;      // Extra brightness for WiFi particles
 
   // Pseudo-random function
   float random(vec2 st) {
@@ -74,6 +83,7 @@ const vertexShader = `
     
     // Calculate position
     vec3 finalPos;
+    float brightness = 0.0; // Default: no extra brightness
     
     if (letterGroup >= 5.0) {
       // "i" and wifi: morph toward center cylinder
@@ -84,13 +94,21 @@ const vertexShader = `
       finalPos.x += sin(uTime * 0.7 + position.y * 2.0) * floatAmp;
       finalPos.y += cos(uTime * 0.5 + position.x * 2.0) * floatAmp;
       
-      // WiFi pulse effect (only for letterGroup 6)
-      if (letterGroup > 5.5 && uProgress > 0.8) {
-        // Pulse the WiFi arcs - scale outward rhythmically
-        float pulse = sin(uWifiPulse * 6.28318) * 0.5 + 0.5;
-        float scaleBoost = 1.0 + pulse * 0.15;
-        finalPos.x *= scaleBoost;
-        finalPos.y *= scaleBoost;
+      // WiFi pulse effect and brightness boost (only for letterGroup 6)
+      if (letterGroup > 5.5) {
+        // Brightness increases as particles morph to tool position
+        brightness = morphAmount * morphAmount; // Quadratic - brighter when closer to final position
+        
+        // Add pulsing glow when over the tool (progress > 0.7)
+        if (uProgress > 0.7) {
+          float pulse = sin(uWifiPulse * 6.28318) * 0.5 + 0.5;
+          brightness += pulse * 0.5;
+          
+          // Scale pulse effect
+          float scaleBoost = 1.0 + pulse * 0.1;
+          finalPos.x *= scaleBoost;
+          finalPos.y *= scaleBoost;
+        }
       }
     } else {
       // Other letters: disperse as they fade
@@ -104,10 +122,20 @@ const vertexShader = `
     }
 
     vec4 mvPosition = modelViewMatrix * vec4(finalPos, 1.0);
-    gl_PointSize = size * (300.0 / -mvPosition.z);
+    
+    // Boost size for WiFi particles when they're over the tool
+    float sizeMultiplier = 1.0;
+    if (letterGroup > 5.5 && uProgress > 0.5) {
+      // WiFi particles get 2-3x larger as they morph to tool
+      float sizeMorph = smoothstep(0.5, 0.9, uProgress);
+      sizeMultiplier = 1.0 + sizeMorph * 2.0; // 1x -> 3x
+    }
+    
+    gl_PointSize = size * sizeMultiplier * (300.0 / -mvPosition.z);
     gl_Position = projectionMatrix * mvPosition;
     
     vAlpha = letterAlpha;
+    vBrightness = brightness;
   }
 `;
 
@@ -710,8 +738,7 @@ export function ParticleMorphHero() {
         />
       </mesh>
       
-      {/* WiFi signal at top of tool */}
-      <WiFiSignal uniforms={uniforms} />
+      {/* WiFi particles from logo provide the signal effect - no separate component needed */}
     </group>
   );
 }
