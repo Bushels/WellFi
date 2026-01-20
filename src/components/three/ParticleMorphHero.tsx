@@ -143,107 +143,77 @@ function getLetterGroup(svgX: number, svgY: number): number {
   return 0; // Default to W group
 }
 
-// Dramatic signal beams emanating from the tool
-function SignalBeams({ uniforms }: { uniforms: { uProgress: { value: number } } }) {
+// Clean WiFi signal at top of tool - arcs pulse sequentially like broadcasting
+function WiFiSignal({ uniforms }: { uniforms: { uProgress: { value: number } } }) {
   const groupRef = useRef<THREE.Group>(null);
-  
-  // Multiple emission points along the tool
-  const emissionPoints = [
-    { y: 2.8, delay: 0 },      // Top
-    { y: 1.0, delay: 0.2 },    // Upper-mid
-    { y: -1.0, delay: 0.4 },   // Lower-mid
-    { y: -2.8, delay: 0.6 },   // Bottom
-  ];
-  
-  const ringsPerPoint = 4;
+  const arcRefs = useRef<THREE.Mesh[]>([]);
+  const dotRef = useRef<THREE.Mesh>(null);
   
   useFrame((state) => {
     if (!groupRef.current) return;
     
-    // Read progress from uniforms each frame (reactive!)
     const progress = uniforms.uProgress.value;
-    if (progress < 0.6) {
-      // Hide all rings when not active
-      groupRef.current.children.forEach((group) => {
-        (group as THREE.Group).children.forEach((ring) => {
-          ((ring as THREE.Mesh).material as THREE.MeshBasicMaterial).opacity = 0;
-        });
-      });
-      return;
-    }
-    
     const time = state.clock.getElapsedTime();
-    const fadeIn = Math.min(1, (progress - 0.6) / 0.15); // Fade in at 60-75%
     
-    // Animate ring emission groups
-    groupRef.current.children.forEach((child, groupIdx) => {
-      if (groupIdx >= emissionPoints.length) return; // Skip WiFi arcs group
+    // WiFi signal appears after 70% scroll progress (earlier start)
+    const fadeIn = Math.max(0, Math.min(1, (progress - 0.7) / 0.1));
+    
+    arcRefs.current.forEach((arc, i) => {
+      if (!arc) return;
+      const mat = arc.material as THREE.MeshBasicMaterial;
       
-      const emitGroup = child as THREE.Group;
-      const emitDelay = emissionPoints[groupIdx]?.delay || 0;
+      // Sequential pulse: each arc lights up in sequence
+      // Creates a "broadcasting" effect from inner to outer
+      const pulsePhase = (time * 2.5 + i * 0.35) % 1.5;
+      const isPulsing = pulsePhase < 0.5;
+      const pulseIntensity = isPulsing ? Math.sin(pulsePhase * Math.PI / 0.5) : 0;
       
-      emitGroup.children.forEach((ring, localIdx) => {
-        const mesh = ring as THREE.Mesh;
-        const mat = mesh.material as THREE.MeshBasicMaterial;
-        
-        // Stagger rings with emission point delay
-        const phase = (time * 1.2 + localIdx * 0.25 + emitDelay) % 1;
-        const scale = 0.6 + phase * 4.0; // Bigger expansion
-        const opacity = (1 - phase * phase) * 0.9 * fadeIn; // Quadratic falloff
-        
-        mesh.scale.setScalar(scale);
-        mat.opacity = Math.max(0, opacity);
-      });
+      // Higher base opacity and brighter pulses
+      mat.opacity = fadeIn * (0.5 + pulseIntensity * 0.5);
     });
     
-    // Animate WiFi arcs (last child group)
-    const wifiGroup = groupRef.current.children[emissionPoints.length] as THREE.Group;
-    if (wifiGroup) {
-      wifiGroup.children.forEach((arc, arcIdx) => {
-        const mesh = arc as THREE.Mesh;
-        const mat = mesh.material as THREE.MeshBasicMaterial;
-        mat.opacity = progress > 0.75 ? 
-          Math.sin(time * 3 + arcIdx * 0.8) * 0.4 + 0.5 : 0;
-      });
+    // Animate the center dot
+    if (dotRef.current) {
+      const dotMat = dotRef.current.material as THREE.MeshBasicMaterial;
+      dotMat.opacity = fadeIn * 0.95;
     }
   });
   
   return (
-    <group ref={groupRef}>
-      {emissionPoints.map((point, pointIdx) => (
-        <group key={pointIdx} position={[0, point.y, 0]} rotation={[Math.PI / 2, 0, 0]}>
-          {Array.from({ length: ringsPerPoint }).map((_, ringIdx) => (
-            <mesh key={ringIdx}>
-              <ringGeometry args={[0.55, 0.7, 48]} />
-              <meshBasicMaterial 
-                color="#22d3ee" 
-                transparent 
-                opacity={0}
-                side={THREE.DoubleSide}
-                blending={THREE.AdditiveBlending}
-              />
-            </mesh>
-          ))}
-        </group>
+    <group ref={groupRef} position={[0, 3.3, 0]}>
+      {/* Three WiFi arcs - like the dot of the "i" from WellFi logo */}
+      {[1, 2, 3].map((arcNum, i) => (
+        <mesh 
+          key={arcNum} 
+          ref={(el) => { if (el) arcRefs.current[i] = el; }}
+          position={[0, arcNum * 0.35, 0]} 
+          rotation={[0, 0, 0]}
+        >
+          {/* Larger radius and thicker tube */}
+          <torusGeometry args={[arcNum * 0.4, 0.06, 8, 32, Math.PI]} />
+          <meshBasicMaterial 
+            color="#22d3ee" 
+            transparent 
+            opacity={0}
+            blending={THREE.AdditiveBlending}
+          />
+        </mesh>
       ))}
       
-      {/* WiFi-style arc signals at top */}
-      <group position={[0, 3.2, 0]}>
-        {[1, 2, 3].map((arc) => (
-          <mesh key={arc} position={[0, arc * 0.3, 0]} rotation={[0, 0, 0]}>
-            <torusGeometry args={[arc * 0.35, 0.03, 8, 32, Math.PI]} />
-            <meshBasicMaterial 
-              color="#22d3ee" 
-              transparent 
-              opacity={0}
-              blending={THREE.AdditiveBlending}
-            />
-          </mesh>
-        ))}
-      </group>
+      {/* Small dot at center (like WiFi icon center) */}
+      <mesh ref={dotRef} position={[0, 0.1, 0]}>
+        <sphereGeometry args={[0.12, 16, 16]} />
+        <meshBasicMaterial 
+          color="#22d3ee" 
+          transparent 
+          opacity={0}
+          blending={THREE.AdditiveBlending}
+        />
+      </mesh>
     </group>
   );
 }
+
 
 
 
@@ -740,8 +710,8 @@ export function ParticleMorphHero() {
         />
       </mesh>
       
-      {/* Signal beams emanating from tool */}
-      <SignalBeams uniforms={uniforms} />
+      {/* WiFi signal at top of tool */}
+      <WiFiSignal uniforms={uniforms} />
     </group>
   );
 }
