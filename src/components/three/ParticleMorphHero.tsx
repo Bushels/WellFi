@@ -143,6 +143,50 @@ function getLetterGroup(svgX: number, svgY: number): number {
   return 0; // Default to W group
 }
 
+// Signal rings that emanate from the tool
+function SignalRings({ progress }: { progress: number }) {
+  const ringsRef = useRef<THREE.Group>(null);
+  const ringCount = 3;
+  
+  useFrame((state) => {
+    if (!ringsRef.current || progress < 0.7) return;
+    
+    const time = state.clock.getElapsedTime();
+    const fadeIn = Math.min(1, (progress - 0.7) / 0.2); // Fade in from 70-90%
+    
+    ringsRef.current.children.forEach((ring, i) => {
+      const mesh = ring as THREE.Mesh;
+      const mat = mesh.material as THREE.MeshBasicMaterial;
+      
+      // Stagger the rings with different phases
+      const phase = (time * 0.8 + i * 0.33) % 1;
+      const scale = 0.8 + phase * 2.5; // Expand from 0.8 to 3.3
+      const opacity = (1 - phase) * 0.6 * fadeIn; // Fade as it expands
+      
+      mesh.scale.setScalar(scale);
+      mat.opacity = opacity;
+    });
+  });
+  
+  if (progress < 0.5) return null;
+  
+  return (
+    <group ref={ringsRef} position={[0, 2.5, 0]} rotation={[Math.PI / 2, 0, 0]}>
+      {Array.from({ length: ringCount }).map((_, i) => (
+        <mesh key={i}>
+          <ringGeometry args={[0.5, 0.55, 32]} />
+          <meshBasicMaterial 
+            color="#22d3ee" 
+            transparent 
+            opacity={0}
+            side={THREE.DoubleSide}
+          />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
 export function ParticleMorphHero() {
   const pointsRef = useRef<THREE.Points>(null);
   const linesRef = useRef<THREE.LineSegments>(null);
@@ -585,7 +629,7 @@ export function ParticleMorphHero() {
   if (!ready) return null;
 
   return (
-    <group>
+    <group position={[3.5, 0, 0]}>
       {/* Connecting lines (node network effect) */}
       {lineData && lineData.positions.length > 0 && (
         <lineSegments ref={linesRef}>
@@ -627,13 +671,17 @@ export function ParticleMorphHero() {
       <mesh ref={cylinderRef} position={[0, 0, 0]} rotation={[0, 0, 0]} visible={false}>
         <cylinderGeometry args={[0.55, 0.55, 6, 32]} />
         <meshStandardMaterial 
-          color="#b8c4ce"
-          metalness={0.95}
-          roughness={0.15}
+          color="#e8eef2"
+          metalness={0.98}
+          roughness={0.08}
+          envMapIntensity={1.5}
           transparent
           opacity={0}
         />
       </mesh>
+      
+      {/* Signal rings emanating from tool */}
+      <SignalRings progress={uniforms.uProgress.value} />
     </group>
   );
 }

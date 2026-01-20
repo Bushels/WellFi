@@ -1,7 +1,7 @@
 import { Canvas } from '@react-three/fiber';
 import { ParticleMorphHero } from './ParticleMorphHero';
 import { Suspense } from 'react';
-import { Loader } from '@react-three/drei';
+import { Loader, Environment } from '@react-three/drei';
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
 
 export function HeroScene({ onIntroComplete }: { onIntroComplete?: () => void }) {
@@ -17,9 +17,12 @@ export function HeroScene({ onIntroComplete }: { onIntroComplete?: () => void })
       >
         <Suspense fallback={null}>
           {/* Lighting for metallic materials */}
-          <ambientLight intensity={0.3} />
-          <directionalLight position={[5, 5, 5]} intensity={1.2} color="#ffffff" />
-          <directionalLight position={[-3, 2, -2]} intensity={0.6} color="#22d3ee" />
+          <ambientLight intensity={0.4} />
+          <directionalLight position={[5, 5, 5]} intensity={1.5} color="#ffffff" />
+          <directionalLight position={[-3, 2, -2]} intensity={0.8} color="#22d3ee" />
+          
+          {/* Environment map for metallic reflections */}
+          <Environment preset="city" background={false} />
           
           <ParticleMorphHero />
         </Suspense>

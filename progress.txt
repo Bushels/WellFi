@@ -1,0 +1,64 @@
+# WellFi Marketing Page - Progress Log
+
+This file captures learnings between Claude Code sessions. Append new learnings at the bottom.
+
+---
+
+## Session: Initial Planning (Current Date)
+
+### Decisions Made
+- Tagline selected: "Wireless Below. Insight Above."
+- Stack: Next.js 14 (App Router) + Tailwind + GSAP ScrollTrigger
+- Deployment: Vercel (will link from MPS Wix site)
+- Dark mode first design approach
+
+### Key Product Insights
+- Fiberglass collar is THE key differentiator - creates electrical isolation
+- Two 10ft pups minimum with wire-wheeled bare steel contact
+- Signal path: through formation, not short-circuit through continuous steel
+- DeltaPressure = continuous monitoring + scheduled transmission + exception alerts
+
+### Target Audience Notes
+- Cold production engineers in Canadian oilsands
+- Clearwater, Blue Sky, Grand Rapids formations
+- Entry point: pump changeouts (minimal additional rig time)
+- They know their pain points - we prompt, they conclude
+
+### Content Guidelines
+- No specific cost comparisons (competitor pricing uncertain)
+- Can say "130+ installs" but not specific customer names
+- Let engineers draw their own conclusions about benefits
+- Use industry terms correctly: MODBUS, RTU, SCADA, PCP
+
+### Section Messaging Finalized
+1. Hero: "Wireless Below. Insight Above."
+2. Benefits: "Reliable. Simple. Powerful." (icon grid)
+3. Technology: "Electromagnetic Telemetry — The New Standard"
+4. Product: "Modular Design. Engineered Integrity."
+5. Installation: "Quicker Install. No Strings Attached."
+6. Integration: "Plug and Play"
+7. Intelligence: "Deploy and Forget. We'll Alert You."
+8. Results: "Less Downtime. Fewer Workovers. Optimized Production."
+9. Specs: Engineer-focused detail section
+10. CTA: "Become Wireless" + "Contact Us Now"
+
+---
+
+## Learnings Template (Copy for Future Sessions)
+
+### Session: [Date]
+
+**What was accomplished:**
+- 
+
+**What worked well:**
+- 
+
+**What caused issues:**
+- 
+
+**Patterns discovered:**
+- 
+
+**Next priorities:**
+- 

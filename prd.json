@@ -1,0 +1,353 @@
+{
+  "projectName": "WellFi Marketing Scrollytelling Page",
+  "description": "An interactive scrollytelling marketing page showcasing the WellFi wireless downhole monitoring system for oil and gas engineers.",
+  "branchName": "feature/wellfi-marketing-page",
+  "qualityChecks": {
+    "typecheck": "npm run typecheck",
+    "lint": "npm run lint",
+    "build": "npm run build"
+  },
+  "userStories": [
+    {
+      "id": "SETUP-001",
+      "title": "Project Foundation Setup",
+      "priority": 1,
+      "phase": "Foundation",
+      "description": "Initialize Next.js 14 project with App Router, Tailwind CSS, and core dependencies",
+      "acceptanceCriteria": [
+        "Next.js 14 with App Router configured",
+        "Tailwind CSS installed and configured with WellFi design tokens",
+        "GSAP and Framer Motion installed",
+        "TypeScript strict mode enabled",
+        "ESLint and Prettier configured",
+        "Basic folder structure created per CLAUDE.md",
+        "Project deploys to Vercel successfully"
+      ],
+      "passes": false,
+      "dependencies": []
+    },
+    {
+      "id": "SETUP-002",
+      "title": "Design System Constants",
+      "priority": 2,
+      "phase": "Foundation",
+      "description": "Create constants file with WellFi colors, typography, and product specifications",
+      "acceptanceCriteria": [
+        "Color palette defined in Tailwind config",
+        "Typography scale configured",
+        "Product specifications as typed constants",
+        "Section content as typed data structures",
+        "Utility functions (cn() for classnames)"
+      ],
+      "passes": false,
+      "dependencies": ["SETUP-001"]
+    },
+    {
+      "id": "SETUP-003",
+      "title": "Base Layout and Global Styles",
+      "priority": 3,
+      "phase": "Foundation",
+      "description": "Create root layout with metadata, fonts, and global styles",
+      "acceptanceCriteria": [
+        "Root layout with proper HTML structure",
+        "Google Fonts configured (Inter)",
+        "Global CSS with dark theme base",
+        "Smooth scroll behavior",
+        "Meta tags for SEO"
+      ],
+      "passes": false,
+      "dependencies": ["SETUP-002"]
+    },
+    {
+      "id": "SEC-001",
+      "title": "Section 1: Hero Component",
+      "priority": 4,
+      "phase": "Static Sections",
+      "description": "Build the hero section with tagline, headline, and subtle animation",
+      "acceptanceCriteria": [
+        "Full viewport height hero",
+        "WellFi logo displayed",
+        "Tagline: 'Wireless Below. Insight Above.'",
+        "Headline and subtext visible",
+        "Scroll indicator at bottom",
+        "Subtle background animation (EM pulse effect)",
+        "Mobile responsive"
+      ],
+      "passes": false,
+      "dependencies": ["SETUP-003"]
+    },
+    {
+      "id": "SEC-002",
+      "title": "Section 2: Wireless Alternative (Benefits Grid)",
+      "priority": 5,
+      "phase": "Static Sections",
+      "description": "Create icon grid showing benefits with minimal text",
+      "acceptanceCriteria": [
+        "Icon grid layout (responsive)",
+        "Icons: Instant data, SCADA-ready, 5+ year battery, Through-casing, Minimal rig time, Potential Uplift, Increased Pump Life",
+        "Short phrases only, no paragraphs",
+        "Transition line to next section",
+        "Mobile: 2 columns, Desktop: 3-4 columns"
+      ],
+      "passes": false,
+      "dependencies": ["SEC-001"]
+    },
+    {
+      "id": "SEC-003",
+      "title": "Section 3: Technology Explanation",
+      "priority": 6,
+      "phase": "Static Sections",
+      "description": "Technical credibility section with EM telemetry diagram",
+      "acceptanceCriteria": [
+        "Animated cross-section diagram (SVG or canvas)",
+        "Shows: gauge on tubing, fiberglass collar, EM signal path, surface detection",
+        "Minimal text labels",
+        "Technical terms: low-frequency EM, proprietary signal processing",
+        "Clean, professional appearance"
+      ],
+      "passes": false,
+      "dependencies": ["SEC-002"]
+    },
+    {
+      "id": "SEC-004",
+      "title": "Section 4: Product Explorer (Scrollytelling)",
+      "priority": 7,
+      "phase": "Interactive Sections",
+      "description": "Interactive tool assembly walkthrough triggered by scroll",
+      "acceptanceCriteria": [
+        "GSAP ScrollTrigger pinned section",
+        "Components highlight as user scrolls",
+        "Each component shows name + one-line purpose",
+        "Components: Signal Collar, Electronics Sonde, Battery Barrel, PEEK Clamp, Fiberglass Collar",
+        "Final state shows complete assembly",
+        "Smooth transitions between states"
+      ],
+      "passes": false,
+      "dependencies": ["SEC-003"]
+    },
+    {
+      "id": "SEC-005",
+      "title": "Section 5: Installation Process",
+      "priority": 8,
+      "phase": "Static Sections",
+      "description": "Show how simple installation is during workover",
+      "acceptanceCriteria": [
+        "Exploded view animation (components coming together)",
+        "Position in completion string diagram",
+        "Step icons: Makeup on surface → Run with tubing → Connect surface box",
+        "Key points: No cable strapping, Adds minutes not hours",
+        "Clean visual flow"
+      ],
+      "passes": false,
+      "dependencies": ["SEC-004"]
+    },
+    {
+      "id": "SEC-006",
+      "title": "Section 6: SCADA Integration",
+      "priority": 9,
+      "phase": "Static Sections",
+      "description": "Show plug-and-play SCADA connectivity",
+      "acceptanceCriteria": [
+        "System flow diagram: Wellhead → Surface Box → RTU → SCADA",
+        "MODBUS RS-485 highlighted",
+        "Stylized UI mockup (not screenshot)",
+        "Clean, modern look"
+      ],
+      "passes": false,
+      "dependencies": ["SEC-005"]
+    },
+    {
+      "id": "SEC-007",
+      "title": "Section 7: DeltaPressure Intelligence",
+      "priority": 10,
+      "phase": "Interactive Sections",
+      "description": "Visualize the smart alerting feature",
+      "acceptanceCriteria": [
+        "Animated timeline showing monitoring vs transmission",
+        "Visual: continuous monitoring (subtle), scheduled transmission (pulse), exception alert (highlight)",
+        "Key phrases: Continuous surveillance, Threshold-based alerting, Battery-optimized",
+        "Clear before/after mental model"
+      ],
+      "passes": false,
+      "dependencies": ["SEC-006"]
+    },
+    {
+      "id": "SEC-008",
+      "title": "Section 8: Results and Credibility",
+      "priority": 11,
+      "phase": "Static Sections",
+      "description": "Show outcomes and build trust",
+      "acceptanceCriteria": [
+        "Animated counter: '130+ installs and counting'",
+        "Before/After comparison: blind operation vs real-time monitoring",
+        "Fluid level visualization (head dropping without vs maintained with)",
+        "Key phrases: Less Downtime, Fewer Workovers, Optimized Production",
+        "No specific percentages without solid attribution"
+      ],
+      "passes": false,
+      "dependencies": ["SEC-007"]
+    },
+    {
+      "id": "SEC-009",
+      "title": "Section 9: Technical Specifications",
+      "priority": 12,
+      "phase": "Static Sections",
+      "description": "Clean spec table for engineers who want details",
+      "acceptanceCriteria": [
+        "Responsive specification table",
+        "All specs from CLAUDE.md included",
+        "Download Tech Sheet button (PDF)",
+        "Professional, scannable layout"
+      ],
+      "passes": false,
+      "dependencies": ["SEC-008"]
+    },
+    {
+      "id": "SEC-010",
+      "title": "Section 10: Call to Action",
+      "priority": 13,
+      "phase": "Static Sections",
+      "description": "Clear conversion section",
+      "acceptanceCriteria": [
+        "Message: 'Become Wireless'",
+        "Two CTA buttons: 'Contact Us Now', 'Download Tech Sheet'",
+        "Contact info or form link",
+        "MPS Group branding/attribution",
+        "Footer with legal/copyright"
+      ],
+      "passes": false,
+      "dependencies": ["SEC-009"]
+    },
+    {
+      "id": "ANIM-001",
+      "title": "Scroll Progress Indicator",
+      "priority": 14,
+      "phase": "Animation Polish",
+      "description": "Add subtle scroll progress indicator",
+      "acceptanceCriteria": [
+        "Thin progress bar at top or side",
+        "Uses WellFi cyan color",
+        "Smooth animation tied to scroll position",
+        "Optional: section indicators"
+      ],
+      "passes": false,
+      "dependencies": ["SEC-010"]
+    },
+    {
+      "id": "ANIM-002",
+      "title": "Section Entrance Animations",
+      "priority": 15,
+      "phase": "Animation Polish",
+      "description": "Add staggered entrance animations to all sections",
+      "acceptanceCriteria": [
+        "Each section fades/slides in on scroll into view",
+        "Staggered children animations",
+        "Respects prefers-reduced-motion",
+        "Not distracting, enhances reading flow"
+      ],
+      "passes": false,
+      "dependencies": ["ANIM-001"]
+    },
+    {
+      "id": "OPT-001",
+      "title": "Performance Optimization",
+      "priority": 16,
+      "phase": "Polish",
+      "description": "Optimize for production performance",
+      "acceptanceCriteria": [
+        "Lighthouse score 90+ on Performance",
+        "Images optimized (Next.js Image component)",
+        "Fonts optimized (next/font)",
+        "Lazy loading for below-fold sections",
+        "Bundle size analyzed and minimized"
+      ],
+      "passes": false,
+      "dependencies": ["ANIM-002"]
+    },
+    {
+      "id": "OPT-002",
+      "title": "Mobile Responsiveness Audit",
+      "priority": 17,
+      "phase": "Polish",
+      "description": "Ensure perfect mobile experience",
+      "acceptanceCriteria": [
+        "All sections work on mobile (320px - 768px)",
+        "Touch interactions work properly",
+        "Scrollytelling sections work on touch devices",
+        "Text is readable without zooming",
+        "CTAs are thumb-friendly size"
+      ],
+      "passes": false,
+      "dependencies": ["OPT-001"]
+    },
+    {
+      "id": "DOC-001",
+      "title": "Tech Sheet PDF Generation",
+      "priority": 18,
+      "phase": "Deliverables",
+      "description": "Create downloadable tech sheet PDF",
+      "acceptanceCriteria": [
+        "Professional one-page PDF",
+        "All specifications included",
+        "WellFi and MPS branding",
+        "Contact information",
+        "Printable format"
+      ],
+      "passes": false,
+      "dependencies": ["OPT-002"]
+    },
+    {
+      "id": "DEPLOY-001",
+      "title": "Production Deployment",
+      "priority": 19,
+      "phase": "Deployment",
+      "description": "Deploy to production on Vercel",
+      "acceptanceCriteria": [
+        "Production deployment successful",
+        "Custom domain configured (if available)",
+        "SSL working",
+        "All sections functional",
+        "Analytics configured (if needed)"
+      ],
+      "passes": false,
+      "dependencies": ["DOC-001"]
+    }
+  ],
+  "phases": [
+    {
+      "name": "Foundation",
+      "description": "Project setup, design system, and base infrastructure",
+      "stories": ["SETUP-001", "SETUP-002", "SETUP-003"]
+    },
+    {
+      "name": "Static Sections",
+      "description": "Build out each section with static content",
+      "stories": ["SEC-001", "SEC-002", "SEC-003", "SEC-005", "SEC-006", "SEC-008", "SEC-009", "SEC-010"]
+    },
+    {
+      "name": "Interactive Sections",
+      "description": "Add scrollytelling and interactive elements",
+      "stories": ["SEC-004", "SEC-007"]
+    },
+    {
+      "name": "Animation Polish",
+      "description": "Add entrance animations and scroll effects",
+      "stories": ["ANIM-001", "ANIM-002"]
+    },
+    {
+      "name": "Polish",
+      "description": "Performance optimization and mobile audit",
+      "stories": ["OPT-001", "OPT-002"]
+    },
+    {
+      "name": "Deliverables",
+      "description": "Final assets and documentation",
+      "stories": ["DOC-001"]
+    },
+    {
+      "name": "Deployment",
+      "description": "Production deployment and configuration",
+      "stories": ["DEPLOY-001"]
+    }
+  ]
+}
