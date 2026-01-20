@@ -144,7 +144,7 @@ function getLetterGroup(svgX: number, svgY: number): number {
 }
 
 // Dramatic signal beams emanating from the tool
-function SignalBeams({ progress }: { progress: number }) {
+function SignalBeams({ uniforms }: { uniforms: { uProgress: { value: number } } }) {
   const groupRef = useRef<THREE.Group>(null);
   
   // Multiple emission points along the tool
@@ -158,34 +158,55 @@ function SignalBeams({ progress }: { progress: number }) {
   const ringsPerPoint = 4;
   
   useFrame((state) => {
-    if (!groupRef.current || progress < 0.6) return;
+    if (!groupRef.current) return;
+    
+    // Read progress from uniforms each frame (reactive!)
+    const progress = uniforms.uProgress.value;
+    if (progress < 0.6) {
+      // Hide all rings when not active
+      groupRef.current.children.forEach((group) => {
+        (group as THREE.Group).children.forEach((ring) => {
+          ((ring as THREE.Mesh).material as THREE.MeshBasicMaterial).opacity = 0;
+        });
+      });
+      return;
+    }
     
     const time = state.clock.getElapsedTime();
     const fadeIn = Math.min(1, (progress - 0.6) / 0.15); // Fade in at 60-75%
     
-    let ringIndex = 0;
-    groupRef.current.children.forEach((group) => {
-      const emitGroup = group as THREE.Group;
-      const emitY = emissionPoints[Math.floor(ringIndex / ringsPerPoint)]?.delay || 0;
+    // Animate ring emission groups
+    groupRef.current.children.forEach((child, groupIdx) => {
+      if (groupIdx >= emissionPoints.length) return; // Skip WiFi arcs group
+      
+      const emitGroup = child as THREE.Group;
+      const emitDelay = emissionPoints[groupIdx]?.delay || 0;
       
       emitGroup.children.forEach((ring, localIdx) => {
         const mesh = ring as THREE.Mesh;
         const mat = mesh.material as THREE.MeshBasicMaterial;
         
         // Stagger rings with emission point delay
-        const phase = (time * 1.2 + localIdx * 0.25 + emitY) % 1;
+        const phase = (time * 1.2 + localIdx * 0.25 + emitDelay) % 1;
         const scale = 0.6 + phase * 4.0; // Bigger expansion
-        const opacity = (1 - phase * phase) * 0.9 * fadeIn; // Quadratic falloff for longer visibility
+        const opacity = (1 - phase * phase) * 0.9 * fadeIn; // Quadratic falloff
         
         mesh.scale.setScalar(scale);
         mat.opacity = Math.max(0, opacity);
-        
-        ringIndex++;
       });
     });
+    
+    // Animate WiFi arcs (last child group)
+    const wifiGroup = groupRef.current.children[emissionPoints.length] as THREE.Group;
+    if (wifiGroup) {
+      wifiGroup.children.forEach((arc, arcIdx) => {
+        const mesh = arc as THREE.Mesh;
+        const mat = mesh.material as THREE.MeshBasicMaterial;
+        mat.opacity = progress > 0.75 ? 
+          Math.sin(time * 3 + arcIdx * 0.8) * 0.4 + 0.5 : 0;
+      });
+    }
   });
-  
-  if (progress < 0.5) return null;
   
   return (
     <group ref={groupRef}>
@@ -214,7 +235,7 @@ function SignalBeams({ progress }: { progress: number }) {
             <meshBasicMaterial 
               color="#22d3ee" 
               transparent 
-              opacity={progress > 0.75 ? Math.sin((progress - 0.75) * 20 + arc) * 0.5 + 0.5 : 0}
+              opacity={0}
               blending={THREE.AdditiveBlending}
             />
           </mesh>
@@ -223,6 +244,7 @@ function SignalBeams({ progress }: { progress: number }) {
     </group>
   );
 }
+
 
 
 export function ParticleMorphHero() {
@@ -719,7 +741,7 @@ export function ParticleMorphHero() {
       </mesh>
       
       {/* Signal beams emanating from tool */}
-      <SignalBeams progress={uniforms.uProgress.value} />
+      <SignalBeams uniforms={uniforms} />
     </group>
   );
 }
