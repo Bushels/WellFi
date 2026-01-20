@@ -26,12 +26,15 @@ const fragmentShader = `
 `;
 
 const vertexShader = `
-  attribute vec3 targetPosition;
+  attribute vec3 targetPosition;  // Tool target (not used in new animation)
+  attribute vec3 cylinderTarget;  // Cylinder position for "i" morph
   attribute float size;
   attribute vec3 color;
+  attribute float letterGroup;    // 0=W, 1=e, 2=l1, 3=l2, 4=F, 5=i_body, 6=wifi
   
-  uniform float uProgress;
+  uniform float uProgress;        // Overall scroll progress 0-1
   uniform float uTime;
+  uniform float uWifiPulse;       // 0-1 repeating pulse for WiFi arcs
   
   varying vec3 vColor;
   varying float vAlpha;
@@ -41,47 +44,70 @@ const vertexShader = `
     return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
   }
 
-  // Simplex-like noise for cloud movement
-  vec3 noiseVec3(vec3 p) {
-      float r = random(p.xy);
-      float g = random(p.yz);
-      float b = random(p.zx);
-      return vec3(r, g, b) * 2.0 - 1.0;
-  }
-
   void main() {
     vColor = color;
     
-    // Calculate morph state
     vec3 startPos = position;
-    vec3 endPos = targetPosition;
+    vec3 endPos = cylinderTarget;
     
-    // Explosion / Cloud phase
-    // Maximum chaos around uProgress = 0.5
-    float explosionState = sin(uProgress * 3.14159); // 0 at 0, 1 at 0.5, 0 at 1
-    float explodePower = 4.0;
+    // Calculate per-letter fade based on progress
+    // Letters fade out: W(0.1-0.3), e(0.15-0.35), l1(0.2-0.4), l2(0.25-0.45), F(0.3-0.5)
+    // i_body and wifi stay visible and morph
+    float letterAlpha = 1.0;
+    float morphAmount = 0.0;
     
-    vec3 noiseDir = noiseVec3(position + uTime * 0.1);
-    vec3 explosionOffset = noiseDir * explodePower * explosionState;
+    // Phase 1: 0.0 - 0.5: Letters fade out sequentially
+    // Phase 2: 0.5 - 1.0: "i" morphs to cylinder
     
-    // Standard Morph
-    vec3 mixedPos = mix(startPos, endPos, uProgress);
+    if (letterGroup < 5.0) {
+      // W, e, l1, l2, F - these fade out
+      float fadeStart = 0.1 + letterGroup * 0.08;  // Stagger start times
+      float fadeEnd = fadeStart + 0.25;
+      letterAlpha = 1.0 - smoothstep(fadeStart, fadeEnd, uProgress);
+    } else {
+      // i_body (5) and wifi (6) - these stay and morph
+      letterAlpha = 1.0;
+      
+      // Start morphing after letters fade (around 0.4)
+      morphAmount = smoothstep(0.35, 0.9, uProgress);
+    }
     
-    // Combine
-    vec3 finalPos = mixedPos + explosionOffset;
+    // Calculate position
+    vec3 finalPos;
     
-    // Floating movement ONLY during transition (not at start or end)
-    // Use explosionState to fade in/out the floating effect
-    float floatSpeed = 0.5;
-    float floatAmp = 0.15 * explosionState; // Only float during transition
-    finalPos.x += sin(uTime * floatSpeed + position.y) * floatAmp;
-    finalPos.y += cos(uTime * floatSpeed + position.x) * floatAmp;
+    if (letterGroup >= 5.0) {
+      // "i" and wifi: morph toward center cylinder
+      finalPos = mix(startPos, endPos, morphAmount);
+      
+      // Add subtle floating during morph
+      float floatAmp = 0.1 * sin(morphAmount * 3.14159); // Max at mid-morph
+      finalPos.x += sin(uTime * 0.7 + position.y * 2.0) * floatAmp;
+      finalPos.y += cos(uTime * 0.5 + position.x * 2.0) * floatAmp;
+      
+      // WiFi pulse effect (only for letterGroup 6)
+      if (letterGroup > 5.5 && uProgress > 0.8) {
+        // Pulse the WiFi arcs - scale outward rhythmically
+        float pulse = sin(uWifiPulse * 6.28318) * 0.5 + 0.5;
+        float scaleBoost = 1.0 + pulse * 0.15;
+        finalPos.x *= scaleBoost;
+        finalPos.y *= scaleBoost;
+      }
+    } else {
+      // Other letters: disperse as they fade
+      vec3 disperseDir = normalize(position + vec3(0.001)); // Prevent zero normal
+      float disperseAmount = (1.0 - letterAlpha) * 5.0;
+      finalPos = startPos + disperseDir * disperseAmount;
+      
+      // Add noise to dispersion
+      float noise = random(position.xy + uTime * 0.1);
+      finalPos += vec3(noise - 0.5, noise * 0.5, 0.0) * disperseAmount * 0.5;
+    }
 
     vec4 mvPosition = modelViewMatrix * vec4(finalPos, 1.0);
     gl_PointSize = size * (300.0 / -mvPosition.z);
     gl_Position = projectionMatrix * mvPosition;
     
-    vAlpha = 1.0;
+    vAlpha = letterAlpha;
   }
 `;
 
@@ -90,17 +116,47 @@ const PARTICLE_COUNT = 12000;
 // SVG URL
 const LOGO_URL = '/wellfi-logo.svg';
 
+// Letter X-position ranges in original SVG coordinates (viewBox 0 0 820 400)
+// Used to detect which letter a particle belongs to
+const LETTER_X_RANGES = {
+  W: { min: 56, max: 286 },
+  e: { min: 294, max: 424 },
+  l1: { min: 452, max: 491 },
+  l2: { min: 527, max: 567 },
+  F: { min: 604, max: 717 },
+  i_body: { min: 725, max: 765 },
+  wifi: { min: 685, max: 810, maxY: 170 } // WiFi arcs are above y=170
+};
+
+// Letter group IDs: 0=W, 1=e, 2=l1, 3=l2, 4=F, 5=i_body, 6=wifi
+function getLetterGroup(svgX: number, svgY: number): number {
+  // Check WiFi arcs first (they overlap with F and i in X but are above)
+  if (svgX >= LETTER_X_RANGES.wifi.min && svgX <= LETTER_X_RANGES.wifi.max && svgY < LETTER_X_RANGES.wifi.maxY) {
+    return 6; // wifi
+  }
+  if (svgX >= LETTER_X_RANGES.W.min && svgX <= LETTER_X_RANGES.W.max) return 0;
+  if (svgX >= LETTER_X_RANGES.e.min && svgX <= LETTER_X_RANGES.e.max) return 1;
+  if (svgX >= LETTER_X_RANGES.l1.min && svgX <= LETTER_X_RANGES.l1.max) return 2;
+  if (svgX >= LETTER_X_RANGES.l2.min && svgX <= LETTER_X_RANGES.l2.max) return 3;
+  if (svgX >= LETTER_X_RANGES.F.min && svgX <= LETTER_X_RANGES.F.max) return 4;
+  if (svgX >= LETTER_X_RANGES.i_body.min && svgX <= LETTER_X_RANGES.i_body.max) return 5;
+  return 0; // Default to W group
+}
+
 export function ParticleMorphHero() {
   const pointsRef = useRef<THREE.Points>(null);
   const linesRef = useRef<THREE.LineSegments>(null);
+  const cylinderRef = useRef<THREE.Mesh>(null);
   const { scene: toolScene } = useGLTF('/models/wellfi-gauge.glb');
 
   // Use useMemo for stable object references
   const geometryData = useMemo(() => ({
     logoPoints: new Float32Array(PARTICLE_COUNT * 3),
     toolPoints: new Float32Array(PARTICLE_COUNT * 3),
+    cylinderPoints: new Float32Array(PARTICLE_COUNT * 3), // Target for "i" -> cylinder morph
     colors: new Float32Array(PARTICLE_COUNT * 3),
     sizes: new Float32Array(PARTICLE_COUNT),
+    letterGroups: new Float32Array(PARTICLE_COUNT), // 0=W, 1=e, 2=l1, 3=l2, 4=F, 5=i_body, 6=wifi
     linePositions: new Float32Array(0), // Will be set dynamically
     lineColors: new Float32Array(0), // Will be set dynamically
   }), []);
@@ -126,6 +182,8 @@ export function ParticleMorphHero() {
 
       const logoPositions: number[] = [];
       const logoColors: number[] = []; // Store colors per particle
+      const letterGroups: number[] = []; // Track which letter each particle belongs to
+      const cylinderPositions: number[] = []; // Target positions for cylinder morph
       const linePositions: number[] = [];
       const lineColors: number[] = [];
       const tempVec = new THREE.Vector3();
@@ -146,8 +204,8 @@ export function ParticleMorphHero() {
           if (shapes.length > 0) {
             // Get color from path - check fill first, then stroke
             let colorValue = '#ffffff'; // Default white
-            const fillColor = path.userData?.style?.fill;
-            const strokeColor = path.userData?.style?.stroke;
+            const fillColor = (path as any).userData?.style?.fill;
+            const strokeColor = (path as any).userData?.style?.stroke;
 
             // Check for cyan WiFi color
             if (fillColor === '#00f2ff' || strokeColor === '#00f2ff' || 
@@ -220,7 +278,12 @@ export function ParticleMorphHero() {
           
           if (particleCount <= 0) continue;
           
-          // Create geometry for this path with unified transform
+          // Sample from UNTRANSFORMED geometry first to get original SVG coords
+          const rawGeometry = new THREE.ShapeGeometry(shapes);
+          const rawMesh = new THREE.Mesh(rawGeometry);
+          const rawSampler = new MeshSurfaceSampler(rawMesh).build();
+          
+          // Create transformed geometry for final positions
           const shapeGeometry = new THREE.ShapeGeometry(shapes);
           shapeGeometry.translate(-centerX, -centerY, 0);
           shapeGeometry.scale(scaleValue, -scaleValue, scaleValue);
@@ -228,9 +291,57 @@ export function ParticleMorphHero() {
           const tempMesh = new THREE.Mesh(shapeGeometry);
           const sampler = new MeshSurfaceSampler(tempMesh).build();
           
+          // Calculate center of "i" letter in transformed space (for moving to center)
+          const iCenterSvgX = (LETTER_X_RANGES.i_body.min + LETTER_X_RANGES.i_body.max) / 2;
+          const iOffsetX = (iCenterSvgX - centerX) * scaleValue; // X offset of "i" from center
+          
           for (let j = 0; j < particleCount; j++) {
+            // Sample from raw geometry to get original SVG coordinates
+            rawSampler.sample(tempVec);
+            const svgX = tempVec.x;
+            const svgY = tempVec.y;
+            
+            // Determine which letter this particle belongs to
+            const letterGroup = getLetterGroup(svgX, svgY);
+            letterGroups.push(letterGroup);
+            
+            // Sample from transformed geometry for final position
             sampler.sample(tempVec);
             logoPositions.push(tempVec.x, tempVec.y, tempVec.z);
+            
+            // Generate cylinder target position for "i" body and wifi particles
+            // These will move to screen center when morphing
+            if (letterGroup === 5 || letterGroup === 6) { // i_body or wifi
+              // Cylinder centered at (0,0,0) 
+              const height = 6.0;
+              const radius = 0.6;
+              
+              if (letterGroup === 5) { // i_body -> cylinder body
+                const theta = Math.random() * Math.PI * 2;
+                const y = (Math.random() - 0.5) * height;
+                const r = radius * (0.95 + Math.random() * 0.1);
+                cylinderPositions.push(
+                  Math.cos(theta) * r,
+                  y,
+                  Math.sin(theta) * r
+                );
+              } else { // wifi -> stays above cylinder as arcs
+                // WiFi arcs stay in relative position above the tool
+                cylinderPositions.push(
+                  tempVec.x - iOffsetX, // Center the x position
+                  tempVec.y + 1.0, // Shift up slightly
+                  tempVec.z
+                );
+              }
+            } else {
+              // Other letters: cylinder position is just dispersed (they fade out anyway)
+              cylinderPositions.push(
+                (Math.random() - 0.5) * 20, // Scatter far away
+                (Math.random() - 0.5) * 20,
+                (Math.random() - 0.5) * 10
+              );
+            }
+            
             // Dim particles by 25% (multiply by 0.75)
             logoColors.push(color.r * 0.75, color.g * 0.75, color.b * 0.75);
           }
@@ -240,6 +351,8 @@ export function ParticleMorphHero() {
         // Apply particle data to geometry
         geometryData.logoPoints.set(logoPositions);
         geometryData.colors.set(logoColors);
+        geometryData.letterGroups.set(letterGroups);
+        geometryData.cylinderPoints.set(cylinderPositions);
 
         // Initialize line data arrays (already declared above)
 
@@ -254,8 +367,8 @@ export function ParticleMorphHero() {
 
            // Determine color based on path style
            let r=4, g=4, b=4; // Default bright white (boosted > 1 for Bloom)
-           const fillColor = path.userData?.style?.fill;
-           const strokeColor = path.userData?.style?.stroke;
+           const fillColor = (path as any).userData?.style?.fill;
+           const strokeColor = (path as any).userData?.style?.stroke;
 
            if (fillColor === '#00f2ff' || strokeColor === '#00f2ff' || 
                fillColor === 'rgb(0, 242, 255)' || strokeColor === 'rgb(0, 242, 255)') {
@@ -411,16 +524,35 @@ export function ParticleMorphHero() {
   // Animation uniforms - useMemo for stable object reference
   const uniforms = useMemo(() => ({
     uProgress: { value: 0 },
-    uTime: { value: 0 }
+    uTime: { value: 0 },
+    uWifiPulse: { value: 0 }
   }), []);
 
   useFrame((state) => {
     if (pointsRef.current) {
-      uniforms.uTime.value = state.clock.getElapsedTime();
+      const elapsed = state.clock.getElapsedTime();
+      uniforms.uTime.value = elapsed;
+      uniforms.uWifiPulse.value = (elapsed * 0.8) % 1.0; // Repeating pulse
       
       const material = pointsRef.current.material as THREE.ShaderMaterial;
       material.uniforms.uProgress.value = uniforms.uProgress.value;
       material.uniforms.uTime.value = uniforms.uTime.value;
+      material.uniforms.uWifiPulse.value = uniforms.uWifiPulse.value;
+    }
+    
+    // Fade lines out early (0-30% scroll)
+    if (linesRef.current) {
+      const lineMat = linesRef.current.material as THREE.LineBasicMaterial;
+      const lineOpacity = Math.max(0, 1 - (uniforms.uProgress.value / 0.3));
+      lineMat.opacity = lineOpacity * 0.4; // Base opacity was 0.4
+    }
+    
+    // Fade in cylinder at end (80-100% scroll)
+    if (cylinderRef.current) {
+      const cylMat = cylinderRef.current.material as THREE.MeshStandardMaterial;
+      const cylOpacity = Math.max(0, (uniforms.uProgress.value - 0.8) / 0.2);
+      cylMat.opacity = cylOpacity;
+      cylinderRef.current.visible = cylOpacity > 0.01;
     }
   });
 
@@ -476,8 +608,10 @@ export function ParticleMorphHero() {
         <bufferGeometry>
           <bufferAttribute attach="attributes-position" args={[geometryData.logoPoints, 3]} />
           <bufferAttribute attach="attributes-targetPosition" args={[geometryData.toolPoints, 3]} />
+          <bufferAttribute attach="attributes-cylinderTarget" args={[geometryData.cylinderPoints, 3]} />
           <bufferAttribute attach="attributes-color" args={[geometryData.colors, 3]} />
           <bufferAttribute attach="attributes-size" args={[geometryData.sizes, 1]} />
+          <bufferAttribute attach="attributes-letterGroup" args={[geometryData.letterGroups, 1]} />
         </bufferGeometry>
         <shaderMaterial
           vertexShader={vertexShader}
@@ -488,6 +622,18 @@ export function ParticleMorphHero() {
           blending={THREE.AdditiveBlending}
         />
       </points>
+
+      {/* Solid Stainless Steel Cylinder - fades in at end */}
+      <mesh ref={cylinderRef} position={[0, 0, 0]} rotation={[0, 0, 0]} visible={false}>
+        <cylinderGeometry args={[0.55, 0.55, 6, 32]} />
+        <meshStandardMaterial 
+          color="#b8c4ce"
+          metalness={0.95}
+          roughness={0.15}
+          transparent
+          opacity={0}
+        />
+      </mesh>
     </group>
   );
 }

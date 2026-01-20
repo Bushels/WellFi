@@ -16,6 +16,11 @@ export function HeroScene({ onIntroComplete }: { onIntroComplete?: () => void })
         dpr={[1, 2]} 
       >
         <Suspense fallback={null}>
+          {/* Lighting for metallic materials */}
+          <ambientLight intensity={0.3} />
+          <directionalLight position={[5, 5, 5]} intensity={1.2} color="#ffffff" />
+          <directionalLight position={[-3, 2, -2]} intensity={0.6} color="#22d3ee" />
+          
           <ParticleMorphHero />
         </Suspense>
         <EffectComposer>
