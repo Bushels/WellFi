@@ -180,17 +180,17 @@ function WiFiSignal({ uniforms }: { uniforms: { uProgress: { value: number } } }
   });
   
   return (
-    <group ref={groupRef} position={[0, 3.3, 0]}>
-      {/* Three WiFi arcs - like the dot of the "i" from WellFi logo */}
+    <group ref={groupRef} position={[0, 1.8, 0]}>
+      {/* Three WiFi arcs - positioned to sit on top of cylinder */}
       {[1, 2, 3].map((arcNum, i) => (
         <mesh 
           key={arcNum} 
           ref={(el) => { if (el) arcRefs.current[i] = el; }}
-          position={[0, arcNum * 0.35, 0]} 
+          position={[0, arcNum * 0.28, 0]} 
           rotation={[0, 0, 0]}
         >
-          {/* Larger radius and thicker tube */}
-          <torusGeometry args={[arcNum * 0.4, 0.06, 8, 32, Math.PI]} />
+          {/* Arcs sized to fit above cylinder */}
+          <torusGeometry args={[arcNum * 0.32, 0.05, 8, 32, Math.PI]} />
           <meshBasicMaterial 
             color="#22d3ee" 
             transparent 
@@ -201,8 +201,8 @@ function WiFiSignal({ uniforms }: { uniforms: { uProgress: { value: number } } }
       ))}
       
       {/* Small dot at center (like WiFi icon center) */}
-      <mesh ref={dotRef} position={[0, 0.1, 0]}>
-        <sphereGeometry args={[0.12, 16, 16]} />
+      <mesh ref={dotRef} position={[0, 0.05, 0]}>
+        <sphereGeometry args={[0.1, 16, 16]} />
         <meshBasicMaterial 
           color="#22d3ee" 
           transparent 
