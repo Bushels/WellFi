@@ -26,8 +26,9 @@ const fragmentShader = `
     float brightness = 1.0 + vBrightness * 2.0;
     vec3 finalColor = vColor * brightness;
     
-    // Clamp to prevent over-saturation
-    finalColor = min(finalColor, vec3(1.2));
+    // HDR brightness for bloom (allow values > 1.0)
+    // Removed strict clamp at 1.2 to let WiFi particles glow intensely
+    finalColor = min(finalColor, vec3(4.0));
     
     gl_FragColor = vec4(finalColor, vAlpha * glow);
   }
@@ -48,9 +49,26 @@ const vertexShader = `
   varying float vAlpha;
   varying float vBrightness;      // Extra brightness for WiFi particles
 
-  // Pseudo-random function
+  // Pseudo-random function (required by noise)
   float random(vec2 st) {
     return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
+  }
+
+  // Value Noise function (from threejs-shaders skill)
+  float noise(vec2 st) {
+
+    vec2 i = floor(st);
+    vec2 f = fract(st);
+
+    // Four corners in 2D of a tile
+    float a = random(i);
+    float b = random(i + vec2(1.0, 0.0));
+    float c = random(i + vec2(0.0, 1.0));
+    float d = random(i + vec2(1.0, 1.0));
+
+    vec2 u = f * f * (3.0 - 2.0 * f);
+
+    return mix(a, b, u.x) + (c - a) * u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
   }
 
   void main() {
@@ -60,51 +78,55 @@ const vertexShader = `
     vec3 endPos = cylinderTarget;
     
     // Calculate per-letter fade based on progress
-    // Letters fade out: W(0.1-0.3), e(0.15-0.35), l1(0.2-0.4), l2(0.25-0.45), F(0.3-0.5)
-    // i_body and wifi stay visible and morph
     float letterAlpha = 1.0;
     float morphAmount = 0.0;
     
-    // Phase 1: 0.0 - 0.5: Letters fade out sequentially
-    // Phase 2: 0.5 - 1.0: "i" morphs to cylinder
+    // Use step() instead of if() for performance (from threejs-shaders skill)
+    float isLogo = step(5.0, letterGroup); // 0 for W,e,l,l,F; 1 for i,wifi
     
-    if (letterGroup < 5.0) {
-      // W, e, l1, l2, F - these fade out
-      float fadeStart = 0.1 + letterGroup * 0.08;  // Stagger start times
-      float fadeEnd = fadeStart + 0.25;
-      letterAlpha = 1.0 - smoothstep(fadeStart, fadeEnd, uProgress);
-    } else {
-      // i_body (5) and wifi (6) - these stay and morph
-      letterAlpha = 1.0;
-      
-      // Start morphing after letters fade (around 0.4)
-      morphAmount = smoothstep(0.35, 0.9, uProgress);
-    }
+    // Logic for fading letters (Group < 5)
+    float fadeStart = 0.1 + letterGroup * 0.08;
+    float fadeEnd = fadeStart + 0.25;
+    float fadeAlpha = 1.0 - smoothstep(fadeStart, fadeEnd, uProgress);
+    
+    // Logic for morphing letters (Group >= 5)
+    float morphVal = smoothstep(0.35, 0.9, uProgress);
+    
+    // Mix based on group
+    letterAlpha = mix(fadeAlpha, 1.0, isLogo);
+    morphAmount = mix(0.0, morphVal, isLogo);
     
     // Calculate position
     vec3 finalPos;
-    float brightness = 0.0; // Default: no extra brightness
+    float brightness = 0.0; 
     
-    if (letterGroup >= 5.0) {
+    if (isLogo > 0.5) {
       // "i" and wifi: morph toward center cylinder
       finalPos = mix(startPos, endPos, morphAmount);
       
-      // Add subtle floating during morph
-      float floatAmp = 0.1 * sin(morphAmount * 3.14159); // Max at mid-morph
-      finalPos.x += sin(uTime * 0.7 + position.y * 2.0) * floatAmp;
-      finalPos.y += cos(uTime * 0.5 + position.x * 2.0) * floatAmp;
+      // Organic floating using Noise (from threejs-shaders skill)
+      // Much smoother than simple sine waves
+      float floatAmp = 0.1 * sin(morphAmount * 3.14159);
+      float nX = noise(vec2(uTime * 0.5, position.y)) * 2.0 - 1.0;
+      float nY = noise(vec2(position.x, uTime * 0.5)) * 2.0 - 1.0;
       
-      // WiFi pulse effect and brightness boost (only for letterGroup 6)
-      if (letterGroup > 5.5) {
-        // Brightness increases as particles morph to tool position
-        brightness = morphAmount * morphAmount; // Quadratic - brighter when closer to final position
+      finalPos.x += nX * floatAmp;
+      finalPos.y += nY * floatAmp;
+      
+      // WiFi pulse effect (letterGroup > 5.5 means letterGroup 6)
+      float isWifi = step(5.5, letterGroup);
+      
+      if (isWifi > 0.5) {
+        // Brightness
+        brightness = morphAmount * morphAmount;
         
-        // Add pulsing glow when over the tool (progress > 0.7)
+        // Pulse
         if (uProgress > 0.7) {
-          float pulse = sin(uWifiPulse * 6.28318) * 0.5 + 0.5;
-          brightness += pulse * 0.5;
+          // Add noise to pulse for less robotic feel
+          float pulseNoise = noise(vec2(uTime, 0.0)) * 0.2; 
+          float pulse = sin(uWifiPulse * 6.28318 + pulseNoise) * 0.5 + 0.5;
           
-          // Scale pulse effect
+          brightness += pulse * 0.5;
           float scaleBoost = 1.0 + pulse * 0.1;
           finalPos.x *= scaleBoost;
           finalPos.y *= scaleBoost;
@@ -112,23 +134,24 @@ const vertexShader = `
       }
     } else {
       // Other letters: disperse as they fade
-      vec3 disperseDir = normalize(position + vec3(0.001)); // Prevent zero normal
+      vec3 disperseDir = normalize(position + vec3(0.001));
       float disperseAmount = (1.0 - letterAlpha) * 5.0;
       finalPos = startPos + disperseDir * disperseAmount;
       
       // Add noise to dispersion
-      float noise = random(position.xy + uTime * 0.1);
-      finalPos += vec3(noise - 0.5, noise * 0.5, 0.0) * disperseAmount * 0.5;
+      float n = noise(position.xy + uTime * 0.1);
+      finalPos += vec3(n - 0.5, n * 0.5, 0.0) * disperseAmount * 0.5;
     }
 
     vec4 mvPosition = modelViewMatrix * vec4(finalPos, 1.0);
     
-    // Boost size for WiFi particles when they're over the tool
+    // Boost size for WiFi particles
     float sizeMultiplier = 1.0;
-    if (letterGroup > 5.5 && uProgress > 0.5) {
-      // WiFi particles get 2-3x larger as they morph to tool
-      float sizeMorph = smoothstep(0.5, 0.9, uProgress);
-      sizeMultiplier = 1.0 + sizeMorph * 2.0; // 1x -> 3x
+    float isWifi = step(5.5, letterGroup);
+    
+    if (isWifi > 0.5 && uProgress > 0.5) {
+       float sizeMorph = smoothstep(0.5, 0.9, uProgress);
+       sizeMultiplier = 1.0 + sizeMorph * 2.0;
     }
     
     gl_PointSize = size * sizeMultiplier * (300.0 / -mvPosition.z);
@@ -138,6 +161,21 @@ const vertexShader = `
     vBrightness = brightness;
   }
 `;
+
+// ...
+
+// In the component render:
+/*
+       <shaderMaterial
+          vertexShader={vertexShader}
+          fragmentShader={fragmentShader}
+          uniforms={uniforms}
+          transparent
+          depthWrite={false}
+          blending={THREE.AdditiveBlending}
+          toneMapped={false}
+        />
+*/
 
 const PARTICLE_COUNT = 12000;
 
@@ -171,76 +209,7 @@ function getLetterGroup(svgX: number, svgY: number): number {
   return 0; // Default to W group
 }
 
-// Clean WiFi signal at top of tool - arcs pulse sequentially like broadcasting
-function WiFiSignal({ uniforms }: { uniforms: { uProgress: { value: number } } }) {
-  const groupRef = useRef<THREE.Group>(null);
-  const arcRefs = useRef<THREE.Mesh[]>([]);
-  const dotRef = useRef<THREE.Mesh>(null);
-  
-  useFrame((state) => {
-    if (!groupRef.current) return;
-    
-    const progress = uniforms.uProgress.value;
-    const time = state.clock.getElapsedTime();
-    
-    // WiFi signal appears after 70% scroll progress (earlier start)
-    const fadeIn = Math.max(0, Math.min(1, (progress - 0.7) / 0.1));
-    
-    arcRefs.current.forEach((arc, i) => {
-      if (!arc) return;
-      const mat = arc.material as THREE.MeshBasicMaterial;
-      
-      // Sequential pulse: each arc lights up in sequence
-      // Creates a "broadcasting" effect from inner to outer
-      const pulsePhase = (time * 2.5 + i * 0.35) % 1.5;
-      const isPulsing = pulsePhase < 0.5;
-      const pulseIntensity = isPulsing ? Math.sin(pulsePhase * Math.PI / 0.5) : 0;
-      
-      // Higher base opacity and brighter pulses
-      mat.opacity = fadeIn * (0.5 + pulseIntensity * 0.5);
-    });
-    
-    // Animate the center dot
-    if (dotRef.current) {
-      const dotMat = dotRef.current.material as THREE.MeshBasicMaterial;
-      dotMat.opacity = fadeIn * 0.95;
-    }
-  });
-  
-  return (
-    <group ref={groupRef} position={[0, 1.8, 0]}>
-      {/* Three WiFi arcs - positioned to sit on top of cylinder */}
-      {[1, 2, 3].map((arcNum, i) => (
-        <mesh 
-          key={arcNum} 
-          ref={(el) => { if (el) arcRefs.current[i] = el; }}
-          position={[0, arcNum * 0.28, 0]} 
-          rotation={[0, 0, 0]}
-        >
-          {/* Arcs sized to fit above cylinder */}
-          <torusGeometry args={[arcNum * 0.32, 0.05, 8, 32, Math.PI]} />
-          <meshBasicMaterial 
-            color="#22d3ee" 
-            transparent 
-            opacity={0}
-            blending={THREE.AdditiveBlending}
-          />
-        </mesh>
-      ))}
-      
-      {/* Small dot at center (like WiFi icon center) */}
-      <mesh ref={dotRef} position={[0, 0.05, 0]}>
-        <sphereGeometry args={[0.1, 16, 16]} />
-        <meshBasicMaterial 
-          color="#22d3ee" 
-          transparent 
-          opacity={0}
-          blending={THREE.AdditiveBlending}
-        />
-      </mesh>
-    </group>
-  );
-}
+
 
 
 
@@ -722,6 +691,7 @@ export function ParticleMorphHero() {
           transparent
           depthWrite={false}
           blending={THREE.AdditiveBlending}
+          toneMapped={false}
         />
       </points>
 

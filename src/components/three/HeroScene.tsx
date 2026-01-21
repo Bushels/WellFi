@@ -2,7 +2,7 @@ import { Canvas } from '@react-three/fiber';
 import { ParticleMorphHero } from './ParticleMorphHero';
 import { Suspense } from 'react';
 import { Loader, Environment } from '@react-three/drei';
-import { EffectComposer, Bloom } from '@react-three/postprocessing';
+import { EffectComposer, Bloom, ChromaticAberration, Noise } from '@react-three/postprocessing';
 
 export function HeroScene({ onIntroComplete }: { onIntroComplete?: () => void }) {
   // Directly trigger intro complete since we start visible
@@ -26,12 +26,20 @@ export function HeroScene({ onIntroComplete }: { onIntroComplete?: () => void })
           
           <ParticleMorphHero />
         </Suspense>
-        <EffectComposer>
+        <EffectComposer enableNormalPass={false}>
           <Bloom 
             mipmapBlur 
-            intensity={1.5} 
-            luminanceThreshold={0.8} 
+            intensity={2.0} 
+            luminanceThreshold={0.9} 
             luminanceSmoothing={0.9} 
+          />
+          <ChromaticAberration 
+            offset={[0.0008, 0.0008]} // Very subtle color shift for premium feel
+            radialModulation={false}
+            modulationOffset={0}
+          />
+          <Noise 
+            opacity={0.05} // Subtle film grain
           />
         </EffectComposer>
       </Canvas>
