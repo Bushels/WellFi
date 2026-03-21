@@ -17,10 +17,11 @@ interface Particle {
   targetY: number;
   radius: number;
   alpha: number;
+  activated: boolean;
 }
 
 export interface ParticleCanvasHandle {
-  triggerExplode: () => void;
+  triggerPulse: () => void;
   enableMouseInteraction: () => void;
 }
 
@@ -49,6 +50,19 @@ const MOUSE_RADIUS = 80;
 const MOUSE_FORCE = 6;
 const RETURN_STIFFNESS = 0.12;
 const GATHER_PULSE_SPEED = 0.03;
+
+const PULSE_RING_DELAY = 0.08; // seconds between each ring start
+const PULSE_RING_SPEED_BASE = 8; // px per frame for leading ring
+const PULSE_MAX_RADIUS = 800;
+
+interface PulseRingState {
+  radius: number;
+  opacity: number;
+  speed: number;
+  lineWidth: number;
+  startOpacity: number;
+  active: boolean;
+}
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -138,6 +152,41 @@ function sampleTargets(
 }
 
 // ---------------------------------------------------------------------------
+// Pulse ring drawing
+// ---------------------------------------------------------------------------
+
+function drawPulseRing(
+  ctx: CanvasRenderingContext2D,
+  cx: number, cy: number,
+  radius: number,
+  opacity: number,
+  lineWidth: number,
+) {
+  if (opacity <= 0 || radius <= 0) return;
+
+  ctx.save();
+
+  // Outer glow ring
+  ctx.shadowColor = '#22D3EE';
+  ctx.shadowBlur = 20;
+  ctx.strokeStyle = `rgba(34, 211, 238, ${opacity})`;
+  ctx.lineWidth = lineWidth;
+  ctx.beginPath();
+  ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+  ctx.stroke();
+
+  // Inner brighter core ring
+  ctx.shadowBlur = 8;
+  ctx.strokeStyle = `rgba(125, 238, 255, ${opacity * 0.5})`;
+  ctx.lineWidth = lineWidth * 0.4;
+  ctx.beginPath();
+  ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+  ctx.stroke();
+
+  ctx.restore();
+}
+
+// ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
@@ -158,7 +207,10 @@ const ParticleCanvas = forwardRef<ParticleCanvasHandle, ParticleCanvasProps>(
     const bitmapRef = useRef<{ bitmap: Uint8Array; width: number; height: number } | null>(null);
     const rafRef = useRef<number>(0);
     const mouseRef = useRef({ x: -9999, y: -9999, active: false });
-    const phaseRef = useRef<'idle' | 'gather' | 'explode' | 'settle'>('idle');
+    const phaseRef = useRef<'idle' | 'gather' | 'pulse' | 'settle'>('idle');
+    const pulseRingsRef = useRef<PulseRingState[]>([]);
+    const pulseStartTimeRef = useRef<number>(0);
+    const pulseOriginRef = useRef({ x: 0, y: 0 });
     const [reducedMotion, setReducedMotion] = useState(false);
 
     useEffect(() => {
@@ -201,7 +253,8 @@ const ParticleCanvas = forwardRef<ParticleCanvasHandle, ParticleCanvasProps>(
           targetX: t.x,
           targetY: t.y,
           radius: 1.2 + Math.random() * 0.8,
-          alpha: 0.6 + Math.random() * 0.4,
+          alpha: 0.05,
+          activated: false,
         };
       });
 
@@ -245,16 +298,70 @@ const ParticleCanvas = forwardRef<ParticleCanvasHandle, ParticleCanvasProps>(
             p.x = p.homeX + Math.sin(gatherTime + p.homeX * 0.1) * 1.5;
             p.y = p.homeY + Math.cos(gatherTime + p.homeY * 0.1) * 1.5;
           }
-        } else if (phase === 'explode' || phase === 'settle') {
-          const stiffness = isMobile() ? 0.12 : SPRING_STIFFNESS;
+        } else if (phase === 'pulse') {
+          const elapsed = performance.now() / 1000;
+          const pulseElapsed = elapsed - pulseStartTimeRef.current;
+          const origin = pulseOriginRef.current;
+          const rings = pulseRingsRef.current;
 
+          // Update and draw each ring
+          let leadingRadius = 0;
+          for (let i = 0; i < rings.length; i++) {
+            const ring = rings[i];
+            const ringElapsed = pulseElapsed - (i * PULSE_RING_DELAY);
+            if (ringElapsed < 0) continue;
+
+            ring.radius = ringElapsed * ring.speed * 60;
+            ring.opacity = ring.startOpacity * Math.max(0, 1 - ring.radius / PULSE_MAX_RADIUS);
+            ring.active = ring.radius < PULSE_MAX_RADIUS;
+
+            if (ring.active && ring.opacity > 0) {
+              drawPulseRing(ctx, origin.x, origin.y, ring.radius, ring.opacity, ring.lineWidth);
+            }
+
+            if (i === 0) leadingRadius = ring.radius;
+          }
+
+          // Wave activation — particles light up as leading ring passes
+          const stiffness = isMobile() ? 0.12 : SPRING_STIFFNESS;
+          for (const p of particles) {
+            if (!p.activated) {
+              const dist = Math.sqrt(
+                (p.homeX - origin.x) ** 2 + (p.homeY - origin.y) ** 2
+              );
+              if (leadingRadius >= dist) {
+                p.activated = true;
+                p.alpha = 0.6 + Math.random() * 0.4; // restore full alpha
+              }
+            }
+
+            if (p.activated) {
+              const dx = p.targetX - p.x;
+              const dy = p.targetY - p.y;
+              p.vx += dx * stiffness;
+              p.vy += dy * stiffness;
+              p.vx *= SPRING_DAMPING;
+              p.vy *= SPRING_DAMPING;
+              p.x += p.vx;
+              p.y += p.vy;
+            }
+          }
+
+          // Transition to settle when all rings are done
+          const allDone = rings.every(r => r.radius >= PULSE_MAX_RADIUS);
+          if (allDone) {
+            phaseRef.current = 'settle';
+          }
+        } else if (phase === 'settle') {
+          const stiffness = isMobile() ? 0.12 : SPRING_STIFFNESS;
           for (const p of particles) {
             const dx = p.targetX - p.x;
             const dy = p.targetY - p.y;
             p.vx += dx * stiffness;
             p.vy += dy * stiffness;
 
-            if (phase === 'settle' && mouse.active && !isMobile()) {
+            // Mouse repulsion
+            if (mouse.active && !isMobile()) {
               const mx = p.x - mouse.x;
               const my = p.y - mouse.y;
               const dist = Math.sqrt(mx * mx + my * my);
@@ -267,11 +374,11 @@ const ParticleCanvas = forwardRef<ParticleCanvasHandle, ParticleCanvasProps>(
 
             p.vx *= SPRING_DAMPING;
             p.vy *= SPRING_DAMPING;
-
             p.x += p.vx;
             p.y += p.vy;
 
-            if (phase === 'settle' && mouse.active && bitmap) {
+            // Letter boundary constraint
+            if (mouse.active && bitmap) {
               const bx = Math.floor(p.x);
               const by = Math.floor(p.y);
               if (bx >= 0 && bx < bitmap.width && by >= 0 && by < bitmap.height) {
@@ -353,16 +460,33 @@ const ParticleCanvas = forwardRef<ParticleCanvasHandle, ParticleCanvasProps>(
     }, []);
 
     useImperativeHandle(ref, () => ({
-      triggerExplode() {
-        phaseRef.current = 'explode';
-        setTimeout(() => {
-          phaseRef.current = 'settle';
-        }, 800);
+      triggerPulse() {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const rect = canvas.getBoundingClientRect();
+        const w = Math.floor(rect.width);
+        const h = Math.floor(rect.height);
+
+        // Pulse origin = center of tool bounds
+        pulseOriginRef.current = {
+          x: toolBounds.x * w + toolBounds.width * w / 2,
+          y: toolBounds.y * h + toolBounds.height * h / 2,
+        };
+
+        // Initialize 3 rings with staggered properties
+        pulseRingsRef.current = [
+          { radius: 0, opacity: 0.9, speed: PULSE_RING_SPEED_BASE, lineWidth: 3.0, startOpacity: 0.9, active: true },
+          { radius: 0, opacity: 0.6, speed: PULSE_RING_SPEED_BASE - 1, lineWidth: 2.0, startOpacity: 0.6, active: true },
+          { radius: 0, opacity: 0.35, speed: PULSE_RING_SPEED_BASE - 2, lineWidth: 1.5, startOpacity: 0.35, active: true },
+        ];
+
+        pulseStartTimeRef.current = performance.now() / 1000;
+        phaseRef.current = 'pulse';
       },
       enableMouseInteraction() {
         mouseRef.current.active = true;
       },
-    }), []);
+    }), [toolBounds]);
 
     if (reducedMotion) return null;
 

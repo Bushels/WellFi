@@ -57,7 +57,7 @@ export default function HeroSection() {
       );
 
       // Beat 2 (1.0s): Trigger particle explosion
-      tl.call(() => particleRef.current?.triggerExplode(), [], 1.0);
+      tl.call(() => particleRef.current?.triggerPulse(), [], 1.0);
 
       // Beat 3 (1.8s): Ghost tool down
       tl.to(
