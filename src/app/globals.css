@@ -325,6 +325,21 @@ body {
 
 .hero-headline { will-change: clip-path; }
 
+/* Spotlight reveal — GSAP animates --reveal-radius from 0 to 600 */
+.tool-spotlight {
+  --reveal-radius: 0px;
+  -webkit-mask-image: radial-gradient(
+    circle var(--reveal-radius) at 50% 45%,
+    white 95%,
+    transparent 100%
+  );
+  mask-image: radial-gradient(
+    circle var(--reveal-radius) at 50% 45%,
+    white 95%,
+    transparent 100%
+  );
+}
+
 /* R3F Canvas creates a wrapper div around the <canvas> element.
    Both the wrapper and the canvas must fill the container. */
 .hero-tool-wrap > div {
