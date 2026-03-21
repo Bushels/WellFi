@@ -34,44 +34,46 @@ export default function HeroSection() {
 
       const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
-      // Beat 0 (0.0-0.5s): Logo + tagline fade in
+      // Beat 0 (0.3s): Logo fades in from void
       tl.fromTo(
         logoRef.current,
         { autoAlpha: 0, y: 10 },
         { autoAlpha: 1, y: 0, duration: 0.5 },
-        0,
+        0.3,
       );
+
+      // Beat 1 (0.8-1.5s): Tool spotlight reveal
+      tl.fromTo(
+        toolRef.current,
+        { '--reveal-radius': '0px', autoAlpha: 0 },
+        { '--reveal-radius': '600px', autoAlpha: 0.55, duration: 0.7, ease: 'power2.out' },
+        0.8,
+      );
+
+      // Tagline alongside tool reveal
       tl.fromTo(
         taglineRef.current,
         { autoAlpha: 0, y: 8 },
         { autoAlpha: 0.85, y: 0, duration: 0.4 },
-        0.15,
+        1.0,
       );
 
-      // Beat 1 (0.5-1.0s): Tool fades in
-      tl.fromTo(
-        toolRef.current,
-        { autoAlpha: 0, y: 20 },
-        { autoAlpha: 0.55, y: 0, duration: 0.5 },
-        0.5,
-      );
+      // Beat 3 (2.0s): Fire EM pulse — rings + wave activation
+      tl.call(() => particleRef.current?.triggerPulse(), [], 2.0);
 
-      // Beat 2 (1.0s): Trigger particle explosion
-      tl.call(() => particleRef.current?.triggerPulse(), [], 1.0);
-
-      // Beat 3 (1.8s): Ghost tool down
+      // Beat 6 (3.0s): Ghost tool after pulse
       tl.to(
         toolRef.current,
-        { autoAlpha: 0.15, duration: 0.4, ease: 'power2.inOut' },
-        1.8,
+        { autoAlpha: 0.15, duration: 0.5, ease: 'power2.inOut' },
+        3.0,
       );
 
-      // Beat 4 (2.2-3.0s): Supporting content staggers in
+      // Beat 7 (3.5s): Supporting content
       tl.fromTo(
         supportRef.current,
         { autoAlpha: 0, y: 14 },
         { autoAlpha: 1, y: 0, duration: 0.5 },
-        2.2,
+        3.5,
       );
 
       if (chipsRef.current) {
@@ -80,7 +82,7 @@ export default function HeroSection() {
           chips,
           { autoAlpha: 0, scale: 0.95 },
           { autoAlpha: 1, scale: 1, duration: 0.35, stagger: 0.12 },
-          2.5,
+          3.8,
         );
       }
 
@@ -90,24 +92,25 @@ export default function HeroSection() {
           buttons,
           { autoAlpha: 0, y: 10 },
           { autoAlpha: 1, y: 0, duration: 0.4, stagger: 0.15 },
-          2.8,
+          4.0,
         );
       }
 
-      // Beat 5 (3.2s): Logo pulse + enable mouse interaction
+      // Beat 8 (4.2s): Enable mouse interaction
+      tl.call(() => particleRef.current?.enableMouseInteraction(), [], 4.2);
+
+      // Logo pulse
       tl.fromTo(
         logoRef.current,
         { filter: 'brightness(1)' },
         { filter: 'brightness(1.3)', duration: 0.3, yoyo: true, repeat: 1 },
-        3.2,
+        4.2,
       );
 
-      tl.call(() => particleRef.current?.enableMouseInteraction(), [], 3.5);
-
-      // After complete — add settled class
+      // Settle
       tl.call(() => {
         heroRef.current?.classList.add('hero-settled');
-      }, [], 4.0);
+      }, [], 4.5);
     },
     { scope: heroRef, dependencies: [] },
   );
@@ -198,7 +201,7 @@ export default function HeroSection() {
           {/* Tool PNG (z-5) */}
           <div
             ref={toolRef}
-            className="invisible relative h-[clamp(20rem,50vh,36rem)] w-[clamp(8rem,20vw,16rem)]"
+            className="tool-spotlight invisible relative h-[clamp(20rem,50vh,36rem)] w-[clamp(8rem,20vw,16rem)]"
           >
             <Image
               src="/images/wellfi-sideclamp-hero.png"
