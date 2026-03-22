@@ -50,11 +50,11 @@ interface SignalWaveHeroProps {
 // ---------------------------------------------------------------------------
 
 const WAVE_LINES = 30;
-const WAVE_SPEED = 4;
-const WAVE_FREQUENCY = 0.025;
-const BASE_AMPLITUDE = 120;
-const SPRING_STIFFNESS = 0.08;
-const SPRING_DAMPING = 0.82;
+const WAVE_SPEED = 6;
+const WAVE_FREQUENCY = 0.02;
+const BASE_AMPLITUDE = 80;
+const SPRING_STIFFNESS = 0.1;
+const SPRING_DAMPING = 0.84;
 const MOUSE_RADIUS = 80;
 const MOUSE_FORCE = 6;
 const RETURN_STIFFNESS = 0.12;
@@ -81,6 +81,8 @@ function buildTextBitmap(
   height: number,
   fontFamily: string,
   fontWeight: number,
+  /** Vertical region for text (fraction of canvas). Defaults to upper 45%. */
+  textRegion = { top: 0.06, bottom: 0.46 },
 ): { bitmap: Uint8Array; width: number; height: number } {
   if (lines.length === 0 || width === 0 || height === 0) {
     return { bitmap: new Uint8Array(0), width: 0, height: 0 };
@@ -90,8 +92,12 @@ function buildTextBitmap(
   canvas.height = height;
   const ctx = canvas.getContext('2d')!;
 
-  // Calculate font size to fill the canvas width with the longest line
-  let fontSize = Math.floor((height / lines.length) * 0.75);
+  // Text renders within a vertical sub-region, leaving bottom clear for content
+  const regionTop = height * textRegion.top;
+  const regionHeight = height * (textRegion.bottom - textRegion.top);
+
+  // Calculate font size to fill the region
+  let fontSize = Math.floor((regionHeight / lines.length) * 0.75);
   ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
 
   // Measure widest line and scale font to fit
@@ -100,8 +106,8 @@ function buildTextBitmap(
     const m = ctx.measureText(line);
     if (m.width > maxTextWidth) maxTextWidth = m.width;
   }
-  if (maxTextWidth > width * 0.92) {
-    fontSize = Math.floor((fontSize * (width * 0.92)) / maxTextWidth);
+  if (maxTextWidth > width * 0.85) {
+    fontSize = Math.floor((fontSize * (width * 0.85)) / maxTextWidth);
   }
 
   ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
@@ -109,9 +115,9 @@ function buildTextBitmap(
   ctx.textBaseline = 'middle';
   ctx.fillStyle = '#fff';
 
-  const lineHeight = height / lines.length;
+  const lineHeight = regionHeight / lines.length;
   for (let i = 0; i < lines.length; i++) {
-    ctx.fillText(lines[i], width / 2, lineHeight * (i + 0.5));
+    ctx.fillText(lines[i], width / 2, regionTop + lineHeight * (i + 0.5));
   }
 
   const imageData = ctx.getImageData(0, 0, width, height);
