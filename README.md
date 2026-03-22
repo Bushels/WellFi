@@ -20,6 +20,36 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Stitch SDK
+
+This project now includes [`@google/stitch-sdk`](https://github.com/google-labs-code/stitch-sdk).
+
+This site now supports browser-side Google OAuth for Stitch inside the landing page, and it still includes the server-side CLI for API-key workflows.
+
+Browser auth setup:
+
+1. Add `NEXT_PUBLIC_GOOGLE_CLIENT_ID` to `.env.local`.
+2. Add `NEXT_PUBLIC_GOOGLE_CLOUD_PROJECT` to `.env.local`.
+3. In Google Cloud Console, make sure your OAuth web client allows this site's origin.
+4. Open the `Stitch` section on the homepage and authenticate with Google.
+
+Server CLI setup:
+
+1. Add `STITCH_API_KEY` to `.env.local`.
+2. List your projects with `npm run stitch:projects`.
+3. Create a project with `npm run stitch:create -- --title "WellFi Concepts"`.
+4. Generate a screen with `npm run stitch:generate -- --project <project-id> --prompt "A modern heavy oil dashboard" --device DESKTOP`.
+
+Available Stitch commands:
+
+- `npm run stitch:projects`
+- `npm run stitch:create -- --title "My Project"`
+- `npm run stitch:screens -- --project <project-id>`
+- `npm run stitch:generate -- --project <project-id> --prompt "..." --device DESKTOP`
+- `npm run stitch:inspect -- --project <project-id> --screen <screen-id>`
+
+Important: [`next.config.ts`](./next.config.ts) still uses `output: "export"`, so any secret-based Stitch integration must stay in scripts or another backend. The in-page Stitch Lab works because it uses Google OAuth in the browser instead of exposing an API key.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

@@ -1,0 +1,109 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e4]:
+      - generic [ref=e5]:
+        - img "WellFi" [ref=e6]
+        - paragraph [ref=e59]: Data Below. Insight Above.
+      - heading "Stop Pumping Blind." [level=1]
+      - generic:
+        - generic:
+          - generic:
+            - img "WellFi side-clamped tool mounted vertically alongside carbon steel pipe"
+    - navigation "Main navigation" [ref=e60]:
+      - link "WellFi" [ref=e61] [cursor=pointer]:
+        - /url: "#hero"
+        - img "WellFi" [ref=e62]
+      - generic [ref=e115]:
+        - link "Proof" [ref=e116] [cursor=pointer]:
+          - /url: "#proof"
+        - link "Install" [ref=e117] [cursor=pointer]:
+          - /url: "#install"
+        - link "Details" [ref=e118] [cursor=pointer]:
+          - /url: "#details"
+      - link "Contact" [ref=e119] [cursor=pointer]:
+        - /url: "#contact"
+    - generic [ref=e121]:
+      - generic [ref=e122]:
+        - paragraph [ref=e123]: Proof without clutter
+        - heading "The simplest deployment path should also be the fastest value case." [level=2] [ref=e124]
+      - generic [ref=e125]:
+        - article [ref=e126]:
+          - generic [ref=e127]:
+            - generic [ref=e128]: Same
+            - generic [ref=e129]: changeout window
+          - paragraph [ref=e130]: No extra rig time
+          - paragraph [ref=e131]: Deploy on the work already on the calendar.
+        - article [ref=e132]:
+          - generic [ref=e133]:
+            - generic [ref=e134]: 130+
+            - generic [ref=e135]: installed globally
+          - paragraph [ref=e136]: Field-proven base
+          - paragraph [ref=e137]: Established hardware, not a concept render.
+        - article [ref=e138]:
+          - generic [ref=e139]:
+            - generic [ref=e140]: MODBUS
+            - generic [ref=e141]: RS-485 output
+          - paragraph [ref=e142]: Surface-ready signal
+          - paragraph [ref=e143]: Bring pressure above without rebuilding the stack.
+    - generic [ref=e146]:
+      - figure [ref=e147]:
+        - img "WellFi side-clamp installed beside carbon-steel pipe and fiberglass isolation section" [ref=e148]
+        - generic [ref=e151]:
+          - paragraph [ref=e152]: Installed state
+          - paragraph [ref=e153]: Stainless side-clamp, carbon-steel pipe, fiberglass isolation, and a deployment path that stays operationally simple.
+      - generic [ref=e154]:
+        - paragraph [ref=e155]: Product / install
+        - heading "No extra rig time. Immediate surface value." [level=2] [ref=e156]
+        - paragraph [ref=e157]: WellFi is valuable because it fits into work that is already happening. Run it on the planned changeout, keep the install path clean, and start tuning with real pressure instead of surface guesswork.
+        - generic [ref=e158]:
+          - generic [ref=e159]:
+            - generic [ref=e160]: "01"
+            - paragraph [ref=e161]: Run it on the planned pump changeout.
+          - generic [ref=e162]:
+            - generic [ref=e163]: "02"
+            - paragraph [ref=e164]: Clamp it to the string without adding another intervention.
+          - generic [ref=e165]:
+            - generic [ref=e166]: "03"
+            - paragraph [ref=e167]: Start reading downhole pressure at surface right away.
+    - generic [ref=e170]:
+      - generic [ref=e171]:
+        - paragraph [ref=e172]: Details + contact
+        - heading "Straight-line specs for a straight-line decision." [level=2] [ref=e173]
+        - paragraph [ref=e174]: No oversized table, no dashboard theater, and no mystery about field fit. The shortlist below is enough to start the right technical conversation.
+        - generic [ref=e175]:
+          - generic [ref=e176]:
+            - paragraph [ref=e177]: Tool OD
+            - paragraph [ref=e178]: 46 mm [1.83″]
+          - generic [ref=e179]:
+            - paragraph [ref=e180]: Temperature
+            - paragraph [ref=e181]: 150°C [302°F]
+          - generic [ref=e182]:
+            - paragraph [ref=e183]: Pressure
+            - paragraph [ref=e184]: 68,948 kPa [10,000 psi]
+          - generic [ref=e185]:
+            - paragraph [ref=e186]: Battery Life
+            - paragraph [ref=e187]: 5+ years
+          - generic [ref=e188]:
+            - paragraph [ref=e189]: Data Output
+            - paragraph [ref=e190]: MODBUS RS-485, dual 4–20 mA
+          - generic [ref=e191]:
+            - paragraph [ref=e192]: Surface Receiver
+            - paragraph [ref=e193]: 150 × 112 × 55 mm
+      - generic [ref=e194]:
+        - heading "Start the first Canadian install." [level=3] [ref=e195]
+        - paragraph [ref=e196]: Talk directly with MPS Group about candidate wells, changeout timing, and the fastest path to a clean first deployment.
+        - link "kylegronning@mpsgroup.ca" [ref=e197] [cursor=pointer]:
+          - /url: mailto:kylegronning@mpsgroup.ca
+          - img [ref=e198]
+          - text: kylegronning@mpsgroup.ca
+        - generic [ref=e201]:
+          - generic [ref=e202]: 130+ tools installed globally
+          - generic [ref=e203]: Planned PCP changeout installs
+          - generic [ref=e204]: Exclusive Canadian distributor
+        - generic [ref=e205]:
+          - img "WellFi" [ref=e206]
+          - generic [ref=e259]:
+            - generic [ref=e260]: MPS Group — Exclusive Canadian Distributor
+            - generic [ref=e261]: © 2026 MPS Group
+  - button "Open Next.js Dev Tools" [ref=e267] [cursor=pointer]:
+    - img [ref=e268]

@@ -1,0 +1,18 @@
+Total messages: 14 (Errors: 0, Warnings: 2)
+
+[INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://127.0.0.1:3002/_next/static/chunks/node_modules_next_dist_f3530cac._.js:2297
+[LOG] [HMR] connected @ http://127.0.0.1:3002/_next/static/chunks/node_modules_next_dist_f3530cac._.js:2297
+[WARNING] Image with src "/images/wellfi-sideclamp-hero.png" is using quality "95" which is not configured in images.qualities [75]. Please update your config to [75, 95].
+Read more: https://nextjs.org/docs/messages/next-image-unconfigured-qualities @ http://127.0.0.1:3002/_next/static/chunks/node_modules_next_dist_f3530cac._.js:2297
+[LOG] [Fast Refresh] rebuilding @ http://127.0.0.1:3002/_next/static/chunks/node_modules_next_dist_f3530cac._.js:2297
+[LOG] [Fast Refresh] done in 112ms @ http://127.0.0.1:3002/_next/static/chunks/node_modules_next_dist_f3530cac._.js:2297
+[LOG] [Fast Refresh] rebuilding @ http://127.0.0.1:3002/_next/static/chunks/node_modules_next_dist_f3530cac._.js:2297
+[LOG] [Fast Refresh] done in 113ms @ http://127.0.0.1:3002/_next/static/chunks/node_modules_next_dist_f3530cac._.js:2297
+[LOG] [Fast Refresh] rebuilding @ http://127.0.0.1:3002/_next/static/chunks/node_modules_next_dist_f3530cac._.js:2297
+[LOG] [Fast Refresh] done in 191ms @ http://127.0.0.1:3002/_next/static/chunks/node_modules_next_dist_f3530cac._.js:2297
+[INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://127.0.0.1:3002/_next/static/chunks/node_modules_next_dist_f3530cac._.js:2297
+[LOG] [HMR] connected @ http://127.0.0.1:3002/_next/static/chunks/node_modules_next_dist_f3530cac._.js:2297
+[WARNING] Image with src "/images/wellfi-sideclamp-hero.png" is using quality "95" which is not configured in images.qualities [75]. Please update your config to [75, 95].
+Read more: https://nextjs.org/docs/messages/next-image-unconfigured-qualities @ http://127.0.0.1:3002/_next/static/chunks/node_modules_next_dist_f3530cac._.js:2297
+[LOG] [Fast Refresh] rebuilding @ http://127.0.0.1:3002/_next/static/chunks/node_modules_next_dist_f3530cac._.js:2297
+[LOG] [Fast Refresh] done in 109ms @ http://127.0.0.1:3002/_next/static/chunks/node_modules_next_dist_f3530cac._.js:2297

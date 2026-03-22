@@ -1,0 +1,2 @@
+[  933689ms] [WARNING] Image with src "http://127.0.0.1:3002/images/wellfi-sideclamp-hero.png" has "fill" and a height value of 0. This is likely because the parent element of the image has not been styled to have a set height. @ http://127.0.0.1:3002/_next/static/chunks/node_modules_next_dist_f3530cac._.js:2297
+[ 1997559ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:3002/images/wellfi-sideclamp-hero-dark.png:0

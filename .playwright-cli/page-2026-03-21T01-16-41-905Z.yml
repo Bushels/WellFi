@@ -1,0 +1,371 @@
+- main [ref=e4]:
+  - generic [ref=e66]:
+    - generic [ref=e67]: Trusted Partners
+    - paragraph [ref=e68]: Powering Western Canada's energy infrastructure
+  - generic [ref=e256]:
+    - generic [ref=e257]:
+      - generic [ref=e258]: Services
+      - heading "Built for the Field. Engineered to Flow." [level=2] [ref=e259]:
+        - text: Built for the Field.
+        - text: Engineered to Flow.
+    - generic [ref=e260]:
+      - 'button "Fabrication: Custom Surface Facilities. Click to learn more." [ref=e261] [cursor=pointer]':
+        - img [ref=e265]
+        - generic:
+          - paragraph: Custom oil and gas surface facility fabrication — vessels, skids, and structural steel built to spec with CWB-certified precision.
+        - generic [ref=e277]:
+          - generic [ref=e278]:
+            - heading "Fabrication" [level=3] [ref=e279]
+            - generic [ref=e280]: Custom Surface Facilities
+          - generic [ref=e281]:
+            - generic [ref=e282]: CWB
+            - generic [ref=e283]: Certified
+      - 'button "Pipefitting: Precision Routing. Click to learn more." [ref=e284] [cursor=pointer]':
+        - img [ref=e288]
+        - generic:
+          - paragraph: Precision pipe installation and routing for production facilities, from small bore to large diameter. B31.3 code compliant across every joint.
+        - generic [ref=e318]:
+          - generic [ref=e319]:
+            - heading "Pipefitting" [level=3] [ref=e320]
+            - generic [ref=e321]: Precision Routing
+          - generic [ref=e322]:
+            - generic [ref=e323]: B31.3
+            - generic [ref=e324]: Code Compliant
+      - 'button "Welding: Multi-Process Expertise. Click to learn more." [ref=e325] [cursor=pointer]':
+        - img [ref=e329]
+        - generic:
+          - paragraph: Certified welding services across all processes — SMAW, GMAW, FCAW, GTAW — for critical applications. Two decades of field-proven reliability.
+        - generic [ref=e351]:
+          - generic [ref=e352]:
+            - heading "Welding" [level=3] [ref=e353]
+            - generic [ref=e354]: Multi-Process Expertise
+          - generic [ref=e355]:
+            - generic [ref=e356]: 20+
+            - generic [ref=e357]: Years
+      - 'button "Modular Fabrication & Assembly: On-Site & Off-Site Execution. Click to learn more." [ref=e358] [cursor=pointer]':
+        - img [ref=e362]:
+          - generic [ref=e383]: M-01
+          - generic [ref=e384]: M-02
+          - generic [ref=e385]: M-03
+        - generic:
+          - paragraph: Precision modular systems fabricated at our Pierceland facility or assembled directly on your lease site. We adapt our workflow to your project's specific logistical needs.
+        - generic [ref=e386]:
+          - generic [ref=e387]:
+            - heading "Modular Fabrication & Assembly" [level=3] [ref=e388]
+            - generic [ref=e389]: On-Site & Off-Site Execution
+          - generic [ref=e390]:
+            - generic [ref=e391]: VERSATILE
+            - generic [ref=e392]: Deployment
+      - 'button "Machining: Mill & Lathe Services. Click to learn more." [ref=e393] [cursor=pointer]':
+        - img [ref=e397]:
+          - generic [ref=e421]: ±0.001"
+        - generic:
+          - paragraph: Precision CNC and manual machining for custom components, repairs, and downhole parts. Equipped to handle technical requirements with professional accuracy.
+        - generic [ref=e422]:
+          - generic [ref=e423]:
+            - heading "Machining" [level=3] [ref=e424]
+            - generic [ref=e425]: Mill & Lathe Services
+          - generic [ref=e426]:
+            - generic [ref=e427]: PRO
+            - generic [ref=e428]: Machining
+      - 'button "Pipe Storage: Secured Yard & Logistics. Click to learn more." [ref=e429] [cursor=pointer]':
+        - img [ref=e433]
+        - generic:
+          - paragraph: MPS is situated on 136 acres of secured, organized pipe storage — one of Western Canada's largest independent yards. Full inventory tracking, 24/7 monitored access, and direct field dispatch.
+        - generic [ref=e596]:
+          - generic [ref=e597]:
+            - heading "Pipe Storage" [level=3] [ref=e598]
+            - generic [ref=e599]: Secured Yard & Logistics
+          - generic [ref=e600]:
+            - generic [ref=e601]: "136"
+            - generic [ref=e602]: Acres
+      - 'button "Downhole Tools: Below-Surface Innovation. Click to learn more." [ref=e603] [cursor=pointer]':
+        - img [ref=e607]:
+          - generic [ref=e631]:
+            - generic [ref=e633]: 0m
+            - generic [ref=e635]: 400m
+            - generic [ref=e637]: 800m
+            - generic [ref=e639]: 1200m
+            - generic [ref=e641]: 1600m
+        - generic:
+          - paragraph: Sand control tools and monitoring solutions — our newest division, bringing surface precision underground to the wellbore.
+        - generic [ref=e643]:
+          - generic [ref=e644]:
+            - heading "Downhole Tools" [level=3] [ref=e645]
+            - generic [ref=e646]: Below-Surface Innovation
+          - generic [ref=e647]:
+            - generic [ref=e648]: NEW
+            - generic [ref=e649]: Division
+  - generic [ref=e650]:
+    - generic [ref=e651]:
+      - generic [ref=e652]: Field Strength
+      - heading "Measured in Magnitude." [level=2] [ref=e653]:
+        - text: Measured in
+        - text: Magnitude.
+    - generic [ref=e654]:
+      - article "20+ Years — Industry Experience" [ref=e655]:
+        - generic [ref=e658]:
+          - generic [ref=e659]: 0+
+          - generic [ref=e660]: Years
+          - generic [ref=e661]: Industry Experience
+      - article "250+ Projects — Completed Successfully" [ref=e662]:
+        - generic [ref=e665]:
+          - generic [ref=e666]: 0+
+          - generic [ref=e667]: Projects
+          - generic [ref=e668]: Completed Successfully
+      - article "3.5M Pounds — Steel Fabricated in 2025" [ref=e669]:
+        - generic [ref=e672]:
+          - generic [ref=e673]: 0.0M
+          - generic [ref=e674]: Pounds
+          - generic [ref=e675]: Steel Fabricated in 2025
+  - generic [ref=e677]:
+    - generic [ref=e678]:
+      - generic [ref=e679]: About MPS Group
+      - heading "Building Western Canada's Oil & Gas Infrastructure Since 2004" [level=2] [ref=e680]:
+        - text: Building Western Canada's Oil & Gas
+        - text: Infrastructure Since 2004
+      - paragraph [ref=e681]: From our roots in Pierceland, Saskatchewan, MPS Group has grown into a trusted name in oil and gas surface facility fabrication. We build the infrastructure that keeps production flowing — from pipe to wellhead.
+    - generic [ref=e682]:
+      - generic [ref=e686]:
+        - paragraph [ref=e687]: Established in 2004 and headquartered in Pierceland, Saskatchewan, MPS Group operates from 136 acres of secured facilities with direct access to Western Canada's oil and gas infrastructure. We specialize in surface facility fabrication, downhole tools, and comprehensive industrial services.
+        - generic "Compliance platforms and safety memberships" [ref=e688]:
+          - generic [ref=e689]: Connected Across Industry Platforms
+          - generic [ref=e690]:
+            - generic [ref=e691]:
+              - img "Alberta Construction Safety Association"
+              - generic [ref=e693]: Safety Association
+            - generic [ref=e694]:
+              - img "CanQual Network"
+              - generic [ref=e696]: Qualification Network
+            - generic [ref=e697]:
+              - img "ComplyWorks"
+              - generic [ref=e699]: Contractor Compliance
+            - generic [ref=e700]:
+              - img "ISN"
+              - generic [ref=e702]: Contractor Management
+      - generic [ref=e703]:
+        - article "Safety First" [ref=e704]:
+          - generic [ref=e707]:
+            - img [ref=e710]
+            - generic [ref=e713]:
+              - heading "Safety First" [level=3] [ref=e714]
+              - paragraph [ref=e715]: Every project begins and ends with safety. Our zero-incident policy drives every decision we make.
+        - article "Innovation" [ref=e716]:
+          - generic [ref=e719]:
+            - img [ref=e722]
+            - generic [ref=e724]:
+              - heading "Innovation" [level=3] [ref=e725]
+              - paragraph [ref=e726]: We leverage cutting-edge technology and methods to deliver superior results efficiently.
+        - article "Integrity" [ref=e727]:
+          - generic [ref=e730]:
+            - img [ref=e733]
+            - generic [ref=e736]:
+              - heading "Integrity" [level=3] [ref=e737]
+              - paragraph [ref=e738]: Honest communication and transparent practices build the lasting relationships we value.
+        - article "Excellence" [ref=e739]:
+          - generic [ref=e742]:
+            - img [ref=e745]
+            - generic [ref=e747]:
+              - heading "Excellence" [level=3] [ref=e748]
+              - paragraph [ref=e749]: We set the standard in industrial services through uncompromising quality in every project.
+  - region "Build with the crews behind Western Canada's hardest work" [ref=e750]:
+    - generic [ref=e751]:
+      - generic [ref=e752]:
+        - generic [ref=e753]:
+          - generic [ref=e754]: Careers
+          - heading "Build with the crews behind Western Canada's hardest work" [level=2] [ref=e755]:
+            - text: Build with the crews behind
+            - text: Western Canada's hardest work
+          - paragraph [ref=e756]: Browse current openings first. If nothing fits today, leave a quick introduction and resume so MPS can keep you on file for the next opportunity.
+        - generic [ref=e760]:
+          - generic [ref=e761]:
+            - generic [ref=e762]:
+              - paragraph [ref=e763]: Hiring Hub
+              - heading "Start with the live roles, then leave a light touchpoint" [level=3] [ref=e764]
+            - generic [ref=e765]: CMS Bridge Pending
+          - paragraph [ref=e767]: Current hiring routes to a separate application page so the homepage stays focused. The future-opportunity card below is only for a simple introduction and resume drop.
+          - generic [ref=e768]:
+            - generic [ref=e769]:
+              - generic [ref=e770]: "03"
+              - text: Active openings
+            - generic [ref=e771]:
+              - generic [ref=e772]: "01"
+              - text: Future intake card
+            - generic [ref=e773]:
+              - generic [ref=e774]: "03"
+              - text: Hiring disciplines
+      - generic [ref=e775]:
+        - generic [ref=e779]:
+          - generic [ref=e780]:
+            - generic [ref=e781]:
+              - generic [ref=e782]: Current Hiring Focus
+              - heading "Open roles" [level=3] [ref=e783]
+            - paragraph [ref=e784]: Each job opens a dedicated application page with the full intake form.
+          - generic [ref=e785]:
+            - link "01 Welder (3rd Year / Journeyperson) Build and repair critical oil and gas infrastructure with a crew that values craft, pace, and safety. Fabrication Pierceland, SK Full-time Open application" [ref=e786] [cursor=pointer]:
+              - /url: http://127.0.0.1:3000/apply.html?roleId=welder-3rd-year&roleTitle=Welder+%283rd+Year+%2F+Journeyperson%29
+              - generic [ref=e787]: "01"
+              - generic [ref=e788]:
+                - generic [ref=e789]: Welder (3rd Year / Journeyperson)
+                - generic [ref=e790]: Build and repair critical oil and gas infrastructure with a crew that values craft, pace, and safety.
+                - generic [ref=e791]:
+                  - generic [ref=e792]: Fabrication
+                  - generic [ref=e793]: Pierceland, SK
+                  - generic [ref=e794]: Full-time
+              - generic [ref=e795]: Open application
+            - link "02 Pipefitter / Fabrication Technician Own spool, skid, and tie-in packages that move directly into Western Canada field installations. Surface Facilities Pierceland, SK Full-time Open application" [ref=e796] [cursor=pointer]:
+              - /url: http://127.0.0.1:3000/apply.html?roleId=pipefitter-fabricator&roleTitle=Pipefitter+%2F+Fabrication+Technician
+              - generic [ref=e797]: "02"
+              - generic [ref=e798]:
+                - generic [ref=e799]: Pipefitter / Fabrication Technician
+                - generic [ref=e800]: Own spool, skid, and tie-in packages that move directly into Western Canada field installations.
+                - generic [ref=e801]:
+                  - generic [ref=e802]: Surface Facilities
+                  - generic [ref=e803]: Pierceland, SK
+                  - generic [ref=e804]: Full-time
+              - generic [ref=e805]: Open application
+            - link "03 Field Service Technician Represent MPS on-site for installs, service work, and operational support across demanding facilities. Field Operations Western Canada Full-time Open application" [ref=e806] [cursor=pointer]:
+              - /url: http://127.0.0.1:3000/apply.html?roleId=field-service-technician&roleTitle=Field+Service+Technician
+              - generic [ref=e807]: "03"
+              - generic [ref=e808]:
+                - generic [ref=e809]: Field Service Technician
+                - generic [ref=e810]: Represent MPS on-site for installs, service work, and operational support across demanding facilities.
+                - generic [ref=e811]:
+                  - generic [ref=e812]: Field Operations
+                  - generic [ref=e813]: Western Canada
+                  - generic [ref=e814]: Full-time
+              - generic [ref=e815]: Open application
+        - generic [ref=e819]:
+          - generic [ref=e821]:
+            - generic [ref=e822]: Future Opportunities
+            - heading "Leave a lighter introduction" [level=3] [ref=e823]
+          - paragraph [ref=e824]: If the right role is not listed, send a quick intro and your resume. This is only for future follow-up, not a live job application.
+          - generic [ref=e825]:
+            - generic [ref=e826]:
+              - generic [ref=e827]:
+                - generic [ref=e828]: First name
+                - textbox "First name" [ref=e829]
+              - generic [ref=e830]:
+                - generic [ref=e831]: Last name
+                - textbox "Last name" [ref=e832]
+              - generic [ref=e833]:
+                - generic [ref=e834]: Email
+                - textbox "Email" [ref=e835]
+              - generic [ref=e836]:
+                - generic [ref=e837]: Phone
+                - textbox "Phone" [ref=e838]
+              - generic [ref=e839]:
+                - generic [ref=e840]: Career focus
+                - combobox "Career focus" [ref=e841]:
+                  - option "General expression of interest" [selected]
+                  - option "Fabrication and welding"
+                  - option "Field service and maintenance"
+                  - option "Piping and surface facilities"
+                  - option "Project support and coordination"
+              - generic [ref=e842]:
+                - generic [ref=e843]: Resume upload
+                - generic [ref=e844] [cursor=pointer]:
+                  - generic [ref=e845]:
+                    - strong [ref=e846]: Upload your resume
+                    - generic [ref=e847]: PDF, DOC or DOCX accepted
+                  - generic [ref=e848]: Choose file
+                - button "Upload your resume PDF, DOC or DOCX accepted Choose file" [ref=e849]
+              - generic [ref=e850]:
+                - generic [ref=e851]: Short note
+                - textbox "Short note" [ref=e852]:
+                  - /placeholder: Tell MPS the kind of work you want to hear about.
+            - paragraph [ref=e853]: This resume drop will activate when the secure backend bridge is connected.
+            - generic [ref=e854]:
+              - button "Leave My Resume" [disabled] [ref=e855]
+              - link "Email careers@mpsgroup.ca" [ref=e856] [cursor=pointer]:
+                - /url: mailto:careers@mpsgroup.ca
+  - region "The Heart of Western Canada's Energy Corridor" [ref=e857]:
+    - generic [ref=e858]:
+      - generic [ref=e859]:
+        - generic [ref=e860]: Location
+        - heading "The Heart of Western Canada's Energy Corridor" [level=2] [ref=e861]:
+          - text: The Heart of
+          - text: Western Canada's Energy Corridor
+        - paragraph [ref=e862]:
+          - text: 136 acres of secured facility. Direct highway access.
+          - text: Positioned to deploy across the entire western basin.
+      - generic [ref=e863]:
+        - generic [ref=e864]:
+          - generic [ref=e865]:
+            - img [ref=e866]:
+              - generic [ref=e873]: "N"
+              - generic [ref=e874]: E
+              - generic [ref=e875]: S
+              - generic [ref=e876]: W
+              - generic [ref=e879]: Pierceland
+              - generic [ref=e882]: Goodsoil
+              - generic [ref=e885]: Northern Pine
+              - generic [ref=e888]: Cherry Grove
+              - generic [ref=e891]: Beaver Crossing
+              - generic [ref=e894]: Peerless
+              - generic [ref=e897]: Golden Ridge
+              - generic [ref=e900]: Meadow Lake
+              - generic [ref=e903]: MPS GROUP
+            - generic: 25 km
+            - generic: 50 km
+            - generic: 100 km
+            - generic: 200 km
+          - generic [ref=e904]:
+            - generic [ref=e905]: 54.32° N
+            - generic [ref=e906]: /
+            - generic [ref=e907]: 109.84° W
+        - generic [ref=e908]:
+          - generic [ref=e911]:
+            - generic [ref=e914]: Station Identification
+            - heading "MPS Group" [level=3] [ref=e915]
+            - paragraph [ref=e916]: Pierceland Fabrication & Field Services Facility
+          - generic [ref=e919]:
+            - generic [ref=e920]:
+              - generic [ref=e921]: PHYS
+              - generic [ref=e922]: E Range Rd 3264, Highway 55, Pierceland, SK S0M 2K0
+            - generic [ref=e923]:
+              - generic [ref=e924]: MAIL
+              - generic [ref=e925]: PO Box 1230, Cold Lake, AB T9M 1P3
+            - generic [ref=e926]:
+              - generic [ref=e927]: TEL
+              - link "(780) 594-8100" [ref=e928] [cursor=pointer]:
+                - /url: tel:+1-780-594-8100
+            - generic [ref=e929]:
+              - generic [ref=e930]: FAX
+              - generic [ref=e931]: (780) 638-6029
+            - generic [ref=e932]:
+              - generic [ref=e933]: COM
+              - link "info@mpsgroup.ca" [ref=e934] [cursor=pointer]:
+                - /url: mailto:info@mpsgroup.ca
+          - generic [ref=e938]:
+            - generic [ref=e939]:
+              - generic [ref=e940]: "136"
+              - generic [ref=e941]: Acre Facility
+            - generic [ref=e942]:
+              - generic [ref=e943]: 24/7
+              - generic [ref=e944]: Operations
+            - generic [ref=e945]:
+              - generic [ref=e946]: HWY 55
+              - generic [ref=e947]: Direct Access
+            - generic [ref=e948]:
+              - generic [ref=e949]: WCSB
+              - generic [ref=e950]: Western Canadian Sedimentary Basin
+          - generic [ref=e951]:
+            - link "Get Directions" [ref=e953] [cursor=pointer]:
+              - /url: https://maps.google.com/?q=54.3243751,-109.8403854
+              - img [ref=e954]
+              - generic [ref=e956]: Get Directions
+            - link "Send Message" [ref=e958] [cursor=pointer]:
+              - /url: mailto:info@mpsgroup.ca
+              - img [ref=e959]
+              - generic [ref=e962]: Send Message
+      - generic [ref=e964]:
+        - generic [ref=e965]: MPS Group
+        - paragraph [ref=e966]: © 2026 MPS Group. All rights reserved.
+        - generic [ref=e967]:
+          - button "Privacy" [ref=e968] [cursor=pointer]
+          - button "Terms" [ref=e969] [cursor=pointer]
+          - link "Careers" [ref=e970] [cursor=pointer]:
+            - /url: "#careers"
+          - link "Contact" [ref=e971] [cursor=pointer]:
+            - /url: "#contact"

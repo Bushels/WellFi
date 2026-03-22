@@ -1,0 +1,5 @@
+[     371ms] [WARNING] Image with src "/images/wellfi-sideclamp-hero.png" is using quality "95" which is not configured in images.qualities [75]. Please update your config to [75, 95].
+Read more: https://nextjs.org/docs/messages/next-image-unconfigured-qualities @ http://127.0.0.1:3002/_next/static/chunks/node_modules_next_dist_f3530cac._.js:2297
+[   86920ms] [WARNING] Image with src "/images/wellfi-sideclamp-hero.png" is using quality "95" which is not configured in images.qualities [75]. Please update your config to [75, 95].
+Read more: https://nextjs.org/docs/messages/next-image-unconfigured-qualities @ http://127.0.0.1:3002/_next/static/chunks/node_modules_next_dist_f3530cac._.js:2297
+[ 4776545ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:3002/images/wellfi-sideclamp-hero-dark.png:0

@@ -1,39 +1,44 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, IBM_Plex_Mono } from "next/font/google";
+import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
+import Script from "next/script";
+import { meta } from "@/lib/content";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space-grotesk",
+  variable: "--font-heading",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["500", "700"],
 });
 
-const ibmPlexMono = IBM_Plex_Mono({
-  variable: "--font-ibm-plex-mono",
+const inter = Inter({
+  variable: "--font-body",
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  weight: ["400", "500"],
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-mono",
+  subsets: ["latin"],
+  weight: ["400"],
 });
 
 export const metadata: Metadata = {
-  title: "WellFi - Wireless Below. Insight Above.",
-  description:
-    "Real-time downhole monitoring. Wirelessly. Through steel casing. For 5+ years. SCADA-ready wireless pressure and temperature gauges for oil and gas production.",
+  title: meta.title,
+  description: meta.description,
   keywords: [
-    "downhole monitoring",
-    "wireless gauge",
-    "EM telemetry",
-    "oil and gas",
-    "SCADA",
-    "pressure monitoring",
-    "temperature monitoring",
+    "PCP wells",
+    "production uplift",
+    "pump changeout",
+    "downhole pressure",
+    "wireless telemetry",
+    "heavy oil",
     "WellFi",
     "MPS Group",
   ],
   authors: [{ name: "MPS Group", url: "https://mpsgroup.ca" }],
   openGraph: {
-    title: "WellFi - Wireless Below. Insight Above.",
-    description:
-      "Real-time downhole monitoring through steel casing. 5+ year battery life. SCADA-ready.",
+    title: meta.title,
+    description: meta.description,
     type: "website",
   },
 };
@@ -44,9 +49,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${spaceGrotesk.variable} ${ibmPlexMono.variable} antialiased`}>
+    <html
+      lang="en"
+      className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable}`}
+      suppressHydrationWarning
+    >
+      <body className="antialiased">
         {children}
+        <Script src="https://accounts.google.com/gsi/client" strategy="afterInteractive" />
       </body>
     </html>
   );

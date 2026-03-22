@@ -1,0 +1,315 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - img "WellFi" [ref=e8]
+        - paragraph [ref=e107]: Retrofit production uplift for existing PCP wells
+        - heading "Unlock More Barrels. Minimal Input. Maximum Value." [level=1] [ref=e108]:
+          - generic [ref=e109]: Unlock More Barrels.
+          - generic [ref=e110]: Minimal Input. Maximum Value.
+        - paragraph [ref=e111]: Install WellFi during a scheduled PCP pump changeout. Get downhole pressure at surface, tune production with real visibility, and pursue observed uplift without a major surface rebuild.
+        - generic [ref=e112]:
+          - generic [ref=e113]: Changeout install
+          - generic [ref=e114]: Up to 10% observed
+          - generic [ref=e115]: 130+ installed
+        - generic [ref=e116]:
+          - link "Email MPS Group" [ref=e117] [cursor=pointer]:
+            - /url: mailto:kylegronning@mpsgroup.ca
+            - img [ref=e118]
+            - text: Email MPS Group
+          - link "See the Tool" [ref=e121] [cursor=pointer]:
+            - /url: "#tool"
+        - generic [ref=e122]:
+          - generic [ref=e123]: Canada rollout
+          - link "kylegronning@mpsgroup.ca" [ref=e124] [cursor=pointer]:
+            - /url: mailto:kylegronning@mpsgroup.ca
+          - paragraph [ref=e125]: Talk directly with MPS Group about candidate wells, changeout timing, and first Canadian installs.
+        - paragraph [ref=e126]: Observed production gains vary by well, pump design, and operating conditions.
+      - generic [ref=e129]:
+        - generic: Retrofit schematic
+        - generic [ref=e131]:
+          - generic [ref=e132]:
+            - generic [ref=e133]:
+              - generic [ref=e134]:
+                - paragraph [ref=e135]: Planned changeout
+                - paragraph [ref=e136]: Existing PCP producer
+              - generic [ref=e137]: Low-friction install
+            - generic [ref=e138]:
+              - generic [ref=e140]: Changeout window
+              - generic [ref=e143]: WellFi insert
+              - generic [ref=e148]:
+                - paragraph [ref=e149]: Existing pump
+                - paragraph [ref=e150]: PCP already scheduled for service
+          - generic [ref=e151]:
+            - generic [ref=e152]:
+              - generic [ref=e153]:
+                - paragraph [ref=e154]: Live pressure view
+                - heading "Pressure at surface. Decisions at surface." [level=3] [ref=e155]
+              - generic [ref=e156]:
+                - generic [ref=e157]: Observed result
+                - generic [ref=e158]: Up to 10% production uplift
+            - generic [ref=e159]:
+              - generic [ref=e161]:
+                - generic [ref=e162]: Production trend
+                - generic [ref=e163]: Downhole pressure visible
+              - img [ref=e166]
+              - generic [ref=e170]:
+                - generic [ref=e171]: Secondary gain
+                - generic [ref=e172]: Longer PCP runtime between changes
+            - generic [ref=e173]:
+              - generic [ref=e174]:
+                - paragraph [ref=e175]: Deployment logic
+                - paragraph [ref=e176]: Install during the changeout that was already going to happen.
+              - generic [ref=e177]:
+                - paragraph [ref=e178]: Surface output
+                - paragraph [ref=e179]: Wireless EM pressure data feeds surface decisions without a cable run.
+        - generic [ref=e180]:
+          - generic [ref=e181]: 1 Scheduled changeout
+          - generic [ref=e182]: 2 Install WellFi
+          - generic [ref=e183]: 3 Read pressure
+          - generic [ref=e184]: 4 Tune production
+    - navigation "Main navigation" [ref=e185]:
+      - link "WellFi" [ref=e186] [cursor=pointer]:
+        - /url: "#hero"
+        - img "WellFi" [ref=e187]
+      - button "Open menu" [ref=e286]:
+        - img [ref=e287]
+      - generic:
+        - link "Proof":
+          - /url: "#proof"
+        - link "Workflow":
+          - /url: "#workflow"
+        - link "Tool":
+          - /url: "#tool"
+        - link "Specs":
+          - /url: "#specs"
+        - link "Contact":
+          - /url: "#contact"
+    - generic [ref=e289]:
+      - heading "Why Existing PCP Wells Matter" [level=2] [ref=e290]
+      - paragraph [ref=e291]: "The value is the retrofit: install during work that was already planned, then tune with real pressure data instead of running blind."
+      - generic [ref=e292]:
+        - generic [ref=e293]:
+          - img [ref=e294]
+          - generic [ref=e296]:
+            - generic [ref=e297]: "1"
+            - generic [ref=e298]: Changeout window
+          - generic [ref=e299]: No extra intervention
+          - paragraph [ref=e300]: WellFi goes in while the PCP is already being changed, which keeps the install path simple.
+        - generic [ref=e301]:
+          - img [ref=e302]
+          - generic [ref=e304]:
+            - generic [ref=e305]: Up to 10%
+            - generic [ref=e306]: Observed uplift
+          - generic [ref=e307]: Production response
+          - paragraph [ref=e308]: When pressure becomes visible at surface, engineers can tune with real downhole feedback instead of guesswork.
+        - generic [ref=e309]:
+          - img [ref=e310]
+          - generic [ref=e313]:
+            - generic [ref=e314]: Longer
+            - generic [ref=e315]: Pump runtime
+          - generic [ref=e316]: Extended run life
+          - paragraph [ref=e317]: Better visibility can help reduce blind operation and keep pumps in service longer between changeouts.
+        - generic [ref=e318]:
+          - img [ref=e319]
+          - generic [ref=e322]:
+            - generic [ref=e323]: 130+
+            - generic [ref=e324]: Tools installed
+          - generic [ref=e325]: Field-proven base
+          - paragraph [ref=e326]: WellFi has an established global installed base, with Canadian rollout now open through MPS Group.
+      - paragraph [ref=e327]: Observed production gains vary by well, pump design, and operating conditions.
+    - generic [ref=e331]:
+      - generic [ref=e332]:
+        - paragraph [ref=e333]: How it fits
+        - heading "Built for Planned PCP Changeouts" [level=2] [ref=e334]
+        - paragraph [ref=e335]: The value is timing. If the pump is already coming out, WellFi can go in during the same intervention, start sending pressure to surface, and give engineers a live basis to tune production.
+        - generic [ref=e336]:
+          - paragraph [ref=e337]: Why engineers care
+          - paragraph [ref=e338]: This is an upgrade to an existing producer, not a new drill, a cable install, or a full control-system rebuild. The simplicity is a large part of the value.
+          - generic [ref=e339]:
+            - generic [ref=e340]: No new cable run
+            - generic [ref=e341]: MODBUS RS-485
+            - generic [ref=e342]: Canadian rollout via MPS Group
+      - generic [ref=e343]:
+        - generic [ref=e344]:
+          - generic [ref=e346]:
+            - img [ref=e348]
+            - generic [ref=e350]: "01"
+          - generic [ref=e351]:
+            - paragraph [ref=e352]: Workflow step
+            - heading "Scheduled PCP changeout" [level=3] [ref=e353]
+          - paragraph [ref=e354]: Use the maintenance event that is already on the calendar.
+        - generic [ref=e355]:
+          - generic [ref=e357]:
+            - img [ref=e359]
+            - generic [ref=e361]: "02"
+          - generic [ref=e362]:
+            - paragraph [ref=e363]: Workflow step
+            - heading "Install WellFi in the string" [level=3] [ref=e364]
+          - paragraph [ref=e365]: Add WellFi into the string while the well is already open for service.
+        - generic [ref=e366]:
+          - generic [ref=e368]:
+            - img [ref=e370]
+            - generic [ref=e373]: "03"
+          - generic [ref=e374]:
+            - paragraph [ref=e375]: Workflow step
+            - heading "Read downhole pressure at surface" [level=3] [ref=e376]
+          - paragraph [ref=e377]: Bring pressure data to surface without a dedicated cable run.
+        - generic [ref=e378]:
+          - generic [ref=e380]:
+            - img [ref=e382]
+            - generic [ref=e383]: "04"
+          - generic [ref=e384]:
+            - paragraph [ref=e385]: Workflow step
+            - heading "Tune pump speed and drawdown" [level=3] [ref=e386]
+          - paragraph [ref=e387]: Adjust speed, drawdown, and operating strategy from real conditions.
+        - generic [ref=e388]:
+          - generic [ref=e390]:
+            - img [ref=e392]
+            - generic [ref=e395]: "05"
+          - generic [ref=e396]:
+            - paragraph [ref=e397]: Workflow step
+            - heading "Produce more and change out less often" [level=3] [ref=e398]
+          - paragraph [ref=e399]: Aim for more barrels and longer runtime from the same existing asset.
+    - generic [ref=e402]:
+      - generic [ref=e403]:
+        - paragraph [ref=e404]: Retrofit Assembly
+        - heading "Built for Planned PCP Changeouts." [level=2] [ref=e405]
+        - paragraph [ref=e406]: Inspect the stack, rotate the model, and see how WellFi stays compact enough to install cleanly when the pump is already coming out for service.
+      - generic [ref=e407]:
+        - figure "Interactive 3D model of the WellFi downhole assembly" [ref=e408]:
+          - generic:
+            - generic: 3D assembly
+            - generic: Drag to rotate
+          - generic:
+            - paragraph: Retrofit logic
+            - paragraph: Top clamp to bottom clamp. A compact stack built to go in during a scheduled changeout and start reporting wirelessly.
+          - generic: Draco GLB
+          - generic [ref=e419]:
+            - paragraph [ref=e420]: Loading 3D assembly
+            - paragraph [ref=e421]: Preparing the tool model and local Draco decoder.
+          - generic [ref=e422]: Interactive 3D render of the WellFi tool assembly.
+        - generic [ref=e423]:
+          - generic [ref=e424]:
+            - paragraph [ref=e425]: Core folder
+            - generic [ref=e426]:
+              - generic [ref=e427]:
+                - heading "Electronics Sonde" [level=3] [ref=e428]
+                - paragraph [ref=e429]: Pressure, temperature, telemetry, and control logic in one core.
+              - generic [ref=e430]:
+                - generic [ref=e431]: Assembly
+                - generic [ref=e432]: "03"
+            - generic [ref=e433]:
+              - generic [ref=e434]: Changeout-ready
+              - generic [ref=e435]: SCADA-ready
+              - generic [ref=e436]: Pressure visibility
+          - group "WellFi assembly folders" [ref=e437]:
+            - button "01 Top Clamp Locks the stack to the assembly and keeps the upper seal tight." [ref=e438]:
+              - generic [ref=e440]:
+                - generic [ref=e441]: "01"
+                - generic [ref=e442]:
+                  - generic [ref=e443]:
+                    - heading "Top Clamp" [level=3] [ref=e444]
+                    - img [ref=e445]
+                  - paragraph [ref=e447]: Locks the stack to the assembly and keeps the upper seal tight.
+            - button "02 Signal Collar Routes the EM dipole cleanly into the casing path." [ref=e448]:
+              - generic [ref=e450]:
+                - generic [ref=e451]: "02"
+                - generic [ref=e452]:
+                  - generic [ref=e453]:
+                    - heading "Signal Collar" [level=3] [ref=e454]
+                    - img [ref=e455]
+                  - paragraph [ref=e457]: Routes the EM dipole cleanly into the casing path.
+            - button "03 Electronics Sonde Pressure, temperature, telemetry, and control logic in one core." [pressed] [ref=e458]:
+              - generic [ref=e460]:
+                - generic [ref=e461]: "03"
+                - generic [ref=e462]:
+                  - generic [ref=e463]:
+                    - heading "Electronics Sonde" [level=3] [ref=e464]
+                    - img [ref=e465]
+                  - paragraph [ref=e467]: Pressure, temperature, telemetry, and control logic in one core.
+            - button "04 Battery Barrel(s) Long-life power stack sized for multi-year downhole service." [ref=e468]:
+              - generic [ref=e470]:
+                - generic [ref=e471]: "04"
+                - generic [ref=e472]:
+                  - generic [ref=e473]:
+                    - heading "Battery Barrel(s)" [level=3] [ref=e474]
+                    - img [ref=e475]
+                  - paragraph [ref=e477]: Long-life power stack sized for multi-year downhole service.
+            - button "05 PEEK Clamp High-temperature isolation and electrical separation." [ref=e478]:
+              - generic [ref=e480]:
+                - generic [ref=e481]: "05"
+                - generic [ref=e482]:
+                  - generic [ref=e483]:
+                    - heading "PEEK Clamp" [level=3] [ref=e484]
+                    - img [ref=e485]
+                  - paragraph [ref=e487]: High-temperature isolation and electrical separation.
+            - button "06 Fiberglass Collar Non-conductive isolation that preserves the EM signal path." [ref=e488]:
+              - generic [ref=e490]:
+                - generic [ref=e491]: "06"
+                - generic [ref=e492]:
+                  - generic [ref=e493]:
+                    - heading "Fiberglass Collar" [level=3] [ref=e494]
+                    - img [ref=e495]
+                  - paragraph [ref=e497]: Non-conductive isolation that preserves the EM signal path.
+            - button "07 Bottom Clamp Anchors the lower end of the stack and closes the assembly." [ref=e498]:
+              - generic [ref=e500]:
+                - generic [ref=e501]: "07"
+                - generic [ref=e502]:
+                  - generic [ref=e503]:
+                    - heading "Bottom Clamp" [level=3] [ref=e504]
+                    - img [ref=e505]
+                  - paragraph [ref=e507]: Anchors the lower end of the stack and closes the assembly.
+    - generic [ref=e510]:
+      - heading "Technical Specifications" [level=2] [ref=e511]
+      - generic [ref=e513]: 130+ tools installed globally
+      - generic [ref=e514]:
+        - generic [ref=e515]:
+          - generic [ref=e516]: Tool OD
+          - text: 46 mm [1.83″]
+        - generic [ref=e517]:
+          - generic [ref=e518]: Temperature
+          - text: 150°C [302°F]
+        - generic [ref=e519]:
+          - generic [ref=e520]: Pressure
+          - text: 68,948 kPa [10,000 psi]
+        - generic [ref=e521]:
+          - generic [ref=e522]: Pressure Accuracy
+          - text: 0.15% F.S. (Piezo) | 13.8 kPa [2.0 psi] (Quartz)
+        - generic [ref=e523]:
+          - generic [ref=e524]: Battery Life
+          - text: 5+ years
+        - generic [ref=e525]:
+          - generic [ref=e526]: Data Output
+          - text: MODBUS RS-485, dual 4–20 mA
+        - generic [ref=e527]:
+          - generic [ref=e528]: Surface Receiver
+          - text: 150 × 112 × 55 mm
+        - generic [ref=e529]:
+          - generic [ref=e530]: Power
+          - text: 24 V DC / ~3 W
+        - generic [ref=e531]:
+          - generic [ref=e532]: Storage
+          - text: 64 MB event SD
+        - generic [ref=e533]:
+          - generic [ref=e534]: Corrosion
+          - text: NACE MR-01-75 available
+    - generic [ref=e537]:
+      - generic [ref=e538]:
+        - heading "Plan the First Canadian Install" [level=2] [ref=e539]
+        - paragraph [ref=e540]: Talk directly with MPS Group about candidate PCP wells, upcoming changeouts, pilot scope, and what a first deployment would look like in Canada.
+        - link "kylegronning@mpsgroup.ca" [ref=e541] [cursor=pointer]:
+          - /url: mailto:kylegronning@mpsgroup.ca
+          - img [ref=e542]
+          - text: kylegronning@mpsgroup.ca
+        - generic [ref=e545]:
+          - generic [ref=e546]: 130+ tools installed globally
+          - generic [ref=e547]: Exclusive Canadian distributor
+          - generic [ref=e548]: Planned PCP changeout installs
+      - generic [ref=e549]:
+        - img "WellFi" [ref=e550]
+        - generic [ref=e649]:
+          - generic [ref=e650]: MPS Group — Exclusive Canadian Distributor
+          - generic [ref=e651]: © 2026 MPS Group
+  - button "Open Next.js Dev Tools" [ref=e657] [cursor=pointer]:
+    - img [ref=e658]

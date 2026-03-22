@@ -4,6 +4,8 @@ description: Lessons learned from implementing the WellFi 3D particle morph anim
 
 # WellFi 3D Animation - Lessons Learned
 
+> **2026-03-21 override:** This older particle-morph workflow is not the pattern to reuse for the current hero. The new lesson is simpler: still-frame parity with the approved marketing render must be achieved before any complex animation idea is allowed to continue.
+
 This workflow documents the attempts, successes, and failures of implementing a scroll-driven particle morph animation for the WellFi marketing site.
 
 ## Project Goal

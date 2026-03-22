@@ -98,6 +98,8 @@ Real-time downhole monitoring system that transmits pressure and temperature dat
    - STAR 2-3/8" 8RD EUE, 2000#
    - **CRITICAL: Creates electrical isolation**
    - Forces signal through formation, not short-circuit through steel
+   - **Visual appearance:** Olive-tan color (NOT teal/green). Visually distinct from the stainless steel sections.
+   - **In renders:** Base color (0.30, 0.25, 0.10), non-metallic, roughness 0.4, IOR 1.54
 
 7. **Bottom Clamp**
    - Interference fit to second pup joint
@@ -225,6 +227,32 @@ Pump changeouts — when the pump fails and needs replacement, WellFi can be add
 - Oversimplify the technology
 - Make claims without backing
 - Mention Shell without explicit permission
+
+## Visual Representation (Renders & Photography)
+
+### Hero Image Requirements
+- **Background:** Pure black (0,0,0) — hero section starts `bg-black`, GSAP transitions to navy at 0.9s
+- **Composition:** Tool crosses frame diagonally (lower-left to upper-right)
+- **Negative space:** Upper-left (desktop) for headline overlay; top (mobile) for headline
+- **Key features visible:** Multiple coupling transitions showing diameter changes
+- **Tool appearance:** Rich stainless steel with anisotropic reflections, not flat/matte
+
+### What Makes the Tool Visually Recognizable
+The coupling sections where different tool components connect show **dramatic diameter changes** (24mm to 46mm — nearly 2x). These create the visible "bumps" that distinguish the WellFi tool from a generic rod. The fiberglass collar (olive-tan) provides a color break from the stainless steel.
+
+### Assembly Threading
+- All connections are **flush threaded** (no protruding collars)
+- Visual transitions come from diameter changes at coupling zones, not from external collar geometry
+
+### Reference Images
+- `public/images/wellfi-hero-4k.webp` — Desktop hero (3840x2160)
+- `public/images/wellfi-hero-mobile.webp` — Mobile hero (1080x1920)
+- `blender/wellfi_hero_final.blend` — Blender production scene
+
+### CAD Source Files
+- `wellfi-dwg/model.glb` — GLB model (most reliable import)
+- `wellfi-dwg/WellFi_Assembly_real.stl` — Full STL assembly
+- `wellfi-dwg/parts/` — Individual part STLs (14 files, some duplicates)
 
 ## Content Writing Guidelines
 

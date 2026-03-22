@@ -1,0 +1,153 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e4]:
+      - generic [ref=e5]:
+        - paragraph [ref=e6]: Wireless downhole telemetry
+        - heading "Stop Pumping Blind." [level=1] [ref=e7]
+        - paragraph [ref=e8]: Data Below. Insight Above.
+        - generic [ref=e9]:
+          - generic [ref=e10]: Install on new pump changeout
+          - generic [ref=e11]: 130+ installed
+          - generic [ref=e12]: SCADA-ready
+      - img "WellFi side-clamped tool mounted vertically alongside carbon steel pipe" [ref=e15]
+    - navigation "Main navigation" [ref=e18]:
+      - link "WellFi" [ref=e19] [cursor=pointer]:
+        - /url: "#hero"
+        - img "WellFi" [ref=e20]
+      - generic [ref=e119]:
+        - link "Proof" [ref=e120] [cursor=pointer]:
+          - /url: "#proof"
+        - link "Install" [ref=e121] [cursor=pointer]:
+          - /url: "#install"
+        - link "Specs" [ref=e122] [cursor=pointer]:
+          - /url: "#specs"
+      - link "Contact" [ref=e123] [cursor=pointer]:
+        - /url: "#contact"
+    - generic [ref=e125]:
+      - heading "Why Existing PCP Wells Matter" [level=2] [ref=e126]
+      - paragraph [ref=e127]: Install on the work that is already planned, then tune with real downhole data instead of guessing from surface symptoms.
+      - generic [ref=e128]:
+        - generic [ref=e129]:
+          - img [ref=e130]
+          - generic [ref=e132]:
+            - generic [ref=e133]: "1"
+            - generic [ref=e134]: Changeout window
+          - generic [ref=e135]: No extra intervention
+          - paragraph [ref=e136]: WellFi goes in while the PCP is already being changed, which keeps the install path simple.
+        - generic [ref=e137]:
+          - img [ref=e138]
+          - generic [ref=e140]:
+            - generic [ref=e141]: Up to 10%
+            - generic [ref=e142]: Observed uplift
+          - generic [ref=e143]: Production response
+          - paragraph [ref=e144]: When pressure becomes visible at surface, engineers can tune with real downhole feedback instead of guesswork.
+        - generic [ref=e145]:
+          - img [ref=e146]
+          - generic [ref=e149]:
+            - generic [ref=e150]: Longer
+            - generic [ref=e151]: Pump runtime
+          - generic [ref=e152]: Extended run life
+          - paragraph [ref=e153]: Better visibility can help reduce blind operation and keep pumps in service longer between changeouts.
+        - generic [ref=e154]:
+          - img [ref=e155]
+          - generic [ref=e158]:
+            - generic [ref=e159]: 130+
+            - generic [ref=e160]: Tools installed
+          - generic [ref=e161]: Field-proven base
+          - paragraph [ref=e162]: WellFi has an established global installed base, with Canadian rollout now open through MPS Group.
+    - generic [ref=e165]:
+      - generic [ref=e166]:
+        - paragraph [ref=e167]: Installed State
+        - heading "Built to Clamp Straight Into the String." [level=2] [ref=e168]
+        - paragraph [ref=e169]: WellFi mounts as a stainless side-clamp against the carbon-steel pipe during a new pump changeout, so the first deployment path stays field-ready instead of turning into another complicated intervention.
+      - generic [ref=e170]:
+        - figure "WellFi side-clamp mounted to carbon-steel pipe" [ref=e171]:
+          - img "WellFi stainless side-clamp mounted to carbon-steel pipe" [ref=e172]
+          - generic:
+            - generic: Stainless side-clamp
+            - generic: Carbon-steel pipe
+          - generic:
+            - paragraph: Installed for the field
+            - paragraph: Real hardware, stainless body, carbon-steel string, and clamp geometry that reads like a tool, not a rendering exercise.
+          - generic [ref=e175]: Close-up of the WellFi installed-state side-clamp assembly.
+        - generic [ref=e176]:
+          - generic [ref=e177]:
+            - paragraph [ref=e178]: Why this install path matters
+            - paragraph [ref=e179]: A clean deployment path matters more than another clever animation. WellFi is meant to go in when the pump is already being changed, lock onto the string, and start sending usable data into the surface stack.
+            - generic [ref=e180]:
+              - generic [ref=e181]: Stainless side-clamp
+              - generic [ref=e182]: Carbon-steel pipe
+              - generic [ref=e183]: SCADA-ready
+          - generic [ref=e186]:
+            - generic [ref=e187]: "01"
+            - generic [ref=e188]:
+              - heading "Install on new pump changeout" [level=3] [ref=e189]
+              - paragraph [ref=e190]: Use the intervention already on the calendar instead of creating a second operational event.
+          - generic [ref=e193]:
+            - generic [ref=e194]: "02"
+            - generic [ref=e195]:
+              - heading "Clamp WellFi to the string" [level=3] [ref=e196]
+              - paragraph [ref=e197]: The stainless WellFi body mounts alongside the carbon-steel pipe as a purpose-built installed system.
+          - generic [ref=e200]:
+            - generic [ref=e201]: "03"
+            - generic [ref=e202]:
+              - heading "Push the signal into SCADA" [level=3] [ref=e203]
+              - paragraph [ref=e204]: Bring the data above without rebuilding the field stack around another cable run.
+    - generic [ref=e207]:
+      - heading "Technical Specifications" [level=2] [ref=e208]
+      - generic [ref=e210]: 130+ tools installed globally
+      - table [ref=e212]:
+        - rowgroup [ref=e213]:
+          - row "Parameter Value" [ref=e214]:
+            - columnheader "Parameter" [ref=e215]
+            - columnheader "Value" [ref=e216]
+        - rowgroup [ref=e217]:
+          - row "Tool OD 46 mm [1.83″]" [ref=e218]:
+            - cell "Tool OD" [ref=e219]
+            - cell "46 mm [1.83″]" [ref=e220]
+          - row "Temperature 150°C [302°F]" [ref=e221]:
+            - cell "Temperature" [ref=e222]
+            - cell "150°C [302°F]" [ref=e223]
+          - row "Pressure 68,948 kPa [10,000 psi]" [ref=e224]:
+            - cell "Pressure" [ref=e225]
+            - cell "68,948 kPa [10,000 psi]" [ref=e226]
+          - row "Pressure Accuracy 0.15% F.S. (Piezo) | 13.8 kPa [2.0 psi] (Quartz)" [ref=e227]:
+            - cell "Pressure Accuracy" [ref=e228]
+            - cell "0.15% F.S. (Piezo) | 13.8 kPa [2.0 psi] (Quartz)" [ref=e229]
+          - row "Battery Life 5+ years" [ref=e230]:
+            - cell "Battery Life" [ref=e231]
+            - cell "5+ years" [ref=e232]
+          - row "Data Output MODBUS RS-485, dual 4–20 mA" [ref=e233]:
+            - cell "Data Output" [ref=e234]
+            - cell "MODBUS RS-485, dual 4–20 mA" [ref=e235]
+          - row "Surface Receiver 150 × 112 × 55 mm" [ref=e236]:
+            - cell "Surface Receiver" [ref=e237]
+            - cell "150 × 112 × 55 mm" [ref=e238]
+          - row "Power 24 V DC / ~3 W" [ref=e239]:
+            - cell "Power" [ref=e240]
+            - cell "24 V DC / ~3 W" [ref=e241]
+          - row "Storage 64 MB event SD" [ref=e242]:
+            - cell "Storage" [ref=e243]
+            - cell "64 MB event SD" [ref=e244]
+          - row "Corrosion NACE MR-01-75 available" [ref=e245]:
+            - cell "Corrosion" [ref=e246]
+            - cell "NACE MR-01-75 available" [ref=e247]
+    - generic [ref=e250]:
+      - generic [ref=e251]:
+        - heading "Start the First Canadian Install" [level=2] [ref=e252]
+        - paragraph [ref=e253]: Talk directly with MPS Group about candidate wells, new pump changeout timing, and the right pilot scope for the first deployment in Canada.
+        - link "kylegronning@mpsgroup.ca" [ref=e254] [cursor=pointer]:
+          - /url: mailto:kylegronning@mpsgroup.ca
+          - img [ref=e255]
+          - text: kylegronning@mpsgroup.ca
+        - generic [ref=e258]:
+          - generic [ref=e259]: 130+ tools installed globally
+          - generic [ref=e260]: Exclusive Canadian distributor
+          - generic [ref=e261]: Planned PCP changeout installs
+      - generic [ref=e262]:
+        - img "WellFi" [ref=e263]
+        - generic [ref=e362]:
+          - generic [ref=e363]: MPS Group — Exclusive Canadian Distributor
+          - generic [ref=e364]: © 2026 MPS Group
+  - button "Open Next.js Dev Tools" [ref=e370] [cursor=pointer]:
+    - img [ref=e371]
