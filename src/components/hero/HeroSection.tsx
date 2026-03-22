@@ -3,10 +3,9 @@
 import { useRef } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
-import Image from 'next/image';
 import { hero, footer } from '@/lib/content';
 import WellFiLogo from '@/components/ui/WellFiLogo';
-import ParticleCanvas, { type ParticleCanvasHandle } from './ParticleCanvas';
+import SignalWaveHero, { type SignalWaveHeroHandle } from './SignalWaveHero';
 
 gsap.registerPlugin(useGSAP);
 
@@ -16,8 +15,7 @@ export default function HeroSection() {
   const heroRef = useRef<HTMLElement>(null);
   const logoRef = useRef<HTMLDivElement>(null);
   const taglineRef = useRef<HTMLParagraphElement>(null);
-  const toolRef = useRef<HTMLDivElement>(null);
-  const particleRef = useRef<ParticleCanvasHandle>(null);
+  const waveRef = useRef<SignalWaveHeroHandle>(null);
   const supportRef = useRef<HTMLParagraphElement>(null);
   const chipsRef = useRef<HTMLDivElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
@@ -34,7 +32,10 @@ export default function HeroSection() {
 
       const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
-      // Beat 0 (0.3s): Logo fades in from void
+      // 0.0s — Start the wave animation immediately
+      tl.call(() => waveRef.current?.startWave(), [], 0.0);
+
+      // 0.3s — Logo fades in
       tl.fromTo(
         logoRef.current,
         { autoAlpha: 0, y: 10 },
@@ -42,15 +43,7 @@ export default function HeroSection() {
         0.3,
       );
 
-      // Beat 1 (0.8-1.5s): Tool spotlight reveal
-      tl.fromTo(
-        toolRef.current,
-        { '--reveal-radius': '0px', autoAlpha: 0 },
-        { '--reveal-radius': '600px', autoAlpha: 0.55, duration: 0.7, ease: 'power2.out' },
-        0.8,
-      );
-
-      // Tagline alongside tool reveal
+      // 1.0s — Tagline fades in
       tl.fromTo(
         taglineRef.current,
         { autoAlpha: 0, y: 8 },
@@ -58,17 +51,7 @@ export default function HeroSection() {
         1.0,
       );
 
-      // Beat 3 (2.0s): Fire EM pulse — rings + wave activation
-      tl.call(() => particleRef.current?.triggerPulse(), [], 2.0);
-
-      // Beat 6 (3.0s): Ghost tool after pulse
-      tl.to(
-        toolRef.current,
-        { autoAlpha: 0.15, duration: 0.5, ease: 'power2.inOut' },
-        3.0,
-      );
-
-      // Beat 7 (3.5s): Supporting content
+      // 3.5s — Support copy fades in
       tl.fromTo(
         supportRef.current,
         { autoAlpha: 0, y: 14 },
@@ -76,6 +59,7 @@ export default function HeroSection() {
         3.5,
       );
 
+      // 3.8s — Proof chips stagger in
       if (chipsRef.current) {
         const chips = chipsRef.current.querySelectorAll('.hero-proof-chip');
         tl.fromTo(
@@ -86,6 +70,7 @@ export default function HeroSection() {
         );
       }
 
+      // 4.0s — CTAs fade in
       if (ctaRef.current) {
         const buttons = ctaRef.current.querySelectorAll('.hero-cta');
         tl.fromTo(
@@ -96,10 +81,7 @@ export default function HeroSection() {
         );
       }
 
-      // Beat 8 (4.2s): Enable mouse interaction
-      tl.call(() => particleRef.current?.enableMouseInteraction(), [], 4.2);
-
-      // Logo pulse
+      // 4.2s — Logo brightness pulse
       tl.fromTo(
         logoRef.current,
         { filter: 'brightness(1)' },
@@ -107,10 +89,13 @@ export default function HeroSection() {
         4.2,
       );
 
-      // Settle
+      // 4.5s — Enable mouse interaction on wave
+      tl.call(() => waveRef.current?.enableMouseInteraction(), [], 4.5);
+
+      // 5.0s — Settle
       tl.call(() => {
         heroRef.current?.classList.add('hero-settled');
-      }, [], 4.5);
+      }, [], 5.0);
     },
     { scope: heroRef, dependencies: [] },
   );
@@ -131,21 +116,12 @@ export default function HeroSection() {
         className="pointer-events-none absolute inset-x-0 bottom-0 h-[28%] bg-[linear-gradient(180deg,rgba(0,0,0,0)_0%,rgba(2,7,14,0.92)_100%)]"
       />
 
-      {/* --- Glass orbs (z-1) --- */}
-      <div
-        aria-hidden="true"
-        className="hero-glass-orb pointer-events-none absolute right-[6%] top-[14%] z-[1] h-[24rem] w-[24rem] rounded-full bg-[radial-gradient(circle,rgba(126,238,255,0.3)_0%,rgba(29,78,136,0.16)_36%,rgba(3,10,18,0)_72%)] opacity-[0.12] blur-[56px]"
-      />
-      <div
-        aria-hidden="true"
-        className="hero-glass-orb pointer-events-none absolute left-[11%] top-[18%] z-[1] h-[16rem] w-[16rem] rounded-full bg-[radial-gradient(circle,rgba(125,238,255,0.08)_0%,rgba(16,78,140,0.06)_38%,rgba(2,7,14,0)_72%)] opacity-[0.06] blur-[44px]"
-      />
+      {/* --- Signal wave canvas (z-5) --- */}
+      <SignalWaveHero ref={waveRef} lines={HEADLINE_LINES} className="absolute inset-0 z-[5]" />
 
-      {/* --- Main content grid --- */}
-      <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-[96rem] flex-col justify-center px-6 py-16 sm:px-10 lg:flex-row lg:items-center lg:px-12 xl:px-14">
-
-        {/* Left column: brand + post-reveal content */}
-        <div className="relative z-20 flex flex-col gap-6 lg:max-w-[34rem] lg:pr-12">
+      {/* --- Content overlay (z-10) --- */}
+      <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-[96rem] flex-col justify-end px-6 pb-16 sm:px-10 lg:px-12 xl:px-14">
+        <div className="flex flex-col gap-6 lg:max-w-[34rem]">
           {/* Logo */}
           <div ref={logoRef} className="invisible">
             <WellFiLogo className="w-[15rem] sm:w-[18rem] lg:w-[28rem]" />
@@ -159,7 +135,7 @@ export default function HeroSection() {
             {hero.tagline}
           </p>
 
-          {/* Support line (hidden until Beat 4) */}
+          {/* Support line */}
           <p
             ref={supportRef}
             className={`invisible max-w-[36ch] text-[clamp(0.95rem,1.6vw,1.15rem)] leading-relaxed text-[#9CA3AF] ${prefersReducedMotion ? '!visible' : ''}`}
@@ -167,7 +143,7 @@ export default function HeroSection() {
             {hero.supportLine}
           </p>
 
-          {/* Proof chips (hidden until Beat 4) */}
+          {/* Proof chips */}
           <div ref={chipsRef} className="flex flex-wrap gap-2.5">
             {hero.proofChips.map((chip) => (
               <span
@@ -179,7 +155,7 @@ export default function HeroSection() {
             ))}
           </div>
 
-          {/* CTAs (hidden until Beat 4) */}
+          {/* CTAs */}
           <div ref={ctaRef} className="flex flex-wrap gap-3 pt-2">
             <a
               href={`mailto:${footer.email}`}
@@ -195,48 +171,17 @@ export default function HeroSection() {
             </a>
           </div>
         </div>
-
-        {/* Right column: tool image + particle canvas */}
-        <div className="relative mt-8 flex flex-1 items-center justify-center lg:mt-0">
-          {/* Tool PNG (z-5) */}
-          <div
-            ref={toolRef}
-            className="tool-spotlight invisible relative h-[clamp(20rem,50vh,36rem)] w-[clamp(8rem,20vw,16rem)]"
-          >
-            <Image
-              src="/images/wellfi-sideclamp-hero.png"
-              alt="WellFi side-clamped tool mounted vertically alongside carbon steel pipe"
-              fill
-              priority
-              sizes="(max-width: 640px) 40vw, (max-width: 1024px) 30vw, 20vw"
-              className="select-none object-contain object-center brightness-[0.6] contrast-[1.08] saturate-[0.72]"
-            />
-          </div>
-
-          {/* Particle canvas (z-10) — overlays the headline area */}
-          <div className="hero-particle-canvas absolute inset-0 z-10">
-            <ParticleCanvas
-              ref={particleRef}
-              lines={HEADLINE_LINES}
-              fontFamily="Space Grotesk, system-ui, sans-serif"
-              fontWeight={700}
-              maxParticles={2500}
-              toolBounds={{ x: 0.55, y: 0.15, width: 0.3, height: 0.65 }}
-              className="h-full w-full"
-            />
-          </div>
-
-          {/* Accessible hidden headline (z-15) */}
-          <h1 className="sr-only">{hero.pulseHeadline}</h1>
-
-          {/* Static headline fallback for reduced motion */}
-          {prefersReducedMotion && (
-            <h1 className="hero-static-headline absolute inset-0 z-[15] flex items-center justify-center text-center text-[clamp(2.4rem,8vw,5rem)] font-bold leading-[0.95] tracking-[-0.04em] text-[#f5f8fd]">
-              {hero.pulseHeadline}
-            </h1>
-          )}
-        </div>
       </div>
+
+      {/* Accessible hidden headline */}
+      <h1 className="sr-only">{hero.pulseHeadline}</h1>
+
+      {/* Static headline fallback for reduced motion */}
+      {prefersReducedMotion && (
+        <h1 className="absolute inset-0 z-[15] flex items-center justify-center text-center text-[clamp(2.4rem,8vw,5rem)] font-bold leading-[0.95] tracking-[-0.04em] text-[#f5f8fd]">
+          {hero.pulseHeadline}
+        </h1>
+      )}
     </section>
   );
 }
