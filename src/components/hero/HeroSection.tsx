@@ -9,8 +9,6 @@ import SignalWaveHero, { type SignalWaveHeroHandle } from './SignalWaveHero';
 
 gsap.registerPlugin(useGSAP);
 
-const HEADLINE_LINES = ['STOP', 'PUMPING', 'BLIND.'];
-
 export default function HeroSection() {
   const heroRef = useRef<HTMLElement>(null);
   const logoRef = useRef<HTMLDivElement>(null);
@@ -117,7 +115,7 @@ export default function HeroSection() {
       />
 
       {/* --- Signal wave canvas (z-5) --- */}
-      <SignalWaveHero ref={waveRef} lines={HEADLINE_LINES} className="absolute inset-0 z-[5]" />
+      <SignalWaveHero ref={waveRef} className="absolute inset-0 z-[5]" />
 
       {/* --- Content overlay (z-10) --- */}
       <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-[96rem] flex-col justify-end px-6 pb-16 sm:px-10 lg:px-12 xl:px-14">

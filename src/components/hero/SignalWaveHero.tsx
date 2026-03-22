@@ -3,7 +3,6 @@
 import {
   useRef,
   useEffect,
-  useCallback,
   useImperativeHandle,
   forwardRef,
   useState,
@@ -13,53 +12,38 @@ import {
 // Types
 // ---------------------------------------------------------------------------
 
-type ParticlePhase = 'offscreen' | 'sine_travel' | 'morphing' | 'settled';
-
-interface Particle {
-  x: number;
-  y: number;
-  vx: number;
-  vy: number;
-  targetX: number;
-  targetY: number;
-  radius: number;
-  alpha: number;
-  phase: ParticlePhase;
-  lineIndex: number;
-  ampMultiplier: number;
-  phaseOffset: number;
-  entryDelay: number; // normalized 0-1.5 delay before particle enters
-}
-
 export interface SignalWaveHeroHandle {
+  /** Start the left-to-right wave reveal */
   startWave: () => void;
-  triggerMorph: () => void;
+  /** Enable mouse/touch interaction */
   enableMouseInteraction: () => void;
 }
 
 interface SignalWaveHeroProps {
-  lines: string[];
-  fontFamily?: string;
-  fontWeight?: number;
-  maxParticles?: number;
   className?: string;
 }
 
 // ---------------------------------------------------------------------------
-// Constants (tuned values)
+// Constants — tuned to match EM Pulse reference image
 // ---------------------------------------------------------------------------
 
-const WAVE_LINES = 30;
-const WAVE_SPEED = 6;
-const WAVE_FREQUENCY = 0.02;
-const BASE_AMPLITUDE = 80;
-const SPRING_STIFFNESS = 0.1;
-const SPRING_DAMPING = 0.84;
-const MOUSE_RADIUS = 80;
-const MOUSE_FORCE = 6;
-const RETURN_STIFFNESS = 0.12;
+const LINES = 50; // number of stacked sine lines
+const POINTS_PER_LINE = 300; // resolution per line
+const BASE_AMPLITUDE = 0.16; // fraction of canvas height
+const WAVE_FREQ = 5; // primary sine frequency
+const PHASE_SHIFT = 0.1; // phase offset between adjacent lines
+const VERTICAL_SPREAD = 0.35; // fraction of canvas height the lines span
+const WAVE_SPEED = 0.012; // time-based animation speed
+const REVEAL_SPEED = 5; // px per frame for left-to-right reveal
+
+// Mouse interaction
+const MOUSE_RADIUS = 150;
+const MOUSE_FORCE = 40;
+
+// Colors
 const COLOR_CORE = '#7DEEFF';
 const COLOR_GLOW = '#22D3EE';
+const COLOR_DEEP = '#06B6D4';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -69,92 +53,8 @@ function isMobile() {
   return typeof window !== 'undefined' && window.innerWidth < 1024;
 }
 
-function getDevicePixelRatio() {
-  if (typeof window === 'undefined') return 1;
-  return isMobile() ? 1 : Math.min(window.devicePixelRatio, 2);
-}
-
-/** Build a binary bitmap from rendered text. Returns { bitmap, width, height }. */
-function buildTextBitmap(
-  lines: string[],
-  width: number,
-  height: number,
-  fontFamily: string,
-  fontWeight: number,
-  /** Vertical region for text (fraction of canvas). Defaults to upper 45%. */
-  textRegion = { top: 0.06, bottom: 0.46 },
-): { bitmap: Uint8Array; width: number; height: number } {
-  if (lines.length === 0 || width === 0 || height === 0) {
-    return { bitmap: new Uint8Array(0), width: 0, height: 0 };
-  }
-  const canvas = document.createElement('canvas');
-  canvas.width = width;
-  canvas.height = height;
-  const ctx = canvas.getContext('2d')!;
-
-  // Text renders within a vertical sub-region, leaving bottom clear for content
-  const regionTop = height * textRegion.top;
-  const regionHeight = height * (textRegion.bottom - textRegion.top);
-
-  // Calculate font size to fill the region
-  let fontSize = Math.floor((regionHeight / lines.length) * 0.75);
-  ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
-
-  // Measure widest line and scale font to fit
-  let maxTextWidth = 0;
-  for (const line of lines) {
-    const m = ctx.measureText(line);
-    if (m.width > maxTextWidth) maxTextWidth = m.width;
-  }
-  if (maxTextWidth > width * 0.85) {
-    fontSize = Math.floor((fontSize * (width * 0.85)) / maxTextWidth);
-  }
-
-  ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillStyle = '#fff';
-
-  const lineHeight = regionHeight / lines.length;
-  for (let i = 0; i < lines.length; i++) {
-    ctx.fillText(lines[i], width / 2, regionTop + lineHeight * (i + 0.5));
-  }
-
-  const imageData = ctx.getImageData(0, 0, width, height);
-  const bitmap = new Uint8Array(width * height);
-  for (let i = 0; i < bitmap.length; i++) {
-    bitmap[i] = imageData.data[i * 4 + 3] > 128 ? 1 : 0;
-  }
-
-  return { bitmap, width, height };
-}
-
-/** Sample target positions from bitmap. Returns array of {x, y}. */
-function sampleTargets(
-  bitmap: Uint8Array,
-  bitmapW: number,
-  bitmapH: number,
-  count: number,
-): { x: number; y: number }[] {
-  const candidates: { x: number; y: number }[] = [];
-  for (let y = 0; y < bitmapH; y += 2) {
-    for (let x = 0; x < bitmapW; x += 2) {
-      if (bitmap[x + y * bitmapW] === 1) {
-        candidates.push({ x, y });
-      }
-    }
-  }
-
-  // Fisher-Yates shuffle
-  for (let i = candidates.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [candidates[i], candidates[j]] = [candidates[j], candidates[i]];
-  }
-
-  return candidates.slice(0, count).map((c) => ({
-    x: c.x + (Math.random() - 0.5) * 2,
-    y: c.y + (Math.random() - 0.5) * 2,
-  }));
+function clamp(v: number, min: number, max: number) {
+  return Math.max(min, Math.min(max, v));
 }
 
 // ---------------------------------------------------------------------------
@@ -162,35 +62,19 @@ function sampleTargets(
 // ---------------------------------------------------------------------------
 
 const SignalWaveHero = forwardRef<SignalWaveHeroHandle, SignalWaveHeroProps>(
-  function SignalWaveHero(
-    {
-      lines,
-      fontFamily = 'Space Grotesk, system-ui, sans-serif',
-      fontWeight = 700,
-      maxParticles = 2500,
-      className,
-    },
-    ref,
-  ) {
+  function SignalWaveHero({ className }, ref) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const particlesRef = useRef<Particle[]>([]);
-    const bitmapRef = useRef<{
-      bitmap: Uint8Array;
-      width: number;
-      height: number;
-    } | null>(null);
     const rafRef = useRef<number>(0);
     const mouseRef = useRef({ x: -9999, y: -9999, active: false });
-    const animPhaseRef = useRef<'idle' | 'wave' | 'morph' | 'settled'>('idle');
-    const waveXRef = useRef<number>(-100);
-    const timeRef = useRef<number>(0);
-    const lastFrameTimeRef = useRef<number>(0);
+    const timeRef = useRef(0);
+    const lastFrameRef = useRef(0);
+    const revealXRef = useRef(-1); // -1 = not started, 0+ = revealing
+    const phaseRef = useRef<'idle' | 'revealing' | 'settled'>('idle');
+    const dimsRef = useRef({ w: 0, h: 0 });
+    const mobileRef = useRef(isMobile());
     const [reducedMotion, setReducedMotion] = useState(false);
 
-    // Cached layout values — updated on init/resize only, NOT per frame
-    const canvasDimsRef = useRef({ w: 0, h: 0 });
-    const isMobileRef = useRef(isMobile());
-
+    // Reduced motion
     useEffect(() => {
       const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
       setReducedMotion(mq.matches);
@@ -199,90 +83,34 @@ const SignalWaveHero = forwardRef<SignalWaveHeroHandle, SignalWaveHeroProps>(
       return () => mq.removeEventListener('change', handler);
     }, []);
 
-    const initParticles = useCallback(
-      (placeAtTargets = false) => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-
-        const rect = canvas.getBoundingClientRect();
-        const w = Math.floor(rect.width);
-        const h = Math.floor(rect.height);
-        if (w === 0 || h === 0) return;
-
-        canvasDimsRef.current = { w, h };
-        isMobileRef.current = isMobile();
-
-        const dpr = isMobileRef.current ? 1 : Math.min(window.devicePixelRatio, 2);
-        canvas.width = w * dpr;
-        canvas.height = h * dpr;
-
-        const bitmapData = buildTextBitmap(lines, w, h, fontFamily, fontWeight);
-        bitmapRef.current = bitmapData;
-
-        const count = isMobileRef.current
-          ? Math.min(maxParticles, 1000)
-          : maxParticles;
-        const targets = sampleTargets(
-          bitmapData.bitmap,
-          w,
-          h,
-          count,
-        );
-
-        const centerY = h / 2;
-
-        const particles: Particle[] = targets.map((t, i) => {
-          const lineIndex = i % WAVE_LINES;
-          const lineDist = (lineIndex - 15) / 15;
-          const ampMultiplier = Math.exp(-lineDist * lineDist * 2);
-          const phaseOffset = (lineIndex / WAVE_LINES) * Math.PI * 2;
-          const entryDelay = (t.x / w) * 1.5;
-
-          if (placeAtTargets) {
-            return {
-              x: t.x,
-              y: t.y,
-              vx: 0,
-              vy: 0,
-              targetX: t.x,
-              targetY: t.y,
-              radius: 1.2 + Math.random() * 0.8,
-              alpha: 0.6 + Math.random() * 0.4,
-              phase: 'settled' as ParticlePhase,
-              lineIndex,
-              ampMultiplier,
-              phaseOffset,
-              entryDelay,
-            };
-          }
-
-          return {
-            x: -100 - Math.random() * 200,
-            y: centerY,
-            vx: 0,
-            vy: 0,
-            targetX: t.x,
-            targetY: t.y,
-            radius: 1.2 + Math.random() * 0.8,
-            alpha: 0,
-            phase: 'offscreen' as ParticlePhase,
-            lineIndex,
-            ampMultiplier,
-            phaseOffset,
-            entryDelay,
-          };
-        });
-
-        particlesRef.current = particles;
+    // Imperative handle for GSAP integration
+    useImperativeHandle(ref, () => ({
+      startWave() {
+        revealXRef.current = 0;
+        phaseRef.current = 'revealing';
       },
-      [lines, fontFamily, fontWeight, maxParticles],
-    );
+      enableMouseInteraction() {
+        mouseRef.current.active = true;
+      },
+    }), []);
+
+    // Sizing
+    const resize = () => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const dpr = mobileRef.current ? 1 : Math.min(window.devicePixelRatio, 2);
+      const rect = canvas.getBoundingClientRect();
+      const w = Math.floor(rect.width);
+      const h = Math.floor(rect.height);
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      dimsRef.current = { w, h };
+      mobileRef.current = isMobile();
+    };
 
     // Main animation loop
     useEffect(() => {
       if (reducedMotion) return;
-
-      initParticles();
 
       const canvas = canvasRef.current;
       if (!canvas) return;
@@ -290,245 +118,173 @@ const SignalWaveHero = forwardRef<SignalWaveHeroHandle, SignalWaveHeroProps>(
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
 
-      lastFrameTimeRef.current = performance.now();
+      resize();
+      window.addEventListener('resize', resize);
+
+      lastFrameRef.current = performance.now();
+
+      // Build x-axis gradient (cyan center, fading edges)
+      function makeGradient() {
+        const w = canvas!.width;
+        const g = ctx!.createLinearGradient(0, 0, w, 0);
+        g.addColorStop(0.0, 'rgba(6, 182, 212, 0.15)');
+        g.addColorStop(0.1, 'rgba(34, 211, 238, 0.3)');
+        g.addColorStop(0.3, 'rgba(34, 211, 238, 0.5)');
+        g.addColorStop(0.5, 'rgba(125, 238, 255, 0.75)');
+        g.addColorStop(0.7, 'rgba(34, 211, 238, 0.5)');
+        g.addColorStop(0.9, 'rgba(34, 211, 238, 0.3)');
+        g.addColorStop(1.0, 'rgba(6, 182, 212, 0.15)');
+        return g;
+      }
+      let grad = makeGradient();
+
+      const handleResize = () => {
+        resize();
+        grad = makeGradient();
+      };
+      window.removeEventListener('resize', resize);
+      window.addEventListener('resize', handleResize);
 
       function animate(now: number) {
         rafRef.current = requestAnimationFrame(animate);
 
-        if (!canvas || !canvas.isConnected) return;
+        if (!canvas || !canvas.isConnected || !ctx) return;
 
-        // Delta time (capped at 50ms to avoid spiral on tab-return)
-        const dt = Math.min((now - lastFrameTimeRef.current) / 1000, 0.05);
-        lastFrameTimeRef.current = now;
-        timeRef.current += dt;
+        // Delta time
+        const dt = Math.min((now - lastFrameRef.current) / 1000, 0.05);
+        lastFrameRef.current = now;
+        timeRef.current += WAVE_SPEED;
 
-        const { w, h } = canvasDimsRef.current;
-        const dpr = isMobileRef.current ? 1 : Math.min(window.devicePixelRatio, 2);
-        const particles = particlesRef.current;
-        const bitmap = bitmapRef.current;
-        const animPhase = animPhaseRef.current;
+        const { w, h } = dimsRef.current;
+        if (w === 0 || h === 0) return;
+
+        const dpr = mobileRef.current ? 1 : Math.min(window.devicePixelRatio, 2);
+        const phase = phaseRef.current;
         const mouse = mouseRef.current;
-        const mobile = isMobileRef.current;
-
-        if (!ctx || particles.length === 0 || w === 0) return;
+        const tm = timeRef.current;
 
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         ctx.clearRect(0, 0, w, h);
 
-        const time = timeRef.current;
-        const centerY = h / 2;
+        // Idle — draw nothing
+        if (phase === 'idle') return;
 
-        // ----- IDLE: nothing to render, waiting for startWave -----
-        if (animPhase === 'idle') {
-          // Draw nothing — particles are offscreen
-          return;
-        }
-
-        // ----- WAVE PHASE -----
-        if (animPhase === 'wave') {
-          waveXRef.current += WAVE_SPEED;
-          const waveFront = waveXRef.current;
-
-          for (const p of particles) {
-            if (p.phase === 'offscreen') {
-              // Activate when wave front passes the particle's entry point
-              // Entry point = proportional to targetX across canvas width
-              const entryX = p.entryDelay * (w / 1.5); // scale entryDelay back to px
-              if (waveFront >= entryX) {
-                p.phase = 'sine_travel';
-                p.x = -50;
-                p.alpha = 0.5 + Math.random() * 0.3;
-              }
-            }
-
-            if (p.phase === 'sine_travel') {
-              p.x += WAVE_SPEED;
-              p.y =
-                centerY +
-                Math.sin(
-                  p.x * WAVE_FREQUENCY + p.phaseOffset + time * 2,
-                ) *
-                  BASE_AMPLITUDE *
-                  p.ampMultiplier;
-
-              // When particle reaches its target X, begin morphing
-              if (p.x >= p.targetX) {
-                p.phase = 'morphing';
-                p.vx = WAVE_SPEED * 0.3; // carry some momentum
-                p.vy = (p.targetY - p.y) * 0.05;
-              }
-            }
-
-            if (p.phase === 'morphing') {
-              p.vx += (p.targetX - p.x) * SPRING_STIFFNESS;
-              p.vy += (p.targetY - p.y) * SPRING_STIFFNESS;
-              p.vx *= SPRING_DAMPING;
-              p.vy *= SPRING_DAMPING;
-              p.x += p.vx;
-              p.y += p.vy;
-
-              const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
-              if (speed < 0.1) {
-                p.phase = 'settled';
-                p.alpha = 0.6 + Math.random() * 0.4;
-              }
-            }
-
-            if (p.phase === 'settled') {
-              // Spring to target (gentle settle)
-              p.vx += (p.targetX - p.x) * SPRING_STIFFNESS;
-              p.vy += (p.targetY - p.y) * SPRING_STIFFNESS;
-              p.vx *= SPRING_DAMPING;
-              p.vy *= SPRING_DAMPING;
-              p.x += p.vx;
-              p.y += p.vy;
-            }
-          }
-
-          // Wave front glow effect
-          if (waveFront > 0 && waveFront < w + 200) {
-            const grad = ctx.createRadialGradient(
-              waveFront,
-              centerY,
-              0,
-              waveFront,
-              centerY,
-              150,
-            );
-            grad.addColorStop(0, 'rgba(125, 238, 255, 0.12)');
-            grad.addColorStop(0.5, 'rgba(34, 211, 238, 0.04)');
-            grad.addColorStop(1, 'rgba(34, 211, 238, 0)');
-            ctx.fillStyle = grad;
-            ctx.fillRect(0, 0, w, h);
-          }
-
-          // Transition: when wave front passes right edge + buffer
-          if (waveFront > w + 200) {
-            animPhaseRef.current = 'morph';
+        // Advance reveal cursor
+        if (phase === 'revealing') {
+          // Speed scales with dt for frame-rate independence
+          revealXRef.current += REVEAL_SPEED * (dt / 0.016);
+          if (revealXRef.current >= w) {
+            revealXRef.current = w;
+            phaseRef.current = 'settled';
           }
         }
 
-        // ----- MORPH PHASE -----
-        if (animPhase === 'morph') {
-          let settledCount = 0;
+        const revealX = revealXRef.current;
 
-          for (const p of particles) {
-            // Force any remaining offscreen/traveling particles into morphing
-            if (p.phase === 'offscreen' || p.phase === 'sine_travel') {
-              p.phase = 'morphing';
-              p.alpha = 0.5 + Math.random() * 0.3;
-            }
+        // --- WAVE RENDERING ---
+        const amplitude = h * BASE_AMPLITUDE;
+        const vSpread = h * VERTICAL_SPREAD;
+        const cy = h * 0.28; // center the wave in upper area, clear of logo
+        const startY = cy - vSpread / 2;
+        const lineSpacing = vSpread / LINES;
 
-            if (p.phase === 'morphing') {
-              p.vx += (p.targetX - p.x) * SPRING_STIFFNESS;
-              p.vy += (p.targetY - p.y) * SPRING_STIFFNESS;
-              p.vx *= SPRING_DAMPING;
-              p.vy *= SPRING_DAMPING;
-              p.x += p.vx;
-              p.y += p.vy;
+        // Two rendering passes for glow depth
+        const passes = [
+          // Pass 1: Wide glow
+          { lineWidth: 3.5, alphaScale: 0.06 },
+          // Pass 2: Sharp core
+          { lineWidth: 1.2, alphaScale: 0.14 },
+        ];
 
-              const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
-              if (speed < 0.1) {
-                p.phase = 'settled';
-                p.alpha = 0.6 + Math.random() * 0.4;
-              }
-            }
+        ctx.globalCompositeOperation = 'lighter';
 
-            if (p.phase === 'settled') {
-              settledCount++;
-              // Gentle spring
-              p.vx += (p.targetX - p.x) * SPRING_STIFFNESS;
-              p.vy += (p.targetY - p.y) * SPRING_STIFFNESS;
-              p.vx *= SPRING_DAMPING;
-              p.vy *= SPRING_DAMPING;
-              p.x += p.vx;
-              p.y += p.vy;
-            }
-          }
+        for (const pass of passes) {
+          ctx.strokeStyle = grad;
+          ctx.lineWidth = pass.lineWidth;
 
-          // Transition when 90% are settled
-          if (settledCount >= particles.length * 0.9) {
-            animPhaseRef.current = 'settled';
-          }
-        }
+          for (let i = 0; i < LINES; i++) {
+            // Gaussian: center lines are brightest, edges fade
+            const lineDist = (i - LINES / 2) / (LINES / 2);
+            const gaussianAlpha = Math.exp(-lineDist * lineDist * 3);
 
-        // ----- SETTLED PHASE -----
-        if (animPhase === 'settled') {
-          for (const p of particles) {
-            // Ensure all particles are in settled state
-            if (p.phase !== 'settled') {
-              p.phase = 'settled';
-              p.alpha = 0.6 + Math.random() * 0.4;
-            }
+            ctx.globalAlpha = pass.alphaScale * gaussianAlpha;
+            ctx.beginPath();
 
-            p.vx += (p.targetX - p.x) * SPRING_STIFFNESS;
-            p.vy += (p.targetY - p.y) * SPRING_STIFFNESS;
+            const baseY = startY + i * lineSpacing;
+            const linePhase = i * PHASE_SHIFT;
+            // Breathing: subtle amplitude modulation over time
+            const breathe = Math.sin(tm * 1.5 + i * 0.04) * 0.1 + 0.9;
+            // Per-line amplitude scaled by Gaussian (center lines = full amplitude)
+            const lineAmp = amplitude * gaussianAlpha;
 
-            // Mouse repulsion when enabled
-            if (mouse.active && !mobile) {
-              const mx = p.x - mouse.x;
-              const my = p.y - mouse.y;
-              const dist = Math.sqrt(mx * mx + my * my);
-              if (dist < MOUSE_RADIUS && dist > 0) {
-                const ratio = (MOUSE_RADIUS - dist) / MOUSE_RADIUS;
-                const force = ratio * ratio * MOUSE_FORCE;
-                p.vx += (mx / dist) * force;
-                p.vy += (my / dist) * force;
-              }
-            }
+            for (let j = 0; j <= POINTS_PER_LINE; j++) {
+              const x = (j / POINTS_PER_LINE) * w;
 
-            p.vx *= SPRING_DAMPING;
-            p.vy *= SPRING_DAMPING;
-            p.x += p.vx;
-            p.y += p.vy;
+              // Don't draw past reveal cursor
+              if (x > revealX) break;
 
-            // Letter boundary constraint
-            if (mouse.active && bitmap) {
-              const bx = Math.floor(p.x);
-              const by = Math.floor(p.y);
-              if (
-                bx >= 0 &&
-                bx < bitmap.width &&
-                by >= 0 &&
-                by < bitmap.height
-              ) {
-                if (bitmap.bitmap[bx + by * bitmap.width] === 0) {
-                  p.vx += (p.targetX - p.x) * RETURN_STIFFNESS;
-                  p.vy += (p.targetY - p.y) * RETURN_STIFFNESS;
+              // Normalized x for wave math (-1 to 1)
+              const nx = (x / w) * 2 - 1;
+
+              // Near-uniform x-axis envelope — wave spans full width like reference
+              const xEnvelope = 0.65 + 0.35 * Math.exp(-nx * nx * 3);
+
+              // Multi-harmonic sine wave
+              const w1 = Math.sin(nx * Math.PI * WAVE_FREQ + tm + linePhase);
+              const w2 = Math.sin(nx * Math.PI * WAVE_FREQ * 1.5 + tm * 0.7 + linePhase * 1.3) * 0.25;
+              const w3 = Math.sin(nx * Math.PI * WAVE_FREQ * 0.5 + tm * 1.3 + linePhase * 0.7) * 0.12;
+              const wave = w1 + w2 + w3;
+
+              let fy = baseY + wave * lineAmp * xEnvelope * breathe;
+
+              // Mouse interaction (only when enabled)
+              if (mouse.active) {
+                const mdx = x - mouse.x;
+                const mdy = fy - mouse.y;
+                const md = Math.sqrt(mdx * mdx + mdy * mdy);
+                if (md < MOUSE_RADIUS && md > 0) {
+                  const ratio = 1 - md / MOUSE_RADIUS;
+                  const force = ratio * ratio * MOUSE_FORCE;
+                  fy += (mdy / md) * force;
                 }
               }
+
+              if (j === 0) ctx.moveTo(x, fy);
+              else ctx.lineTo(x, fy);
             }
+            ctx.stroke();
           }
         }
 
-        // ----- RENDERING (two-pass) -----
-        // Pass 1: Glow
-        ctx.globalCompositeOperation = 'lighter';
-        ctx.shadowBlur = 6;
-        ctx.shadowColor = COLOR_GLOW;
-        ctx.fillStyle = COLOR_GLOW;
-        for (const p of particles) {
-          if (p.phase === 'offscreen') continue;
-          ctx.globalAlpha = p.alpha * 0.4;
-          ctx.fillRect(
-            p.x - p.radius,
-            p.y - p.radius,
-            p.radius * 2,
-            p.radius * 2,
-          );
+        // --- CENTER ENERGY GLOW ---
+        // Bright radial glow at the horizontal center of the wave
+        if (revealX > w * 0.4) {
+          const glowIntensity = phase === 'revealing'
+            ? clamp((revealX - w * 0.4) / (w * 0.3), 0, 1)
+            : 1;
+          const glowRadius = Math.min(w * 0.2, 300);
+          ctx.globalAlpha = 0.15 * glowIntensity;
+          const cg = ctx.createRadialGradient(w / 2, cy, 0, w / 2, cy, glowRadius);
+          cg.addColorStop(0, 'rgba(125, 238, 255, 0.5)');
+          cg.addColorStop(0.3, 'rgba(34, 211, 238, 0.15)');
+          cg.addColorStop(1, 'rgba(34, 211, 238, 0)');
+          ctx.fillStyle = cg;
+          ctx.fillRect(0, 0, w, h);
         }
 
-        // Pass 2: Core
-        ctx.globalCompositeOperation = 'source-over';
-        ctx.shadowBlur = 0;
-        ctx.fillStyle = COLOR_CORE;
-        for (const p of particles) {
-          if (p.phase === 'offscreen') continue;
-          ctx.globalAlpha = p.alpha;
-          const r = p.radius * 0.6;
-          ctx.fillRect(p.x - r, p.y - r, r * 2, r * 2);
+        // --- REVEAL EDGE GLOW ---
+        // Bright leading edge during reveal
+        if (phase === 'revealing' && revealX > 0 && revealX < w) {
+          ctx.globalAlpha = 0.2;
+          const eg = ctx.createRadialGradient(revealX, cy, 0, revealX, cy, 100);
+          eg.addColorStop(0, 'rgba(125, 238, 255, 0.5)');
+          eg.addColorStop(0.4, 'rgba(34, 211, 238, 0.15)');
+          eg.addColorStop(1, 'rgba(34, 211, 238, 0)');
+          ctx.fillStyle = eg;
+          ctx.fillRect(0, 0, w, h);
         }
 
+        // Reset
         ctx.globalAlpha = 1;
         ctx.globalCompositeOperation = 'source-over';
       }
@@ -536,48 +292,34 @@ const SignalWaveHero = forwardRef<SignalWaveHeroHandle, SignalWaveHeroProps>(
       rafRef.current = requestAnimationFrame(animate);
 
       return () => {
+        window.removeEventListener('resize', handleResize);
         cancelAnimationFrame(rafRef.current);
       };
-    }, [reducedMotion, initParticles]);
+    }, [reducedMotion]);
 
-    // ResizeObserver
+    // Mouse/touch handlers
     useEffect(() => {
       const canvas = canvasRef.current;
       if (!canvas) return;
 
-      const ro = new ResizeObserver(() => {
-        if (animPhaseRef.current === 'settled') {
-          initParticles(true); // place at targets instantly on resize
-          animPhaseRef.current = 'settled';
-        }
-      });
-      ro.observe(canvas.parentElement || canvas);
-
-      return () => ro.disconnect();
-    }, [initParticles]);
-
-    // Mouse/touch events
-    useEffect(() => {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
+      const getPos = (clientX: number, clientY: number) => {
+        const rect = canvas.getBoundingClientRect();
+        return { x: clientX - rect.left, y: clientY - rect.top };
+      };
 
       const handleMouseMove = (e: MouseEvent) => {
         if (!mouseRef.current.active) return;
-        const rect = canvas.getBoundingClientRect();
-        mouseRef.current.x = e.clientX - rect.left;
-        mouseRef.current.y = e.clientY - rect.top;
+        const pos = getPos(e.clientX, e.clientY);
+        mouseRef.current.x = pos.x;
+        mouseRef.current.y = pos.y;
       };
-
       const handleTouchMove = (e: TouchEvent) => {
         if (!mouseRef.current.active) return;
-        const rect = canvas.getBoundingClientRect();
-        const touch = e.touches[0];
-        if (touch) {
-          mouseRef.current.x = touch.clientX - rect.left;
-          mouseRef.current.y = touch.clientY - rect.top;
-        }
+        const t = e.touches[0];
+        const pos = getPos(t.clientX, t.clientY);
+        mouseRef.current.x = pos.x;
+        mouseRef.current.y = pos.y;
       };
-
       const handleLeave = () => {
         mouseRef.current.x = -9999;
         mouseRef.current.y = -9999;
@@ -595,25 +337,6 @@ const SignalWaveHero = forwardRef<SignalWaveHeroHandle, SignalWaveHeroProps>(
         canvas.removeEventListener('touchend', handleLeave);
       };
     }, []);
-
-    // Imperative handle for GSAP integration
-    useImperativeHandle(
-      ref,
-      () => ({
-        startWave() {
-          waveXRef.current = -100;
-          timeRef.current = 0;
-          animPhaseRef.current = 'wave';
-        },
-        triggerMorph() {
-          animPhaseRef.current = 'morph';
-        },
-        enableMouseInteraction() {
-          mouseRef.current.active = true;
-        },
-      }),
-      [],
-    );
 
     if (reducedMotion) return null;
 
