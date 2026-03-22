@@ -82,6 +82,9 @@ function buildTextBitmap(
   fontFamily: string,
   fontWeight: number,
 ): { bitmap: Uint8Array; width: number; height: number } {
+  if (lines.length === 0 || width === 0 || height === 0) {
+    return { bitmap: new Uint8Array(0), width: 0, height: 0 };
+  }
   const canvas = document.createElement('canvas');
   canvas.width = width;
   canvas.height = height;
@@ -175,10 +178,12 @@ const SignalWaveHero = forwardRef<SignalWaveHeroHandle, SignalWaveHeroProps>(
     const animPhaseRef = useRef<'idle' | 'wave' | 'morph' | 'settled'>('idle');
     const waveXRef = useRef<number>(-100);
     const timeRef = useRef<number>(0);
+    const lastFrameTimeRef = useRef<number>(0);
     const [reducedMotion, setReducedMotion] = useState(false);
 
-    // Track canvas logical dimensions for entry delay calculation
+    // Cached layout values — updated on init/resize only, NOT per frame
     const canvasDimsRef = useRef({ w: 0, h: 0 });
+    const isMobileRef = useRef(isMobile());
 
     useEffect(() => {
       const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -199,15 +204,16 @@ const SignalWaveHero = forwardRef<SignalWaveHeroHandle, SignalWaveHeroProps>(
         if (w === 0 || h === 0) return;
 
         canvasDimsRef.current = { w, h };
+        isMobileRef.current = isMobile();
 
-        const dpr = getDevicePixelRatio();
+        const dpr = isMobileRef.current ? 1 : Math.min(window.devicePixelRatio, 2);
         canvas.width = w * dpr;
         canvas.height = h * dpr;
 
         const bitmapData = buildTextBitmap(lines, w, h, fontFamily, fontWeight);
         bitmapRef.current = bitmapData;
 
-        const count = isMobile()
+        const count = isMobileRef.current
           ? Math.min(maxParticles, 1000)
           : maxParticles;
         const targets = sampleTargets(
@@ -278,24 +284,31 @@ const SignalWaveHero = forwardRef<SignalWaveHeroHandle, SignalWaveHeroProps>(
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
 
-      function animate() {
+      lastFrameTimeRef.current = performance.now();
+
+      function animate(now: number) {
         rafRef.current = requestAnimationFrame(animate);
 
-        const rect = canvas!.getBoundingClientRect();
-        const w = Math.floor(rect.width);
-        const h = Math.floor(rect.height);
-        const dpr = getDevicePixelRatio();
+        if (!canvas || !canvas.isConnected) return;
+
+        // Delta time (capped at 50ms to avoid spiral on tab-return)
+        const dt = Math.min((now - lastFrameTimeRef.current) / 1000, 0.05);
+        lastFrameTimeRef.current = now;
+        timeRef.current += dt;
+
+        const { w, h } = canvasDimsRef.current;
+        const dpr = isMobileRef.current ? 1 : Math.min(window.devicePixelRatio, 2);
         const particles = particlesRef.current;
         const bitmap = bitmapRef.current;
         const animPhase = animPhaseRef.current;
         const mouse = mouseRef.current;
+        const mobile = isMobileRef.current;
 
-        if (!ctx || particles.length === 0) return;
+        if (!ctx || particles.length === 0 || w === 0) return;
 
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         ctx.clearRect(0, 0, w, h);
 
-        timeRef.current += 0.016; // ~60fps time step
         const time = timeRef.current;
         const centerY = h / 2;
 
@@ -446,13 +459,13 @@ const SignalWaveHero = forwardRef<SignalWaveHeroHandle, SignalWaveHeroProps>(
             p.vy += (p.targetY - p.y) * SPRING_STIFFNESS;
 
             // Mouse repulsion when enabled
-            if (mouse.active && !isMobile()) {
+            if (mouse.active && !mobile) {
               const mx = p.x - mouse.x;
               const my = p.y - mouse.y;
               const dist = Math.sqrt(mx * mx + my * my);
               if (dist < MOUSE_RADIUS && dist > 0) {
-                const force =
-                  ((MOUSE_RADIUS - dist) / MOUSE_RADIUS) * MOUSE_FORCE;
+                const ratio = (MOUSE_RADIUS - dist) / MOUSE_RADIUS;
+                const force = ratio * ratio * MOUSE_FORCE;
                 p.vx += (mx / dist) * force;
                 p.vy += (my / dist) * force;
               }
@@ -514,7 +527,7 @@ const SignalWaveHero = forwardRef<SignalWaveHeroHandle, SignalWaveHeroProps>(
         ctx.globalCompositeOperation = 'source-over';
       }
 
-      animate();
+      rafRef.current = requestAnimationFrame(animate);
 
       return () => {
         cancelAnimationFrame(rafRef.current);
