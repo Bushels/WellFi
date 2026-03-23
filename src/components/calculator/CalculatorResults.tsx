@@ -86,9 +86,11 @@ export default function CalculatorResults({
         <h2 className="display-heading text-[clamp(2.2rem,6vw,4.2rem)] text-[#f7fbff]">
           {formatNumber(results.payoutDays, 0)} days
         </h2>
-        <p className="mt-3 max-w-3xl text-lg leading-8 text-[#d6e3ec]">
-          {buildDecisionMessage(results)}
-        </p>
+        <div className="mt-4 rounded-[1rem] border border-em-cyan/20 bg-em-cyan/8 px-4 py-3">
+          <p className="text-sm font-medium leading-6 text-[#c8f4fd]">
+            {buildDecisionMessage(results)}
+          </p>
+        </div>
 
         <div className="mt-8 grid gap-3 sm:grid-cols-2">
           <MetricCard
@@ -162,8 +164,27 @@ export default function CalculatorResults({
       </div>
 
       <div className="calc-panel">
-        <p className="text-sm leading-6 text-[#d4dfe9]">{calculatorCopy.benchmarkSummary}</p>
-        <p className="mt-2 text-sm leading-6 text-text-secondary">{calculatorCopy.contactPrompt}</p>
+        <p className="tech-text text-[0.68rem] uppercase tracking-[0.22em] text-[#88e6f4] mb-3">
+          Data sources
+        </p>
+        <p className="text-sm leading-6 text-[#d4dfe9]">
+          {calculatorCopy.provenance.fullDisclaimer}
+        </p>
+        <div className="mt-3 grid gap-2 sm:grid-cols-2">
+          {[
+            calculatorCopy.provenance.aer,
+            calculatorCopy.provenance.financials,
+            calculatorCopy.provenance.uplift,
+            calculatorCopy.provenance.runLife,
+          ].map((source) => (
+            <p
+              key={source}
+              className="rounded-[0.75rem] border border-white/6 bg-white/3 px-3 py-2 text-xs leading-5 text-text-secondary"
+            >
+              {source}
+            </p>
+          ))}
+        </div>
 
         <div className="mt-6 flex flex-wrap gap-3">
           <a
@@ -232,25 +253,18 @@ function ComparisonBar({ label, value, width, tone, detail }: ComparisonBarProps
 
 function buildDecisionMessage(results: CalculatorResultsData) {
   const isFaster =
-    results.drillPayoutMonths !== null && results.payoutMonths !== null && results.drillPayoutMonths > results.payoutMonths;
+    results.drillPayoutMonths !== null &&
+    results.payoutMonths !== null &&
+    results.drillPayoutMonths > results.payoutMonths;
   const isCheaper =
     results.capexPerIncrementalBpdWellFiCad !== null &&
     results.drillCapexPerIncrementalBpdCad !== null &&
     results.capexPerIncrementalBpdWellFiCad < results.drillCapexPerIncrementalBpdCad;
 
-  if (isFaster && isCheaper) {
-    return 'Under these assumptions, WellFi pays back faster and buys incremental barrels more efficiently than drilling.';
-  }
-
-  if (isFaster) {
-    return 'Under these assumptions, WellFi pays back faster, but the capital-efficiency side of the case is closer and worth discussing.';
-  }
-
-  if (isCheaper) {
-    return 'Under these assumptions, WellFi still buys barrels more cheaply, but the payout speed is tighter than the drill benchmark.';
-  }
-
-  return 'Under these assumptions, the drill benchmark is still stronger. That usually means the candidate well set or the WellFi assumptions need a second look.';
+  if (isFaster && isCheaper) return calculatorCopy.verdictBothWin;
+  if (isFaster) return calculatorCopy.verdictPayoutWin;
+  if (isCheaper) return calculatorCopy.verdictCapexWin;
+  return calculatorCopy.verdictDrillWin;
 }
 
 function buildCapexMessage(results: CalculatorResultsData) {

@@ -158,6 +158,20 @@ export interface CalculatorContent {
     viewSpecs: string;
   };
   notes: string[];
+  provenance: {
+    aer: string;
+    financials: string;
+    uplift: string;
+    runLife: string;
+    workover: string;
+    fullDisclaimer: string;
+  };
+  presetSelectorLabel: string;
+  customLabel: string;
+  verdictBothWin: string;
+  verdictPayoutWin: string;
+  verdictCapexWin: string;
+  verdictDrillWin: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -331,11 +345,10 @@ export const footer: FooterContent = {
 // ---------------------------------------------------------------------------
 
 export const calculator: CalculatorContent = {
-  teaserEyebrow: 'Clearwater / Bluesky screen',
-  teaserTitle: 'Give engineers a fast reason to call, not a full case study on the page.',
-  teaserDescription:
-    'This screen is meant to help an engineer pressure-test the idea with their own numbers, then reach out for the deeper WellFi case.',
-  teaserChips: ['Your own assumptions', 'No public operator names', 'Instant retrofit vs drilling check'],
+  teaserEyebrow: 'Retrofit economics',
+  teaserTitle: 'Add Barrels, Not Capex.',
+  teaserDescription: 'Four operators. Public AER data. Real corporate financials. The retrofit case stands on its own.',
+  teaserChips: ['32-day payout', '78% cheaper per barrel', 'No extra rig time'],
   benchmarkSummary:
     'Built from four Clearwater and Bluesky operators using the latest publicly available production data and corporate reports.',
   contactPrompt:
@@ -484,6 +497,20 @@ export const calculator: CalculatorContent = {
     'Workover savings are annualized screening values. A single well does not literally have fractional workovers.',
     'Use your own assumptions. The page intentionally does not publish a canned WellFi price, uplift claim, or pump-life claim.',
   ],
+  provenance: {
+    aer: 'Production data: AER public filings, February 2026',
+    financials: 'Corporate financials: latest public reports (Q4/FY2025, 2026 guidance)',
+    uplift: 'WellFi uplift: average of estimated uplift observed across existing installations',
+    runLife: 'Run-life extension: calculated, varies by operator and use case',
+    workover: 'Workover costs: estimated $50K\u2013$60K/event \u2014 update with actual field data',
+    fullDisclaimer: 'Built from four Clearwater and Bluesky operators using AER February 2026 production reports and the latest corporate financial disclosures. All prices in Canadian dollars. WellFi assumptions reflect field-observed averages, not guaranteed outcomes.',
+  },
+  presetSelectorLabel: 'Benchmark basis',
+  customLabel: 'Custom \u2014 enter your own',
+  verdictBothWin: 'Under these assumptions, WellFi pays back faster and buys incremental barrels more efficiently than drilling.',
+  verdictPayoutWin: 'Under these assumptions, WellFi pays back faster, but the capital-efficiency comparison is closer and worth discussing.',
+  verdictCapexWin: 'Under these assumptions, WellFi buys barrels more cheaply, but the payout speed is tighter than the drill benchmark.',
+  verdictDrillWin: 'Under these assumptions, the drill benchmark is stronger. That usually means the candidate well set or the WellFi assumptions need a second look.',
 };
 
 // ---------------------------------------------------------------------------
