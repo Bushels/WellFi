@@ -56,6 +56,24 @@ export interface WorkflowContent {
   chips: string[];
 }
 
+export interface ProofPoint {
+  icon: string; // lucide-react icon name
+  value: string;
+  unit?: string;
+  label: string;
+  side: 'left' | 'right';
+}
+
+export interface ProofContent {
+  eyebrow: string;
+  points: ProofPoint[];
+  trustLine: string;
+  trustSub: string;
+  ctaHeading: string;
+  ctaBody: string;
+  ctaChips: string[];
+}
+
 export interface FooterContent {
   cta: string;
   email: string;
@@ -195,10 +213,8 @@ export const hero: HeroContent = {
 
 export const navLinks: NavLink[] = [
   { label: 'Calculator', href: '#calculator' },
-  { label: 'Proof',   href: '#proof' },
-  { label: 'Install', href: '#install' },
-  { label: 'Details', href: '#details' },
-  { label: 'Contact', href: '#contact' },
+  { label: 'The Tool',   href: '#proof' },
+  { label: 'Contact',    href: '#contact' },
 ];
 
 // ---------------------------------------------------------------------------
@@ -300,6 +316,27 @@ export const workflow: WorkflowContent = {
   asideBody:
     'This is an upgrade to an existing producer, not a new drill, a cable install, or a full control-system rebuild. The simplicity is a large part of the value.',
   chips: ['No new cable run', 'MODBUS RS-485', 'Canadian rollout via MPS Group'],
+};
+
+// ---------------------------------------------------------------------------
+// Proof Section (unified image-spine layout)
+// ---------------------------------------------------------------------------
+
+export const proof: ProofContent = {
+  eyebrow: 'The tool',
+  points: [
+    { icon: 'Radio',        value: 'MODBUS',  label: 'Straight to SCADA',    side: 'left' },
+    { icon: 'BatteryFull',  value: '5+',      unit: 'yr',  label: 'Battery Life',  side: 'left' },
+    { icon: 'Wrench',       value: 'Same',    label: 'Changeout Window',     side: 'left' },
+    { icon: 'Gauge',        value: '10,000',  unit: 'psi', label: 'Pressure Rating', side: 'right' },
+    { icon: 'Thermometer',  value: '150',     unit: '°C',  label: 'Temperature',    side: 'right' },
+    { icon: 'Ruler',        value: '46',      unit: 'mm',  label: 'Tool OD',        side: 'right' },
+  ],
+  trustLine: '130+ installed globally',
+  trustSub: 'No cable run · No new infrastructure',
+  ctaHeading: 'Start the first Canadian install.',
+  ctaBody: 'Talk directly with MPS Group about candidate wells, changeout timing, and the fastest path to a clean first deployment.',
+  ctaChips: ['Planned PCP changeout installs', 'Exclusive Canadian distributor'],
 };
 
 // ---------------------------------------------------------------------------
