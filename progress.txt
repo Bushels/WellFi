@@ -1,64 +1,34 @@
 # WellFi Marketing Page - Progress Log
 
-This file captures learnings between Claude Code sessions. Append new learnings at the bottom.
+This file is a current-state handoff, not a historical archive. Remove stale hero direction when the approved sequence changes.
 
----
+## Current Approved Hero State
 
-## Session: Initial Planning (Current Date)
+### Startup Sequence
+- ultra-faint ghost baseline
+- fixed-height left-to-right sine-wave sweep
+- WellFi logo appears at 75% sweep
+- `Stop Pumping Blind` lands at full sweep
+- subheadline, proof chips, and CTAs reveal only after the headline
+- mouse/touch interaction turns on only after the sweep completes
+- hero logo arcs can pulse on direct hover/touch/focus without adding a looping distraction
 
-### Decisions Made
-- Tagline selected: "Wireless Below. Insight Above."
-- Stack: Next.js 14 (App Router) + Tailwind + GSAP ScrollTrigger
-- Deployment: Vercel (will link from MPS Wix site)
-- Dark mode first design approach
+### Regression Triggers To Avoid
+- bottom-up band motion during intro
+- changing wave height, spread, or amplitude during intro
+- spark bursts, lens spikes, or other cinematic startup effects
+- revealing copy before the sweep completes
+- hardcoded GSAP times that drift away from the shared wave duration
+- separate mouse and touch codepaths that drift apart instead of one pointer-event path
+- large hero dead space caused by full-screen min-height choices that do not serve the layout
 
-### Key Product Insights
-- Fiberglass collar is THE key differentiator - creates electrical isolation
-- Two 10ft pups minimum with wire-wheeled bare steel contact
-- Signal path: through formation, not short-circuit through continuous steel
-- DeltaPressure = continuous monitoring + scheduled transmission + exception alerts
+### Maintenance Rule
+- When hero startup behavior changes, update both `docs/hero-startup-animation.md` and `CLAUDE.md` in the same pass.
+- When Playwright is used for verification, keep artifacts out of git and only retain them intentionally.
 
-### Target Audience Notes
-- Cold production engineers in Canadian oilsands
-- Clearwater, Blue Sky, Grand Rapids formations
-- Entry point: pump changeouts (minimal additional rig time)
-- They know their pain points - we prompt, they conclude
+## Current Calculator State
 
-### Content Guidelines
-- No specific cost comparisons (competitor pricing uncertain)
-- Can say "130+ installs" but not specific customer names
-- Let engineers draw their own conclusions about benefits
-- Use industry terms correctly: MODBUS, RTU, SCADA, PCP
-
-### Section Messaging Finalized
-1. Hero: "Wireless Below. Insight Above."
-2. Benefits: "Reliable. Simple. Powerful." (icon grid)
-3. Technology: "Electromagnetic Telemetry — The New Standard"
-4. Product: "Modular Design. Engineered Integrity."
-5. Installation: "Quicker Install. No Strings Attached."
-6. Integration: "Plug and Play"
-7. Intelligence: "Deploy and Forget. We'll Alert You."
-8. Results: "Less Downtime. Fewer Workovers. Optimized Production."
-9. Specs: Engineer-focused detail section
-10. CTA: "Become Wireless" + "Contact Us Now"
-
----
-
-## Learnings Template (Copy for Future Sessions)
-
-### Session: [Date]
-
-**What was accomplished:**
-- 
-
-**What worked well:**
-- 
-
-**What caused issues:**
-- 
-
-**Patterns discovered:**
-- 
-
-**Next priorities:**
-- 
+- Added a compact calculator section directly under the hero and a full `/calculator` route for deeper screening.
+- Normalized the local operator workbooks into one reusable math engine instead of mirroring four spreadsheet layouts.
+- Standardized drill comparison on year-one average rate, not IP30, and split vague ROI into `cash yield` and `net year-1 return`.
+- Captured workbook caveats in `docs/wellfi-calculator-method.md`, including source-label drift and an omitted transport-cost line in one benchmark source.

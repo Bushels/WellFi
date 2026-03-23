@@ -187,6 +187,130 @@ body {
   box-shadow: 0 0 30px rgba(6, 182, 212, 0.2);
 }
 
+/* Calculator */
+
+.calc-shell {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1.75rem;
+  background:
+    radial-gradient(circle at 18% 22%, rgba(34, 211, 238, 0.08), transparent 26%),
+    radial-gradient(circle at 84% 10%, rgba(217, 119, 6, 0.08), transparent 22%),
+    linear-gradient(160deg, rgba(11, 17, 30, 0.94), rgba(10, 14, 26, 0.92));
+  box-shadow:
+    0 32px 90px rgba(0, 0, 0, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.calc-panel {
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1.5rem;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.03)),
+    rgba(6, 10, 18, 0.88);
+  padding: 1.5rem;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.calc-panel--accent {
+  background:
+    radial-gradient(circle at 18% 16%, rgba(34, 211, 238, 0.16), transparent 32%),
+    linear-gradient(160deg, rgba(8, 15, 28, 0.96), rgba(7, 12, 21, 0.9));
+}
+
+.calc-gridlines {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.9), transparent);
+}
+
+.calc-input {
+  appearance: none;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+  min-height: 3.25rem;
+  padding: 0.85rem 1rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.95rem;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    background-color 180ms ease;
+}
+
+.calc-input:hover {
+  background: rgba(255, 255, 255, 0.065);
+}
+
+.calc-input:focus {
+  outline: none;
+  border-color: rgba(34, 211, 238, 0.6);
+  box-shadow:
+    0 0 0 3px rgba(34, 211, 238, 0.12),
+    0 0 24px rgba(34, 211, 238, 0.08);
+}
+
+.calc-segment {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 2.75rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #dce8f1;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background-color 180ms ease;
+}
+
+.calc-segment:hover {
+  transform: translateY(-1px);
+  border-color: rgba(34, 211, 238, 0.24);
+  background: rgba(255, 255, 255, 0.065);
+}
+
+.calc-segment--active {
+  border-color: rgba(34, 211, 238, 0.4);
+  background:
+    linear-gradient(135deg, rgba(34, 211, 238, 0.18), rgba(34, 211, 238, 0.06)),
+    rgba(255, 255, 255, 0.05);
+  color: #f5fbff;
+  box-shadow: 0 0 24px rgba(34, 211, 238, 0.08);
+}
+
+.calc-comparison-track {
+  overflow: hidden;
+  height: 0.9rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.calc-comparison-bar {
+  height: 100%;
+  border-radius: inherit;
+}
+
+.calc-comparison-bar--wellfi {
+  background: linear-gradient(90deg, rgba(34, 211, 238, 0.72), rgba(34, 211, 238, 1));
+}
+
+.calc-comparison-bar--drill {
+  background: linear-gradient(90deg, rgba(245, 158, 11, 0.76), rgba(245, 158, 11, 1));
+}
+
 /* ═══════════════════════════════════════════════════════════════
    SCROLL ANIMATIONS (GSAP-DRIVEN INITIAL STATES)
    ═══════════════════════════════════════════════════════════════ */
@@ -430,6 +554,89 @@ body {
   --hero-glass-alpha: 0.06;
 }
 
+.wellfi-logo__arc {
+  opacity: 0.22;
+  transform-origin: 50% 100%;
+}
+
+.wellfi-logo--animated .wellfi-logo__arc {
+  animation: wellfiSignalPing 5.4s ease-in-out infinite;
+}
+
+.wellfi-logo--interactive {
+  touch-action: manipulation;
+}
+
+.wellfi-logo--interactive .wellfi-logo__arc {
+  transition: opacity 140ms ease;
+}
+
+.wellfi-logo--animated .wellfi-logo__arc--1 {
+  animation-delay: 0s;
+}
+
+.wellfi-logo--animated .wellfi-logo__arc--2 {
+  animation-delay: 0.15s;
+}
+
+.wellfi-logo--animated .wellfi-logo__arc--3 {
+  animation-delay: 0.3s;
+}
+
+.wellfi-logo--signal-active .wellfi-logo__arc {
+  animation: wellfiSignalBurst 0.92s cubic-bezier(0.2, 0.9, 0.2, 1) both;
+}
+
+.wellfi-logo--signal-active .wellfi-logo__arc--2 {
+  animation-delay: 0.08s;
+}
+
+.wellfi-logo--signal-active .wellfi-logo__arc--3 {
+  animation-delay: 0.16s;
+}
+
+@keyframes wellfiSignalPing {
+  0%,
+  12%,
+  100% {
+    opacity: 0.18;
+    filter: drop-shadow(0 0 0 rgba(34, 211, 238, 0));
+  }
+
+  18%,
+  34% {
+    opacity: 1;
+    filter: drop-shadow(0 0 4px rgba(34, 211, 238, 0.65));
+  }
+
+  42% {
+    opacity: 0.28;
+    filter: drop-shadow(0 0 1px rgba(34, 211, 238, 0.12));
+  }
+}
+
+@keyframes wellfiSignalBurst {
+  0% {
+    opacity: 0.22;
+    filter: drop-shadow(0 0 0 rgba(34, 211, 238, 0));
+  }
+
+  28% {
+    opacity: 1;
+    filter: drop-shadow(0 0 7px rgba(34, 211, 238, 0.85));
+  }
+
+  62% {
+    opacity: 0.42;
+    filter: drop-shadow(0 0 3px rgba(34, 211, 238, 0.2));
+  }
+
+  100% {
+    opacity: 0.2;
+    filter: drop-shadow(0 0 0 rgba(34, 211, 238, 0));
+  }
+}
+
 .hero-glass-orb {
   opacity: calc(0.24 + var(--hero-glass-alpha));
   mix-blend-mode: screen;
@@ -479,6 +686,12 @@ body {
   .hero-glass-orb {
     opacity: 0.12 !important;
     animation: none !important;
+  }
+
+  .wellfi-logo--animated .wellfi-logo__arc {
+    opacity: 0.58 !important;
+    animation: none !important;
+    filter: none !important;
   }
 
   .hero-particle-canvas {

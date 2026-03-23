@@ -76,7 +76,7 @@ export const typography = {
 // ---------------------------------------------------------------------------
 
 export const spacing = {
-  sectionY:   'clamp(4rem, 10vh, 8rem)',   // vertical padding between sections
+  sectionY:   'clamp(3.25rem, 7vh, 5.75rem)',   // vertical padding between sections
   containerX: 'clamp(1rem, 5vw, 6rem)',    // horizontal page margins
   cardGap:    '1.5rem',
   gridGap:    '2rem',

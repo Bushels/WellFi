@@ -16,6 +16,25 @@ description: Canvas 2D animation patterns for high-performance particle systems,
 
 **Rule: Start with Canvas 2D. Upgrade to WebGL only if you need >5,000 particles or GPU shaders.**
 
+## WellFi Startup Wave Pattern
+
+When working on the WellFi hero startup, keep the motion model simple:
+- export one shared sweep-duration constant from the canvas component and drive GSAP timing from that same value
+- keep the wave band at a fixed vertical position during intro
+- use one ultra-faint ghost baseline for the first `60-180ms` instead of stacking more effects
+- reveal the logo at roughly `75%` sweep, the headline at full sweep, and supporting copy after the headline
+- enable mouse/touch interaction only after the sweep completes
+- prefer one Pointer Events path for mouse, pen, and touch instead of separate mouse/touch handlers
+- on touch devices, preserve vertical scroll with `touch-action: pan-y` unless the interaction truly requires gesture capture
+- if settled-state interaction is technically correct but visually invisible on a laptop, increase radius/force modestly before adding new effects
+
+Avoid these regressions:
+- bottom-up wave motion
+- intro-only distortion spikes or spark bursts
+- copy arriving before the sweep completes
+- independent hardcoded text timings that drift away from the canvas timing
+- touchmove handlers that fight page scroll
+
 ## Component Architecture (React/Next.js)
 
 ```tsx

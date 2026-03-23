@@ -233,6 +233,14 @@ useGSAP(() => {
 });
 ```
 
+## WellFi Hero Coordination Rule
+
+If GSAP is orchestrating the WellFi startup hero while Canvas 2D renders the wave:
+- read the sweep duration from the canvas module instead of hardcoding duplicate hero times
+- treat the canvas as the source of timing truth and GSAP as the reveal coordinator
+- do not "fix" a visual gap by adding extra timeline beats if the real issue is section height or spacing
+- keep direct interaction enabled only after the approved sweep completes
+
 ## Related Skills
 - `framer-motion` - For component-level animations
 - `react-three-fiber` - For 3D scroll interactions

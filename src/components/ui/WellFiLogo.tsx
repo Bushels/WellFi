@@ -1,27 +1,76 @@
 'use client';
 
-import { useId } from 'react';
+import { type CSSProperties, useEffect, useId, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
 
 interface WellFiLogoProps {
   className?: string;
+  animateSignal?: boolean;
+  interactiveSignal?: boolean;
+  wordmarkColor?: string;
+  signalColor?: string;
 }
 
-export default function WellFiLogo({ className }: WellFiLogoProps) {
+export default function WellFiLogo({
+  className,
+  animateSignal = false,
+  interactiveSignal = false,
+  wordmarkColor,
+  signalColor,
+}: WellFiLogoProps) {
   const uid = useId().replace(/:/g, '');
   const wordmarkId = `wf-wordmark-${uid}`;
-  const clipId = `wf-clip-${uid}`;
-  const fillId = `wf-fill-${uid}`;
-  const signalId = `wf-signal-${uid}`;
-  const glowId = `wf-soft-glow-${uid}`;
+  const pulseResetRef = useRef<number | null>(null);
+  const [signalActive, setSignalActive] = useState(false);
+
+  useEffect(() => {
+    return () => {
+      if (pulseResetRef.current !== null) {
+        window.clearTimeout(pulseResetRef.current);
+      }
+    };
+  }, []);
+
+  const triggerSignalPulse = () => {
+    if (!interactiveSignal || typeof window === 'undefined') return;
+
+    if (pulseResetRef.current !== null) {
+      window.clearTimeout(pulseResetRef.current);
+    }
+
+    setSignalActive(false);
+
+    window.requestAnimationFrame(() => {
+      setSignalActive(true);
+      pulseResetRef.current = window.setTimeout(() => {
+        setSignalActive(false);
+        pulseResetRef.current = null;
+      }, 1100);
+    });
+  };
+
+  const logoStyle = {
+    '--wellfi-logo-wordmark': wordmarkColor ?? 'currentColor',
+    '--wellfi-logo-signal': signalColor ?? wordmarkColor ?? 'currentColor',
+  } as CSSProperties;
 
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 820 400"
-      className={cn('shrink-0', className)}
+      className={cn(
+        'shrink-0 text-white',
+        animateSignal && 'wellfi-logo--animated',
+        interactiveSignal && 'wellfi-logo--interactive',
+        signalActive && 'wellfi-logo--signal-active',
+        className,
+      )}
       role="img"
       aria-label="WellFi"
+      style={logoStyle}
+      onPointerEnter={interactiveSignal ? triggerSignalPulse : undefined}
+      onPointerDown={interactiveSignal ? triggerSignalPulse : undefined}
+      onFocus={interactiveSignal ? triggerSignalPulse : undefined}
     >
       <defs>
         <path
@@ -34,95 +83,29 @@ export default function WellFiLogo({ className }: WellFiLogoProps) {
             M 604.9,139.6 L 716.5,139.6 L 716.5,170.9 L 646.3,170.9 L 646.3,200.7 L 712.4,200.7 L 712.4,232.0 L 646.3,232.0 L 646.3,300.0 L 604.9,300.0 L 604.9,139.6 Z
             M 726,170 L 764,170 L 764,300 L 726,300 Z"
         />
-        <clipPath id={clipId}>
-          <use href={`#${wordmarkId}`} />
-        </clipPath>
-        <linearGradient id={fillId} x1="0%" y1="100%" x2="0%" y2="0%">
-          <stop offset="0%" stopColor="#0B2C58" />
-          <stop offset="55%" stopColor="#0E4E8C" />
-          <stop offset="100%" stopColor="#18BEE5" />
-        </linearGradient>
-        <linearGradient id={signalId} x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#7DEEFF" />
-          <stop offset="100%" stopColor="#22D3EE" />
-        </linearGradient>
-        <filter id={glowId} x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur stdDeviation="3.2" result="blur" />
-          <feMerge>
-            <feMergeNode in="blur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
       </defs>
 
-      <use href={`#${wordmarkId}`} fill={`url(#${fillId})`} />
-
-      <g clipPath={`url(#${clipId})`}>
-        <g
-          stroke={`url(#${signalId})`}
-          strokeWidth="4.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          fill="none"
-          opacity="0.78"
-        >
-          <path d="M 82 160 L 113 210" />
-          <path d="M 82 160 L 173 176" />
-          <path d="M 113 210 L 130 284" />
-          <path d="M 130 284 L 173 176" />
-          <path d="M 173 176 L 203 214" />
-          <path d="M 173 176 L 234 223" />
-          <path d="M 203 214 L 234 223" />
-          <path d="M 234 223 L 247 286" />
-          <path d="M 340 209 L 363 197 L 392 214" />
-          <path d="M 340 209 L 344 243" />
-          <path d="M 344 243 L 364 262 L 391 245" />
-          <path d="M 392 214 L 391 245" />
-          <path d="M 468 149 L 480 191 L 472 286" />
-          <path d="M 544 150 L 556 198 L 548 286" />
-          <path d="M 622 165 L 689 165" />
-          <path d="M 622 165 L 650 203 L 650 244" />
-          <path d="M 650 203 L 689 203" />
-          <path d="M 650 244 L 744 211" />
-          <path d="M 744 187 L 744 211 L 744 289" />
-        </g>
-
-        <g fill="#A5F3FC" filter={`url(#${glowId})`}>
-          <circle cx="82" cy="160" r="5.5" />
-          <circle cx="113" cy="210" r="5.5" />
-          <circle cx="130" cy="284" r="5.5" />
-          <circle cx="173" cy="176" r="5.5" />
-          <circle cx="203" cy="214" r="5.5" />
-          <circle cx="234" cy="223" r="5.5" />
-          <circle cx="247" cy="286" r="5.5" />
-          <circle cx="340" cy="209" r="5.5" />
-          <circle cx="363" cy="197" r="5.5" />
-          <circle cx="392" cy="214" r="5.5" />
-          <circle cx="344" cy="243" r="5.5" />
-          <circle cx="364" cy="262" r="5.5" />
-          <circle cx="391" cy="245" r="5.5" />
-          <circle cx="468" cy="149" r="5.5" />
-          <circle cx="480" cy="191" r="5.5" />
-          <circle cx="472" cy="286" r="5.5" />
-          <circle cx="544" cy="150" r="5.5" />
-          <circle cx="556" cy="198" r="5.5" />
-          <circle cx="548" cy="286" r="5.5" />
-          <circle cx="622" cy="165" r="5.5" />
-          <circle cx="650" cy="203" r="5.5" />
-          <circle cx="650" cy="244" r="5.5" />
-          <circle cx="689" cy="165" r="5.5" />
-          <circle cx="689" cy="203" r="5.5" />
-          <circle cx="744" cy="187" r="5.5" />
-          <circle cx="744" cy="211" r="5.5" />
-          <circle cx="744" cy="289" r="5.5" />
-        </g>
+      <g fill="var(--wellfi-logo-wordmark, currentColor)">
+        <use href={`#${wordmarkId}`} />
+        <circle cx="745" cy="139" r="14" />
       </g>
 
-      <g fill="none" stroke={`url(#${fillId})`} strokeLinecap="round">
-        <circle cx="745" cy="139" r="14" fill={`url(#${fillId})`} stroke="none" />
-        <path d="M 723 118 A 31 31 0 0 1 767 118" strokeWidth="10" />
-        <path d="M 705 99 A 56 56 0 0 1 785 99" strokeWidth="10" />
-        <path d="M 688 81 A 80 80 0 0 1 802 81" strokeWidth="10" opacity="0.95" />
+      <g fill="none" stroke="var(--wellfi-logo-signal, currentColor)" strokeLinecap="round">
+        <path
+          d="M 723 118 A 31 31 0 0 1 767 118"
+          strokeWidth="10"
+          className="wellfi-logo__arc wellfi-logo__arc--1"
+        />
+        <path
+          d="M 705 99 A 56 56 0 0 1 785 99"
+          strokeWidth="10"
+          className="wellfi-logo__arc wellfi-logo__arc--2"
+        />
+        <path
+          d="M 688 81 A 80 80 0 0 1 802 81"
+          strokeWidth="10"
+          className="wellfi-logo__arc wellfi-logo__arc--3"
+        />
       </g>
     </svg>
   );

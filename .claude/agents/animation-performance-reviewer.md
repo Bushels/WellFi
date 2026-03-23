@@ -56,11 +56,17 @@ WellFi marketing page uses:
 - [ ] Respects `prefers-reduced-motion`
 - [ ] Touch scrolling remains smooth
 - [ ] Battery impact considered
+- [ ] Pointer interaction uses one coherent input path and does not block normal page scroll
 
 ## Specific Failure Patterns To Catch
 - Heavy animation effects layered onto an off-brief hero
 - Live 3D chosen when an exact-match render card would be cleaner and safer
 - Intro sequences with too many beats before the still frame is already approved
+- Performance changes that break the approved WellFi startup-wave sequence
+- Canvas and GSAP timelines drifting because they do not share one duration constant
+- "Optimizations" that bring back bottom-up motion, intro distortion, or early copy reveals
+- Interaction code that technically works on touch but makes laptop/desktop response too subtle to notice
+- Hero min-height choices that create large dead gaps and get mistaken for section-spacing problems
 
 ## Output Format
 ### Performance Metrics

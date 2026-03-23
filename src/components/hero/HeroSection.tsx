@@ -1,108 +1,142 @@
 'use client';
 
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
-import { hero, footer } from '@/lib/content';
+import { hero } from '@/lib/content';
 import WellFiLogo from '@/components/ui/WellFiLogo';
-import SignalWaveHero, { type SignalWaveHeroHandle } from './SignalWaveHero';
+import SignalWaveHero, {
+  SIGNAL_WAVE_INTRO_DURATION,
+  type SignalWaveHeroHandle,
+} from './SignalWaveHero';
 
 gsap.registerPlugin(useGSAP);
 
 export default function HeroSection() {
+  const headlineWords = hero.headline.split(' ');
+  const hasHeadlineEmphasis = headlineWords.length > 1;
+  const headlineEmphasis = hasHeadlineEmphasis ? (headlineWords.at(-1) ?? '') : '';
+  const headlineLeadWords = hasHeadlineEmphasis ? headlineWords.slice(0, -1) : [hero.headline];
   const heroRef = useRef<HTMLElement>(null);
   const logoRef = useRef<HTMLDivElement>(null);
-  const taglineRef = useRef<HTMLParagraphElement>(null);
+  const headlineRef = useRef<HTMLHeadingElement>(null);
+  const headlineBlindRef = useRef<HTMLSpanElement>(null);
+  const subheadlineRef = useRef<HTMLParagraphElement>(null);
   const waveRef = useRef<SignalWaveHeroHandle>(null);
-  const supportRef = useRef<HTMLParagraphElement>(null);
   const chipsRef = useRef<HTMLDivElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
-  // Check reduced motion
-  const prefersReducedMotion =
-    typeof window !== 'undefined'
-      ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
-      : false;
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined;
+
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const update = () => setPrefersReducedMotion(mediaQuery.matches);
+    update();
+    mediaQuery.addEventListener('change', update);
+
+    return () => mediaQuery.removeEventListener('change', update);
+  }, []);
 
   useGSAP(
     () => {
       if (prefersReducedMotion) return;
 
       const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+      const sweepDuration = SIGNAL_WAVE_INTRO_DURATION;
+      const logoRevealAt = sweepDuration * 0.75;
+      const copyRevealAt = sweepDuration + 0.05;
+      const chipsRevealAt = copyRevealAt + 0.3;
+      const ctaRevealAt = copyRevealAt + 0.46;
+      const chips = chipsRef.current?.querySelectorAll('.hero-proof-chip') ?? [];
+      const buttons = ctaRef.current?.querySelectorAll('.hero-cta') ?? [];
 
-      // 0.0s — Start the wave animation immediately
+      // 0.0s - Start the wave animation immediately
       tl.call(() => waveRef.current?.startWave(), [], 0.0);
+      tl.set(logoRef.current, { autoAlpha: 0, y: 10 }, 0);
+      tl.set(headlineRef.current, { autoAlpha: 0 }, 0);
+      tl.set(subheadlineRef.current, { autoAlpha: 0, y: 14 }, 0);
+      tl.set(chips, { autoAlpha: 0, scale: 0.95 }, 0);
+      tl.set(buttons, { autoAlpha: 0, y: 10 }, 0);
+      if (headlineRef.current) {
+        tl.set(
+          headlineRef.current.querySelectorAll('.hero-headline-part'),
+          { autoAlpha: 0, x: 18 },
+          0,
+        );
+      }
 
-      // 0.3s — Logo fades in
-      tl.fromTo(
+      // 75% sweep - Brand appears once the signal has earned the frame
+      tl.to(
         logoRef.current,
-        { autoAlpha: 0, y: 10 },
-        { autoAlpha: 1, y: 0, duration: 0.5 },
-        0.3,
+        { autoAlpha: 1, y: 0, duration: 0.42 },
+        logoRevealAt,
       );
 
-      // 1.0s — Tagline fades in
-      tl.fromTo(
-        taglineRef.current,
-        { autoAlpha: 0, y: 8 },
-        { autoAlpha: 0.85, y: 0, duration: 0.4 },
-        1.0,
-      );
-
-      // 3.5s — Support copy fades in
-      tl.fromTo(
-        supportRef.current,
-        { autoAlpha: 0, y: 14 },
-        { autoAlpha: 1, y: 0, duration: 0.5 },
-        3.5,
-      );
-
-      // 3.8s — Proof chips stagger in
-      if (chipsRef.current) {
-        const chips = chipsRef.current.querySelectorAll('.hero-proof-chip');
-        tl.fromTo(
-          chips,
-          { autoAlpha: 0, scale: 0.95 },
-          { autoAlpha: 1, scale: 1, duration: 0.35, stagger: 0.12 },
-          3.8,
-        );
-      }
-
-      // 4.0s — CTAs fade in
-      if (ctaRef.current) {
-        const buttons = ctaRef.current.querySelectorAll('.hero-cta');
-        tl.fromTo(
-          buttons,
-          { autoAlpha: 0, y: 10 },
-          { autoAlpha: 1, y: 0, duration: 0.4, stagger: 0.15 },
-          4.0,
-        );
-      }
-
-      // 4.2s — Logo brightness pulse
+      // Logo gets a brief systems-online pulse after reveal
       tl.fromTo(
         logoRef.current,
         { filter: 'brightness(1)' },
-        { filter: 'brightness(1.3)', duration: 0.3, yoyo: true, repeat: 1 },
-        4.2,
+        { filter: 'brightness(1.24)', duration: 0.18, yoyo: true, repeat: 1 },
+        logoRevealAt + 0.22,
       );
 
-      // 4.5s — Enable mouse interaction on wave
-      tl.call(() => waveRef.current?.enableMouseInteraction(), [], 4.5);
+      // Full sweep - Headline wipes in from left to right, with Blind landing last
+      tl.set(headlineRef.current, { autoAlpha: 1 }, copyRevealAt);
+      if (headlineRef.current) {
+        const headlineParts = headlineRef.current.querySelectorAll('.hero-headline-part');
+        tl.fromTo(
+          headlineParts,
+          { autoAlpha: 0, x: 18 },
+          {
+            autoAlpha: 1,
+            x: 0,
+            duration: 0.66,
+            stagger: 0.08,
+            ease: 'power3.out',
+          },
+          copyRevealAt,
+        );
+      }
 
-      // 5.0s — Settle
+      if (headlineBlindRef.current) {
+        tl.fromTo(
+          headlineBlindRef.current,
+          { filter: 'brightness(0.92)' },
+          { filter: 'brightness(1.1)', duration: 0.18, yoyo: true, repeat: 1 },
+          copyRevealAt + 0.56,
+        );
+      }
+
+      // Product descriptor follows the slogan after the headline takes the beat
+      tl.to(
+        subheadlineRef.current,
+        { autoAlpha: 1, y: 0, duration: 0.42 },
+        copyRevealAt + 0.16,
+      );
+
+      // Proof chips wait until the full headline beat has landed
+      tl.to(chips, { autoAlpha: 1, scale: 1, duration: 0.35, stagger: 0.12 }, chipsRevealAt);
+
+      // CTAs come in last so they do not compete with the message
+      tl.to(buttons, { autoAlpha: 1, y: 0, duration: 0.4, stagger: 0.15 }, ctaRevealAt);
+
+      // Interactivity turns on exactly when the sweep finishes
+      tl.call(() => waveRef.current?.enableMouseInteraction(), [], sweepDuration);
+
+      // Settle shortly after the reveal completes
       tl.call(() => {
         heroRef.current?.classList.add('hero-settled');
-      }, [], 5.0);
+      }, [], sweepDuration + 0.15);
     },
-    { scope: heroRef, dependencies: [] },
+    { scope: heroRef, dependencies: [prefersReducedMotion] },
   );
 
   return (
     <section
       ref={heroRef}
       id="hero"
-      className="hero-poster relative isolate min-h-screen overflow-hidden bg-[#020408] text-white"
+      className="hero-poster relative isolate min-h-[clamp(38rem,82svh,50rem)] overflow-hidden bg-[#020408] text-white"
     >
       {/* --- Background layers (z-0) --- */}
       <div
@@ -111,34 +145,48 @@ export default function HeroSection() {
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-[28%] bg-[linear-gradient(180deg,rgba(0,0,0,0)_0%,rgba(2,7,14,0.92)_100%)]"
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-[18%] bg-[linear-gradient(180deg,rgba(0,0,0,0)_0%,rgba(2,7,14,0.92)_100%)] lg:h-[20%]"
       />
 
       {/* --- Signal wave canvas (z-5) --- */}
       <SignalWaveHero ref={waveRef} className="absolute inset-0 z-[5]" />
 
       {/* --- Content overlay (z-10) --- */}
-      <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-[96rem] flex-col justify-end px-6 pb-16 sm:px-10 lg:px-12 xl:px-14">
-        <div className="flex flex-col gap-6 lg:max-w-[34rem]">
+      <div className="relative z-10 mx-auto flex min-h-[clamp(38rem,82svh,50rem)] w-full max-w-[96rem] flex-col items-start justify-center px-6 py-16 sm:px-10 sm:py-20 lg:px-12 lg:py-24 xl:px-14 xl:py-28">
+        <div className="flex w-full max-w-[31rem] flex-col gap-4 sm:max-w-[33rem] sm:gap-5 lg:max-w-[36rem]">
           {/* Logo */}
-          <div ref={logoRef} className="invisible">
-            <WellFiLogo className="w-[15rem] sm:w-[18rem] lg:w-[28rem]" />
+          <div ref={logoRef} className={prefersReducedMotion ? '' : 'invisible'}>
+            <WellFiLogo
+              interactiveSignal
+              wordmarkColor="#d3e2ec"
+              signalColor="#78f4ff"
+              className="w-[13rem] sm:w-[16rem] lg:w-[23rem] xl:w-[25rem]"
+            />
           </div>
 
-          {/* Tagline */}
-          <p
-            ref={taglineRef}
-            className="invisible max-w-[18ch] text-[clamp(1.1rem,2vw,1.7rem)] font-medium tracking-[-0.02em] text-[#d7dee8]"
+          {/* Headline */}
+          <h1
+            ref={headlineRef}
+            className={`${prefersReducedMotion ? '' : 'invisible'} max-w-[13ch] text-[clamp(2.8rem,6vw,5.6rem)] font-semibold leading-[0.94] tracking-[-0.06em] text-[#f5fbff]`}
           >
-            {hero.tagline}
-          </p>
+            {headlineLeadWords.map((word) => (
+              <span key={word} className="hero-headline-part block pr-[0.08em]">
+                {word}
+              </span>
+            ))}
+            {headlineEmphasis && (
+              <span ref={headlineBlindRef} className="hero-headline-part block pr-[0.08em]">
+                {headlineEmphasis}
+              </span>
+            )}
+          </h1>
 
-          {/* Support line */}
+          {/* Subheadline */}
           <p
-            ref={supportRef}
-            className={`invisible max-w-[36ch] text-[clamp(0.95rem,1.6vw,1.15rem)] leading-relaxed text-[#9CA3AF] ${prefersReducedMotion ? '!visible' : ''}`}
+            ref={subheadlineRef}
+            className={`${prefersReducedMotion ? '' : 'invisible'} max-w-[28ch] text-[clamp(1rem,1.8vw,1.35rem)] font-medium leading-relaxed tracking-[-0.02em] text-[#c9d7e2]`}
           >
-            {hero.supportLine}
+            {hero.subheadline}
           </p>
 
           {/* Proof chips */}
@@ -156,7 +204,7 @@ export default function HeroSection() {
           {/* CTAs */}
           <div ref={ctaRef} className="flex flex-wrap gap-3 pt-2">
             <a
-              href={`mailto:${footer.email}`}
+              href={hero.ctaPrimaryHref}
               className={`hero-cta btn-primary invisible text-sm ${prefersReducedMotion ? '!visible' : ''}`}
             >
               {hero.ctaPrimary}
@@ -170,16 +218,6 @@ export default function HeroSection() {
           </div>
         </div>
       </div>
-
-      {/* Accessible hidden headline */}
-      <h1 className="sr-only">{hero.pulseHeadline}</h1>
-
-      {/* Static headline fallback for reduced motion */}
-      {prefersReducedMotion && (
-        <h1 className="absolute inset-0 z-[15] flex items-center justify-center text-center text-[clamp(2.4rem,8vw,5rem)] font-bold leading-[0.95] tracking-[-0.04em] text-[#f5f8fd]">
-          {hero.pulseHeadline}
-        </h1>
-      )}
     </section>
   );
 }

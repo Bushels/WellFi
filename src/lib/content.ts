@@ -7,11 +7,11 @@
 
 export interface HeroContent {
   brandWordmarkAlt: string;
-  tagline: string;
-  pulseHeadline: string;
-  supportLine: string;
+  headline: string;
+  subheadline: string;
   proofChips: string[];
   ctaPrimary: string;
+  ctaPrimaryHref: string;
   ctaSecondary: string;
   ctaSecondaryHref: string;
 }
@@ -77,19 +77,102 @@ export interface StitchLabContent {
   promptPlaceholder: string;
 }
 
+export interface CalculatorFieldCopy {
+  label: string;
+  hint: string;
+  unit?: string;
+}
+
+export interface CalculatorContent {
+  teaserEyebrow: string;
+  teaserTitle: string;
+  teaserDescription: string;
+  teaserChips: string[];
+  benchmarkSummary: string;
+  contactPrompt: string;
+  emptyStateTitle: string;
+  emptyStateDescription: string;
+  pageEyebrow: string;
+  pageTitle: string;
+  pageDescription: string;
+  pageBody: string;
+  presetLabel: string;
+  scenarioLabel: string;
+  scenarios: {
+    average: string;
+    top10: string;
+    custom: string;
+  };
+  groups: {
+    compact: string;
+    production: string;
+    wellfi: string;
+    economics: string;
+    drill: string;
+  };
+  modes: {
+    directNetback: string;
+    detailedNetback: string;
+    averageRate: string;
+    ip30Rate: string;
+  };
+  fields: {
+    candidateWellCount: CalculatorFieldCopy;
+    avgOilRatePerWellBpd: CalculatorFieldCopy;
+    wellfiCostPerWellCad: CalculatorFieldCopy;
+    productionUpliftPct: CalculatorFieldCopy;
+    currentRunLifeMonths: CalculatorFieldCopy;
+    runLifeExtensionPct: CalculatorFieldCopy;
+    workoverCostPerEventCad: CalculatorFieldCopy;
+    operatingNetbackCadPerBbl: CalculatorFieldCopy;
+    realizedOilPriceCadPerBbl: CalculatorFieldCopy;
+    royaltyRatePct: CalculatorFieldCopy;
+    variableOperatingCostCadPerBbl: CalculatorFieldCopy;
+    transportCostCadPerBbl: CalculatorFieldCopy;
+    gAndACostCadPerBbl: CalculatorFieldCopy;
+    drillCapexPerWellCad: CalculatorFieldCopy;
+    drillYear1AvgBpd: CalculatorFieldCopy;
+    drillIp30Bpd: CalculatorFieldCopy;
+    drillFirstYearDeclinePct: CalculatorFieldCopy;
+  };
+  metrics: {
+    payout: string;
+    annualValuePerWell: string;
+    totalProgramValue: string;
+    capexPerBarrel: string;
+    capitalSaved: string;
+    cashYield: string;
+    netReturn: string;
+    productionValue: string;
+    workoverSavings: string;
+    drillBenchmark: string;
+    sameCapital: string;
+    showMath: string;
+    warnings: string;
+  };
+  buttons: {
+    openFull: string;
+    requestQuote: string;
+    reset: string;
+    backHome: string;
+    viewSpecs: string;
+  };
+  notes: string[];
+}
+
 // ---------------------------------------------------------------------------
 // Hero
 // ---------------------------------------------------------------------------
 
 export const hero: HeroContent = {
   brandWordmarkAlt: 'WellFi',
-  tagline: 'Data Below. Insight Above.',
-  pulseHeadline: 'Stop Pumping Blind.',
-  supportLine: 'Real-time downhole pressure through steel casing. No cables. No extra rig time.',
-  proofChips: ['130+ installed globally', 'MODBUS RS-485', '5+ year battery'],
+  headline: 'Stop Pumping Blind',
+  subheadline: 'Real-Time Wireless Telemetry Tool',
+  proofChips: ['130+ Installed Globally', 'Modbus Ready', 'Seamless Install'],
   ctaPrimary: 'Request a Quote',
-  ctaSecondary: 'View Specifications',
-  ctaSecondaryHref: '#details',
+  ctaPrimaryHref: 'mailto:kylegronning@mpsgroup.ca',
+  ctaSecondary: 'Open Calculator',
+  ctaSecondaryHref: '#calculator',
 };
 
 // ---------------------------------------------------------------------------
@@ -97,6 +180,7 @@ export const hero: HeroContent = {
 // ---------------------------------------------------------------------------
 
 export const navLinks: NavLink[] = [
+  { label: 'Calculator', href: '#calculator' },
   { label: 'Proof',   href: '#proof' },
   { label: 'Install', href: '#install' },
   { label: 'Details', href: '#details' },
@@ -240,6 +324,166 @@ export const footer: FooterContent = {
   email: 'kylegronning@mpsgroup.ca',
   distributor: 'MPS Group \u2014 Exclusive Canadian Distributor',
   copyright: '\u00A9 2026 MPS Group',
+};
+
+// ---------------------------------------------------------------------------
+// Calculator
+// ---------------------------------------------------------------------------
+
+export const calculator: CalculatorContent = {
+  teaserEyebrow: 'Clearwater / Bluesky screen',
+  teaserTitle: 'Give engineers a fast reason to call, not a full case study on the page.',
+  teaserDescription:
+    'This screen is meant to help an engineer pressure-test the idea with their own numbers, then reach out for the deeper WellFi case.',
+  teaserChips: ['Your own assumptions', 'No public operator names', 'Instant retrofit vs drilling check'],
+  benchmarkSummary:
+    'Built from four Clearwater and Bluesky operators using the latest publicly available production data and corporate reports.',
+  contactPrompt:
+    'If they want the modeled benchmark assumptions behind the screen, that is the point where they contact MPS Group.',
+  emptyStateTitle: 'Enter your own assumptions to see the WellFi case.',
+  emptyStateDescription:
+    'Add your own base rate, netback, drill benchmark, WellFi capital, expected uplift, and PCP run-life assumptions. The outputs stay intentionally simple.',
+  pageEyebrow: 'WellFi Calculator',
+  pageTitle: 'A simple engineer screen for retrofit value in Clearwater and Bluesky.',
+  pageDescription:
+    'Compare WellFi against drilling using your own well assumptions, grounded in a Clearwater and Bluesky benchmark built from four operators\' latest publicly available production data and corporate reports.',
+  pageBody:
+    'This is a lightweight contact-driving screen, not a full engineering model. It is designed to show whether the retrofit deserves a deeper conversation.',
+  presetLabel: 'Benchmark basis',
+  scenarioLabel: 'Mode',
+  scenarios: {
+    average: 'Average fleet',
+    top10: 'Top 10%',
+    custom: 'Custom',
+  },
+  groups: {
+    compact: 'Calculator preview',
+    production: 'Your well set',
+    wellfi: 'Your WellFi assumptions',
+    economics: 'Your economics',
+    drill: 'Your drill benchmark',
+  },
+  modes: {
+    directNetback: 'Direct netback',
+    detailedNetback: 'Price and cost stack',
+    averageRate: 'Year-1 average rate',
+    ip30Rate: 'IP30 + decline',
+  },
+  fields: {
+    candidateWellCount: {
+      label: 'Candidate wells',
+      hint: 'How many changeout candidates you want to screen in one program.',
+      unit: 'wells',
+    },
+    avgOilRatePerWellBpd: {
+      label: 'Average oil rate per well',
+      hint: 'Use a sustained producing rate, not flush production.',
+      unit: 'bbl/d',
+    },
+    wellfiCostPerWellCad: {
+      label: 'Your assumed WellFi capital',
+      hint: 'Enter the per-well retrofit capital you want to test.',
+      unit: 'C$',
+    },
+    productionUpliftPct: {
+      label: 'Your assumed uplift',
+      hint: 'Enter the year-one average production improvement you want to test.',
+      unit: '%',
+    },
+    currentRunLifeMonths: {
+      label: 'Current pump run life',
+      hint: 'Average months between changeouts for the candidate well set.',
+      unit: 'months',
+    },
+    runLifeExtensionPct: {
+      label: 'Your assumed PCP life extension',
+      hint: 'Enter the pump-life improvement you want to test.',
+      unit: '%',
+    },
+    workoverCostPerEventCad: {
+      label: 'Workover cost per event',
+      hint: 'Use the direct intervention cost you want to annualize.',
+      unit: 'C$',
+    },
+    operatingNetbackCadPerBbl: {
+      label: 'Operating netback',
+      hint: 'The cleanest screening input if you already know your dollars kept per produced barrel.',
+      unit: 'C$/bbl',
+    },
+    realizedOilPriceCadPerBbl: {
+      label: 'Realized oil price',
+      hint: 'Use realized pricing if you have it, not just headline WCS.',
+      unit: 'C$/bbl',
+    },
+    royaltyRatePct: {
+      label: 'Royalty rate',
+      hint: 'Flat screening assumption. Real royalties are price and well sensitive.',
+      unit: '%',
+    },
+    variableOperatingCostCadPerBbl: {
+      label: 'Variable operating cost',
+      hint: 'Incremental cost basis is usually more defensible than full corporate cost.',
+      unit: 'C$/bbl',
+    },
+    transportCostCadPerBbl: {
+      label: 'Transportation',
+      hint: 'Use the portion that moves with each extra barrel.',
+      unit: 'C$/bbl',
+    },
+    gAndACostCadPerBbl: {
+      label: 'G&A burden',
+      hint: 'Optional. Keep this low if you want a marginal rather than corporate cost view.',
+      unit: 'C$/bbl',
+    },
+    drillCapexPerWellCad: {
+      label: 'Drill and complete cost',
+      hint: 'All-in capital required for the benchmark new well.',
+      unit: 'C$',
+    },
+    drillYear1AvgBpd: {
+      label: 'Drill year-1 average rate',
+      hint: 'Preferred benchmark for comparing sustained incremental barrels.',
+      unit: 'bbl/d',
+    },
+    drillIp30Bpd: {
+      label: 'Drill IP30 rate',
+      hint: 'Only use this path if you do not have a known year-one average rate.',
+      unit: 'bbl/d',
+    },
+    drillFirstYearDeclinePct: {
+      label: 'First-year decline',
+      hint: 'Screening shortcut used to convert IP30 into a year-one average rate.',
+      unit: '%',
+    },
+  },
+  metrics: {
+    payout: 'Payout',
+    annualValuePerWell: 'Annual value per well',
+    totalProgramValue: 'Total program value',
+    capexPerBarrel: 'Capex per incremental bbl/d',
+    capitalSaved: 'Capital saved vs drilling',
+    cashYield: 'Year-1 cash yield',
+    netReturn: 'Net year-1 return',
+    productionValue: 'Production uplift value',
+    workoverSavings: 'Annualized workover savings',
+    drillBenchmark: 'Drill benchmark',
+    sameCapital: 'Same capital drill result',
+    showMath: 'View calculation detail',
+    warnings: 'Assumption flags',
+  },
+  buttons: {
+    openFull: 'Open Full Calculator',
+    requestQuote: 'Request a Quote',
+    reset: 'Clear Inputs',
+    backHome: 'Back to Home',
+    viewSpecs: 'View Specifications',
+  },
+  notes: [
+    'Built from four Clearwater and Bluesky operators using latest public production data and corporate reports.',
+    'The drill comparison is normalized to year-one average rate instead of IP30 so the capital-efficiency math stays apples-to-apples.',
+    'Workover savings are annualized screening values. A single well does not literally have fractional workovers.',
+    'Use your own assumptions. The page intentionally does not publish a canned WellFi price, uplift claim, or pump-life claim.',
+  ],
 };
 
 // ---------------------------------------------------------------------------

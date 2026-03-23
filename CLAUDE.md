@@ -2,9 +2,9 @@
 
 ## Quick Facts
 - **Project:** WellFi single-page marketing landing
-- **Stack:** Next.js 16, React 19, Tailwind 4, GSAP, Three.js + R3F + Drei
+- **Stack:** Next.js 16, React 19, Tailwind 4, GSAP, Canvas 2D, Three.js + R3F + Drei
 - **Deployment:** Vercel (static export)
-- **Brand:** WellFi by MPS Group (mpsgroup.ca)
+- **Brand:** WellFi by MPS Group
 - **Target:** Cold production engineers in Canadian oilsands
 
 ## Commands
@@ -12,114 +12,105 @@
 npm run dev          # Start dev server
 npm run build        # Production build (static export)
 npm run lint         # ESLint check
+gemini --help        # Gemini CLI is installed for second-opinion troubleshooting
 ```
 
 ## Directory Structure
-```
+```text
 wellfi-marketing/
-├── src/
-│   ├── app/
-│   │   ├── page.tsx            # Single landing page (GenesisOverlay + sections)
-│   │   ├── layout.tsx          # Root layout (fonts, metadata)
-│   │   └── globals.css         # Tailwind + design tokens + glass utilities
-│   ├── components/
-│   │   ├── genesis/            # Full-screen EM wave intro overlay
-│   │   ├── hero/               # Hero section + particle text canvas
-│   │   ├── nav/                # Sticky navigation bar
-│   │   ├── highlights/         # Feature highlight cards
-│   │   ├── tool/               # 3D tool explorer (R3F)
-│   │   ├── scada/              # SCADA integration diagram
-│   │   ├── specs/              # Specifications table
-│   │   ├── contact/            # Contact / CTA footer
-│   │   └── ui/                 # Shared UI primitives
-│   ├── hooks/                  # Custom React hooks
-│   └── lib/
-│       ├── content.ts          # Single source of truth for ALL copy
-│       ├── design-tokens.ts    # Colors, typography, spacing, animation tokens
-│       ├── hero-motion.ts      # Hero loop state machine (may be deprecated)
-│       └── utils.ts            # cn() helper
-├── public/                     # Static assets
-│   ├── images/                 # Hero PNG, etc.
-│   └── models/                 # GLB 3D models
-├── next.config.ts              # Static export, Turbopack
-└── CLAUDE.md                   # This file
+|-- src/
+|   |-- app/
+|   |-- components/
+|   |   |-- hero/
+|   |   |-- nav/
+|   |   |-- highlights/
+|   |   |-- tool/
+|   |   |-- scada/
+|   |   |-- specs/
+|   |   |-- contact/
+|   |   `-- ui/
+|   `-- lib/
+|-- docs/
+|-- public/
+|-- next.config.ts
+`-- CLAUDE.md
 ```
 
 ## Brand Rules
-- Product name: **WellFi** (one word, capital W capital F)
-- Company: **MPS Group** (footer only — "A product of MPS Group")
-- NEVER use "ResLink" — that is the old brand name
-- Logo: Use WellFi_Logo_V3.png from public/
+- Product name: **WellFi**
+- Company: **MPS Group**
+- Never use **ResLink**
+- Default mark: use `src/components/ui/WellFiLogo.tsx`
+- Hero logo treatment: only the hero may animate the WiFi arcs on the `i`
 
 ## Design System
 
-### Color Tokens (CSS custom properties in globals.css)
-| Token            | Hex       | Usage                        |
-|------------------|-----------|------------------------------|
-| --navy-void      | #0A0E1A   | Page background              |
-| --charcoal       | #111827   | Card/section backgrounds     |
-| --text-primary   | #F9FAFB   | Headings, body text          |
-| --text-secondary | #9CA3AF   | Subtitles, captions          |
-| --em-cyan        | #06B6D4   | Primary accent (EM signal)   |
-| --em-glow        | #22D3EE   | Glow/highlight variant       |
-| --hw-amber       | #D97706   | Hardware callout accent      |
-| --border-subtle  | #1F2937   | Dividers, card borders       |
+### Color Tokens
+- `--navy-void`: `#0A0E1A`
+- `--charcoal`: `#111827`
+- `--text-primary`: `#F9FAFB`
+- `--text-secondary`: `#9CA3AF`
+- `--em-cyan`: `#06B6D4`
+- `--em-glow`: `#22D3EE`
+- `--hw-amber`: `#D97706`
+- `--border-subtle`: `#1F2937`
 
 ### Typography
-- **Headings:** Space Grotesk (700, 500) — `font-heading`
-- **Body:** Inter (400, 500) — `font-body`
-- **Data/Specs:** JetBrains Mono (400) — `font-mono`
+- Headings: `Space Grotesk`
+- Body: `Inter`
+- Data/specs: `JetBrains Mono`
 
-### Glassmorphism
-- `.glass-panel` — standard frosted glass
-- `.glass-panel-hover` — interactive hover variant
-- `.glass-card` — card with gradient glass + hover lift
-
-### Animation
-- GSAP one-shot timeline for hero intro sequence (NOT infinite CSS loops)
-- GSAP + ScrollTrigger for scroll-driven animations below hero
-- Canvas 2D for particle text effects and EM waveform (see `.claude/skills/canvas-animation/`)
-- @gsap/react for React integration
-- Three.js lazy-loaded via next/dynamic (used in tool explorer section, not hero)
+### Motion Stack
+- GSAP for hero sequencing and scroll reveals
+- Canvas 2D for the startup wave
+- SVG for the hero logo signal arcs
 - Respect `prefers-reduced-motion`
 
-### Hero Animation (IN PROGRESS — Creative Direction)
-The hero sequence is being redesigned. See `memory/feedback_hero_animation.md` for full context.
-- **Current vision**: EM waveform powers up from darkness → wave morphs into "STOP PUMPING BLIND." text → tool fades in and pulses → tool ghosts → page reveals
-- **Tech**: Canvas 2D for wave + particles, GSAP for orchestration
-- **Key principle**: Prototype each animation phase INDEPENDENTLY before stitching together
-- **Do NOT build the full sequence in one pass** — this was tried and lost coherence
+## Hero Startup Animation
+Source of truth: `docs/hero-startup-animation.md`
+
+### Approved Sequence
+- ultra-faint ghost baseline
+- fixed-height left-to-right sine-wave sweep
+- WellFi logo at 75% sweep
+- `Stop Pumping Blind` at full sweep
+- supporting copy, chips, and CTAs after the headline
+- mouse/touch interaction only after sweep completion
+- hero logo WiFi arcs may pulse only on direct hover/touch/focus interaction
+
+### Non-Negotiables
+- Do not reintroduce bottom-up wave motion
+- Do not tighten or reshape the wave during intro
+- Do not reveal supporting copy before the headline
+- Do not decouple GSAP timing from the shared sweep duration constant
+- Do not pile extra startup effects onto the approved sequence
 
 ## Code Style
 - TypeScript strict mode
 - Server Components by default, `'use client'` only when needed
-- No runtime CSS-in-JS — Tailwind utility classes only
-- `cn()` from `@/lib/utils` for conditional classes
+- No runtime CSS-in-JS
+- Use `cn()` from `@/lib/utils` for conditional classes
 - Every dependency must justify its bundle cost
 
 ## Product Quick Reference
 
-### WellFi Core Value Proposition
-**"Wireless Below. Insight Above."**
-Real-time downhole monitoring through steel casing via EM telemetry. 5+ year battery. SCADA-ready.
+### Core Value Proposition
+**Stop Pumping Blind**
 
-### Key Specifications
-| Parameter                     | Value               |
-|-------------------------------|---------------------|
-| Temperature Rating            | 302 deg F (150 deg C)|
-| Pressure Rating               | 10,000 psi          |
-| Battery Life                  | 5+ years             |
-| Outer Diameter                | 1.83" (46mm)         |
-| Pressure Resolution (Piezo)   | 0.04 psi             |
-| Pressure Resolution (Quartz)  | 0.006 psi            |
-| Data Output                   | MODBUS RS-485        |
-| Optional Output               | 4-20mA               |
+### Hero Copy
+- Headline: `Stop Pumping Blind`
+- Subheadline: `Real-Time Wireless Telemetry Tool`
+- Proof chips: `130+ Installed Globally`, `Modbus Ready`, `Seamless Install`
+- Primary CTA: `Request a Quote` -> `mailto:kylegronning@mpsgroup.ca`
 
-### Physical Assembly (top to bottom)
-1. Top Clamp -> Signal Collar -> Electronics Sonde -> Battery Barrel(s) -> PEEK Clamp -> Fiberglass Collar -> Bottom Clamp
+### Key Specs
+- Temperature: `150 C [302 F]`
+- Pressure: `10,000 psi`
+- Data output: `MODBUS RS-485`
+- Outer diameter: `46 mm [1.83 in]`
 
-### EM Telemetry Signal Path
-Sonde -> Signal Collar -> Pup Joint #1 -> Formation (via fiberglass isolation) -> Casing -> Surface Box -> MODBUS -> SCADA
+### Physical Assembly
+Top Clamp -> Signal Collar -> Electronics Sonde -> Battery Barrel(s) -> PEEK Clamp -> Fiberglass Collar -> Bottom Clamp
 
-### DeltaPressure Feature
-Exception-based alerting: monitors at short intervals, transmits on schedule, sends immediate alert if reading exceeds threshold.
+### EM Telemetry Path
+Sonde -> Signal Collar -> Formation -> Casing -> Surface Receiver -> MODBUS -> SCADA
