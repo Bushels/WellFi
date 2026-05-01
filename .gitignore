@@ -30,6 +30,11 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
+# dev/serve script logs (Next.js dev server, custom serve scripts)
+dev-*.log
+serve-*.log
+start-*.log
+
 # local browser-verification artifacts
 .playwright-cli/
 output/playwright/
@@ -43,3 +48,22 @@ output/playwright/
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+.vercel
+.env*.local
+
+# OS artifacts
+Thumbs.db
+Desktop.ini
+
+# editor / IDE
+.vscode/
+.idea/
+*.swp
+*~
+
+# test outputs
+/test-results/
+/playwright-report/
+/vitest-results/
+/.nyc_output/
