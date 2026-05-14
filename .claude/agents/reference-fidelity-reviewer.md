@@ -54,7 +54,7 @@ When the current approved hero is the startup wave, the reference behavior is:
 - ultra-faint ghost baseline first
 - fixed-height left-to-right sweep
 - logo at 75% sweep
-- `Stop Pumping Blind` at full sweep
+- `Know the Unknown` at full sweep
 - supporting copy after the headline
 - user interaction only after sweep completion
 - logo arcs may pulse on direct interaction, but should not become a distracting ambient loop

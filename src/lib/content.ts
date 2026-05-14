@@ -198,13 +198,13 @@ export interface CalculatorContent {
 
 export const hero: HeroContent = {
   brandWordmarkAlt: 'WellFi',
-  headline: 'Stop Pumping Blind',
-  subheadline: 'Real-Time Wireless Telemetry Tool',
-  proofChips: ['130+ Installed Globally', 'Modbus Ready', 'Seamless Install'],
-  ctaPrimary: 'Request a Quote',
+  headline: 'Know the Unknown',
+  subheadline: '1.8 trillion barrels. Waiting.',
+  proofChips: ['100+ Installed Internationally', 'Modbus Ready', 'Planned Changeout'],
+  ctaPrimary: 'See Closer',
   ctaPrimaryHref: 'mailto:kylegronning@mpsgroup.ca',
-  ctaSecondary: 'Open Calculator',
-  ctaSecondaryHref: '#calculator',
+  ctaSecondary: 'Continue',
+  ctaSecondaryHref: '#anchor',
 };
 
 // ---------------------------------------------------------------------------
@@ -212,9 +212,9 @@ export const hero: HeroContent = {
 // ---------------------------------------------------------------------------
 
 export const navLinks: NavLink[] = [
-  { label: 'Calculator', href: '#calculator' },
-  { label: 'The Tool',   href: '#proof' },
-  { label: 'Contact',    href: '#contact' },
+  { label: 'Closer',   href: '#anchor' },
+  { label: 'The Tool', href: '#proof' },
+  { label: 'Contact',  href: '#contact' },
 ];
 
 // ---------------------------------------------------------------------------
@@ -226,13 +226,13 @@ export const highlights: HighlightCard[] = [
     icon: 'Wrench',
     value: 'Same',
     unit: 'changeout window',
-    label: 'No extra rig time',
+    label: 'Planned changeout',
     description: 'Deploy on the work already on the calendar.',
   },
   {
     icon: 'Globe',
-    value: '130+',
-    unit: 'installed globally',
+    value: '100+',
+    unit: 'installed internationally',
     label: 'Field-proven base',
     description: 'Established hardware, not a concept render.',
   },
@@ -296,7 +296,7 @@ export const integration: IntegrationContent = {
   description:
     'EM signal transmits through earth to surface receiver. ' +
     'Decoded data outputs via MODBUS RS-485 to your existing RTU/SCADA. ' +
-    'No new infrastructure required.',
+    'No downhole cable run required.',
   flow: ['Downhole Gauge', 'EM Signal', 'Surface Receiver', 'RTU / SCADA'],
 };
 
@@ -310,7 +310,7 @@ export const workflow: WorkflowContent = {
     'Install WellFi in the string',
     'Read downhole pressure at surface',
     'Tune pump speed and drawdown',
-    'Produce more and change out less often',
+    'Tune from pressure trends earlier',
   ],
   asideTitle: 'Why engineers care',
   asideBody:
@@ -332,11 +332,11 @@ export const proof: ProofContent = {
     { icon: 'Thermometer',  value: '150',     unit: '°C',  label: 'Temperature',    side: 'right' },
     { icon: 'Ruler',        value: '46',      unit: 'mm',  label: 'Tool OD',        side: 'right' },
   ],
-  trustLine: '130+ installed globally',
-  trustSub: 'No cable run · No new infrastructure',
-  ctaHeading: 'Start the first Canadian install.',
-  ctaBody: 'Talk directly with MPS Group about candidate wells, changeout timing, and the fastest path to a clean first deployment.',
-  ctaChips: ['Planned PCP changeout installs', 'Exclusive Canadian distributor'],
+  trustLine: '100+ installed internationally',
+  trustSub: 'No downhole cable run · MODBUS-ready surface handoff',
+  ctaHeading: 'Review a candidate well.',
+  ctaBody: 'Talk directly with MPS Group about candidate wells, changeout timing, fit, and what data you need before a deployment decision.',
+  ctaChips: ['Candidate-well review', 'Planned PCP changeouts', 'MPS Group Canadian support'],
 };
 
 // ---------------------------------------------------------------------------
@@ -346,7 +346,7 @@ export const proof: ProofContent = {
 export const specs: SpecRow[] = [
   { parameter: 'Tool OD',            value: '46 mm [1.83\u2033]' },
   { parameter: 'Temperature',        value: '150\u00B0C [302\u00B0F]' },
-  { parameter: 'Pressure',           value: '68,948 kPa [10,000 psi]' },
+  { parameter: 'Pressure',           value: '68,948 kPa(a) [10,000 psia]' },
   { parameter: 'Pressure Accuracy',  value: '0.15% F.S. (Piezo) | 13.8 kPa [2.0 psi] (Quartz)' },
   { parameter: 'Battery Life',       value: '5+ years' },
   { parameter: 'Data Output',        value: 'MODBUS RS-485, dual 4\u201320 mA' },
@@ -354,7 +354,7 @@ export const specs: SpecRow[] = [
   { parameter: 'Power',              value: '24 V DC / ~3 W' },
   { parameter: 'Storage',            value: '64 MB event SD' },
   { parameter: 'Corrosion',          value: 'NACE MR-01-75 available' },
-  { parameter: 'Deployments',        value: '130+ tools installed globally' },
+  { parameter: 'Deployments',        value: '100+ tools installed internationally' },
 ];
 
 // ---------------------------------------------------------------------------
@@ -382,10 +382,10 @@ export const footer: FooterContent = {
 // ---------------------------------------------------------------------------
 
 export const calculator: CalculatorContent = {
-  teaserEyebrow: 'Retrofit economics',
-  teaserTitle: 'Add Barrels, Not Capex.',
-  teaserDescription: 'Four operators. Public AER data. Real corporate financials. The retrofit case stands on its own.',
-  teaserChips: ['32-day payout', '78% cheaper per barrel', 'No extra rig time'],
+  teaserEyebrow: 'Seeing is Believing.',
+  teaserTitle: 'Screen candidate wells with MPS Group.',
+  teaserDescription: 'Public calculator assumptions are parked until the benchmark and claim boundary are approved for publication.',
+  teaserChips: ['Candidate screening', 'Operator assumptions', 'Contact for model'],
   benchmarkSummary:
     'Built from four Clearwater and Bluesky operators using the latest publicly available production data and corporate reports.',
   contactPrompt:
@@ -523,7 +523,7 @@ export const calculator: CalculatorContent = {
   },
   buttons: {
     openFull: 'Open Full Calculator',
-    requestQuote: 'Request a Quote',
+    requestQuote: 'Contact MPS Group',
     reset: 'Clear Inputs',
     backHome: 'Back to Home',
     viewSpecs: 'View Specifications',
@@ -572,7 +572,7 @@ export const stitchLab: StitchLabContent = {
 // ---------------------------------------------------------------------------
 
 export const meta: MetaContent = {
-  title: 'WellFi \u2014 Retrofit Production Uplift for PCP Wells | MPS Group',
+  title: 'WellFi \u2014 Know the Unknown | MPS Group',
   description:
-    'Data Below. Insight Above. Install WellFi on the planned changeout, avoid extra rig time, and bring downhole pressure to surface with minimalist wireless telemetry.',
+    '1.8 trillion barrels locked in place. Waiting. Seeing is Believing. Install WellFi on the planned changeout and bring downhole pressure to surface with minimalist wireless telemetry.',
 };

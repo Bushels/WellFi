@@ -6,7 +6,7 @@ This file is the canonical source of truth for the approved WellFi hero startup 
 - Start from a near-black field with an ultra-faint ghost baseline.
 - Draw the waveform left to right at a fixed band height.
 - Reveal the WellFi logo when the sweep is about 75% across the screen.
-- Reveal `Stop Pumping Blind` only when the sweep reaches the right edge.
+- Reveal `Know the Unknown` only when the sweep reaches the right edge.
 - Reveal the subheadline, proof chips, and CTAs only after the headline lands.
 - Enable mouse/touch interaction only after the sweep completes.
 - Allow the logo WiFi arcs to pulse only on direct hover/touch/focus interaction.
@@ -21,7 +21,7 @@ This file is the canonical source of truth for the approved WellFi hero startup 
 - Do not resize or tighten the wave during intro.
 - Do not add lens spikes, spark bursts, or extra startup effects unless explicitly requested.
 - Do not decouple the hero text timing from the shared wave duration constant.
-- Do not reveal supporting copy before `Stop Pumping Blind`.
+- Do not reveal supporting copy before `Know the Unknown`.
 
 ## Current Timing Model
 - Shared duration constant: `SIGNAL_WAVE_INTRO_DURATION`

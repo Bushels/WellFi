@@ -42,7 +42,7 @@ Real-time downhole monitoring system that transmits pressure and temperature dat
 | Parameter | Value |
 |-----------|-------|
 | Temperature Rating | 302°F (150°C) |
-| Pressure Rating | 10,000 psi |
+| Pressure Rating | 10,000 psia |
 | Battery Life | 5+ years |
 | Outer Diameter | 1.83" (46mm) |
 | Pressure Resolution (Piezo) | 0.04 psi |
@@ -132,7 +132,7 @@ Traditional EM telemetry fails in cased wells because metal's low resistivity an
 - **Exception-based alerting** when readings exceed thresholds
 
 ### Example Configuration
-- Set point: 1500 kPa
+- Set point: 1500 kPa(a)
 - Threshold: ±150 kPa
 - Alert triggers if: <1350 kPa OR >1650 kPa
 - Alert is immediate, regardless of scheduled interval

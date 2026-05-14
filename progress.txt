@@ -8,7 +8,7 @@ This file is a current-state handoff, not a historical archive. Remove stale her
 - ultra-faint ghost baseline
 - fixed-height left-to-right sine-wave sweep
 - WellFi logo appears at 75% sweep
-- `Stop Pumping Blind` lands at full sweep
+- `Know the Unknown` lands at full sweep
 - subheadline, proof chips, and CTAs reveal only after the headline
 - mouse/touch interaction turns on only after the sweep completes
 - hero logo arcs can pulse on direct hover/touch/focus without adding a looping distraction
@@ -28,7 +28,7 @@ This file is a current-state handoff, not a historical archive. Remove stale her
 
 ## Current Calculator State
 
-- Added a compact calculator section directly under the hero and a full `/calculator` route for deeper screening.
-- Normalized the local operator workbooks into one reusable math engine instead of mirroring four spreadsheet layouts.
-- Standardized drill comparison on year-one average rate, not IP30, and split vague ROI into `cash yield` and `net year-1 return`.
-- Captured workbook caveats in `docs/wellfi-calculator-method.md`, including source-label drift and an omitted transport-cost line in one benchmark source.
+- The public `/calculator` route is parked as a contact handoff until benchmark assumptions and public claim boundaries are approved.
+- Do not publish price, payout, uplift, run-life extension, or capital-efficiency claims without explicit approval and source notes.
+- Keep the calculator code available for private candidate-well screening, but do not surface it publicly by default.
+- Current public CTA should route to candidate-well review, not "first Canadian install" language.

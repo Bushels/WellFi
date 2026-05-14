@@ -358,8 +358,66 @@ body {
     rgba(6, 182, 212, 0.15) 80%,
     transparent 100%
   );
-  max-width: 80%;
+  max-width: 0%;
+  opacity: 0;
   margin: 0 auto;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SCROLL-LINKED BACKGROUND GRADIENT
+   ═══════════════════════════════════════════════════════════════ */
+
+main {
+  background:
+    radial-gradient(ellipse 60% 40% at 30% 40%,
+      rgba(6, 182, 212, var(--bg-cyan-intensity, 0.04)),
+      transparent 60%),
+    radial-gradient(ellipse 50% 40% at 70% 60%,
+      rgba(217, 119, 6, var(--bg-amber-intensity, 0.02)),
+      transparent 60%),
+    var(--navy-void);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HOVER MICRO-INTERACTIONS
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Operator cards — enhanced hover */
+.calc-card {
+  transition:
+    transform 200ms cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 200ms ease,
+    box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.calc-card:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 0 24px rgba(6, 182, 212, 0.12);
+}
+
+/* Proof icon containers — hover glow */
+.proof-icon {
+  transition:
+    transform 200ms cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 300ms ease;
+}
+.proof-icon:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 16px rgba(34, 211, 238, 0.4);
+}
+
+/* Contact CTA — border glow on hover */
+.proof-cta {
+  transition:
+    border-color 400ms ease,
+    box-shadow 400ms ease;
+}
+.proof-cta:hover {
+  border-color: rgba(6, 182, 212, 0.3);
+  box-shadow:
+    0 22px 80px rgba(0, 0, 0, 0.44),
+    0 0 40px rgba(6, 182, 212, 0.15);
 }
 
 .bg-section-alt {
@@ -555,6 +613,50 @@ body {
   --hero-glass-alpha: 0.06;
 }
 
+.hero-flashlight-scrim {
+  --flashlight-x: 50%;
+  --flashlight-y: 52%;
+  mask-image: none;
+  -webkit-mask-image: none;
+  will-change: opacity, mask-image;
+}
+
+.hero-flashlight-scrim--active {
+  mask-image: radial-gradient(
+    circle 14rem at var(--flashlight-x) var(--flashlight-y),
+    transparent 0%,
+    transparent 34%,
+    rgba(0, 0, 0, 0.34) 50%,
+    #000 74%
+  );
+  -webkit-mask-image: radial-gradient(
+    circle 14rem at var(--flashlight-x) var(--flashlight-y),
+    transparent 0%,
+    transparent 34%,
+    rgba(0, 0, 0, 0.34) 50%,
+    #000 74%
+  );
+}
+
+@media (max-width: 640px) {
+  .hero-flashlight-scrim--active {
+    mask-image: radial-gradient(
+      circle 10rem at var(--flashlight-x) var(--flashlight-y),
+      transparent 0%,
+      transparent 34%,
+      rgba(0, 0, 0, 0.34) 52%,
+      #000 76%
+    );
+    -webkit-mask-image: radial-gradient(
+      circle 10rem at var(--flashlight-x) var(--flashlight-y),
+      transparent 0%,
+      transparent 34%,
+      rgba(0, 0, 0, 0.34) 52%,
+      #000 76%
+    );
+  }
+}
+
 .wellfi-logo__arc {
   opacity: 0.22;
   transform-origin: 50% 100%;
@@ -701,5 +803,253 @@ body {
 
   .hero-static-headline {
     opacity: 1 !important;
+  }
+
+  /* Scrollytelling reduced-motion overrides */
+  .section-divider {
+    opacity: 1 !important;
+    max-width: 80% !important;
+  }
+
+  .calc-card,
+  .proof-icon,
+  .proof-cta {
+    transition: none !important;
+  }
+
+  .calc-eyebrow,
+  .calc-word,
+  .calc-desc,
+  .calc-chip,
+  .calc-payout-number,
+  .calc-payout-label,
+  .calc-cards-label,
+  .calc-card,
+  .calc-ctas,
+  .calc-provenance,
+  .proof-tagline,
+  .proof-point-left,
+  .proof-point-right,
+  .proof-image,
+  .proof-trust,
+  .proof-cta {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+
+  /* Disable candle pulse for reduced-motion users */
+  .hero-candle-pulse {
+    animation: none !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HERO CANDLE PULSE (R5 V2 hero image breathes the EM signal)
+   ═══════════════════════════════════════════════════════════════ */
+
+@keyframes heroCandlePulse {
+  /* Deeper rest state — formation barely visible (brightness 0.22). The
+     always-on candle-glow overlay (opacity 0.15) keeps the WellFi device
+     faintly burning even when the formation falls into deeper shadow. The
+     burst-to-rest contrast is now ~7.5x (was ~5x), making the piercing flash
+     even more dramatic against the near-darkness. */
+  0%,
+  45% {
+    filter: brightness(0.22) saturate(0.85) contrast(0.96);
+  }
+  50% {
+    filter: brightness(1.65) saturate(1.65) contrast(1.1);
+  }
+  60% {
+    filter: brightness(0.62) saturate(1.4) contrast(1.04);
+  }
+  78% {
+    filter: brightness(0.34) saturate(1.05) contrast(0.98);
+  }
+  100% {
+    filter: brightness(0.22) saturate(0.85) contrast(0.96);
+  }
+}
+
+.hero-candle-pulse {
+  /* 6s cycle. Linear timing because the keyframe stops already encode the
+     asymmetric easing — ease-in-out would smooth out the sharp burst. */
+  animation: heroCandlePulse 6s linear infinite;
+  will-change: filter;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HERO CANDLE GLOW (localized cyan halo at the WellFi device position)
+   Synchronized with hero-candle-pulse: invisible at rest, blooms during
+   the flash, lingers concentrated around the candle, then fades back.
+   ═══════════════════════════════════════════════════════════════ */
+
+.hero-candle-glow {
+  /* Radial gradient anchored where the candle sits in the source image.
+     The R3 V3 candle is at roughly 50% horizontal, 72% vertical of the
+     square frame. Responsive variants stay close to this position because
+     the candle is roughly center-bottom in all three art-direction crops. */
+  background: radial-gradient(
+    circle 28rem at 50% 72%,
+    rgba(120, 244, 255, 0.55) 0%,
+    rgba(79, 183, 199, 0.32) 22%,
+    rgba(79, 183, 199, 0.14) 48%,
+    rgba(79, 183, 199, 0.04) 72%,
+    rgba(2, 4, 8, 0) 90%
+  );
+  mix-blend-mode: screen;
+  opacity: 0;
+  animation: heroCandleGlow 6s linear infinite;
+  will-change: opacity;
+}
+
+@keyframes heroCandleGlow {
+  /* Always-on baseline: even at rest, the candle has a faint cyan presence
+     (~0.15 opacity) so it's always quietly burning. The pulse adds a dramatic
+     spike on top of that baseline rather than emerging from nothing. */
+  0%,
+  45% {
+    opacity: 0.15;
+  }
+  50% {
+    /* Bloom in sync with the brightness flash */
+    opacity: 0.55;
+  }
+  62% {
+    /* Light contracts and concentrates around the candle */
+    opacity: 0.92;
+  }
+  82% {
+    opacity: 0.32;
+  }
+  100% {
+    opacity: 0.15;
+  }
+}
+
+/* Responsive candle position — adjust gradient anchor for portrait viewports.
+   In the portrait variant, the candle position shifts slightly because of the
+   canvas extension top + bottom. Keep glow centered horizontally; vertical
+   position pulls slightly toward middle. */
+@media (max-width: 767px) {
+  .hero-candle-glow {
+    background: radial-gradient(
+      circle 18rem at 50% 65%,
+      rgba(120, 244, 255, 0.55) 0%,
+      rgba(79, 183, 199, 0.32) 22%,
+      rgba(79, 183, 199, 0.14) 48%,
+      rgba(79, 183, 199, 0.04) 72%,
+      rgba(2, 4, 8, 0) 90%
+    );
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-candle-glow {
+    animation: none !important;
+    opacity: 0.18; /* Steady faint glow instead of pulsing */
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HERO ART DIRECTION
+   Responsive image swap — portrait on mobile/narrow, square on
+   tablet/medium, landscape on wide desktop. Different aspect ratios
+   convey different "vastness" stories: portrait = depth, landscape
+   = horizontal extent of the formation.
+   ═══════════════════════════════════════════════════════════════ */
+
+.hero-art-direction {
+  /* DARK layer — the reservoir at rest. Always opaque, no animation.
+     Filter brightness 0.45 pushes the rest state into genuine "hardly see"
+     territory — the formation has only faint banding texture visible, no
+     real luminance. Cross-faded over by the .hero-art-lit layer at full
+     opacity during the burst, which restores luminance and reveals the
+     proper point-light illumination. */
+  background-image: url('/wellfi/hero-v2-portrait.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: brightness(0.45) contrast(0.95);
+}
+
+@media (min-width: 768px) and (orientation: landscape) {
+  .hero-art-direction {
+    background-image: url('/wellfi/hero-square.png');
+  }
+}
+
+@media (min-width: 1280px) and (orientation: landscape) {
+  .hero-art-direction {
+    background-image: url('/wellfi/hero-landscape.png');
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HERO ART LIT — Codex-generated relight of the dark scene
+   Properly lit point-light render: bright cyan illuminates the wet
+   bitumen around the WellFi device, falls off naturally, far corners
+   stay dark. Cross-faded on top of .hero-art-direction during the burst.
+   Same responsive image swap pattern as the dark layer.
+   ═══════════════════════════════════════════════════════════════ */
+
+.hero-art-lit {
+  background-image: url('/wellfi/hero-lit-portrait.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  /* Opacity animation handles the cross-fade. 0.15 baseline keeps the candle
+     quietly burning at rest; peaks to 1.0 during burst; decays asymmetrically. */
+  animation: heroCandleLitFade 6s linear infinite;
+  will-change: opacity;
+}
+
+@media (min-width: 768px) and (orientation: landscape) {
+  .hero-art-lit {
+    background-image: url('/wellfi/hero-lit-square.png');
+  }
+}
+
+@media (min-width: 1280px) and (orientation: landscape) {
+  .hero-art-lit {
+    background-image: url('/wellfi/hero-lit-landscape.png');
+  }
+}
+
+@keyframes heroCandleLitFade {
+  /* Tight baseline: the lit layer is barely present at rest (4% opacity), just
+     enough to give the candle position a quiet always-on hue without revealing
+     the formation. Burst peak fully reveals the lit state. Asymmetric decay —
+     fast initial fall, slow afterglow back to near-darkness baseline.
+
+     Why 0.04 instead of 0.15: at full-viewport scale, 15% of a bright image
+     reads as substantial illumination. 4% is "barely there" — the formation
+     stays in shadow at rest, which is what 'hardly see the reservoir' requires. */
+  0%,
+  45% {
+    opacity: 0.04;
+  }
+  50% {
+    /* Burst: lit image fully visible, dark layer overpowered */
+    opacity: 1;
+  }
+  60% {
+    /* Fast initial decay */
+    opacity: 0.5;
+  }
+  78% {
+    /* Slow afterglow toward baseline */
+    opacity: 0.18;
+  }
+  100% {
+    opacity: 0.04;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-art-lit {
+    animation: none !important;
+    opacity: 0.4; /* Steady soft glow instead of pulsing */
   }
 }

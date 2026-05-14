@@ -16,10 +16,10 @@ export default function ContactFooter() {
       <div className="max-w-3xl mx-auto text-center">
         <GlassPanel glow className="p-10 md:p-16">
           <h2 className="display-heading mb-4" style={{ fontSize: 'clamp(2rem, 4vw, 3.5rem)' }}>
-            Start the First <span className="text-gradient">Canadian Install</span>
+            Review a <span className="text-gradient">Candidate Well</span>
           </h2>
           <p className="text-text-secondary mb-8 text-lg max-w-2xl mx-auto">
-            Talk directly with MPS Group about candidate wells, new pump changeout timing, and the right pilot scope for the first deployment in Canada.
+            Talk directly with MPS Group about candidate wells, pump changeout timing, and the deployment fit before a field decision.
           </p>
 
           <a
@@ -32,7 +32,7 @@ export default function ContactFooter() {
 
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <span className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-text-secondary">
-              130+ tools installed globally
+              100+ installed internationally
             </span>
             <span className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-text-secondary">
               Exclusive Canadian distributor

@@ -23,8 +23,12 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://mpsgroup.energy'),
   title: meta.title,
   description: meta.description,
+  alternates: {
+    canonical: "https://mpsgroup.energy/wellfi",
+  },
   keywords: [
     "PCP wells",
     "production uplift",
@@ -32,14 +36,35 @@ export const metadata: Metadata = {
     "downhole pressure",
     "wireless telemetry",
     "heavy oil",
+    "Bluesky Formation",
+    "Clearwater Formation",
+    "Peace River",
     "WellFi",
     "MPS Group",
+    "Know the Unknown",
   ],
-  authors: [{ name: "MPS Group", url: "https://mpsgroup.ca" }],
+  authors: [{ name: "MPS Group", url: "https://mpsgroup.energy/" }],
   openGraph: {
     title: meta.title,
     description: meta.description,
     type: "website",
+    url: "https://mpsgroup.energy/wellfi",
+    siteName: "MPS Group — WellFi",
+    images: [
+      {
+        url: "https://mpsgroup.energy/wellfi/og-wellfi.png",
+        width: 1200,
+        height: 630,
+        alt: "WellFi — 1.8 trillion barrels locked in place. Waiting. Seeing is Believing.",
+        type: "image/png",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: meta.title,
+    description: meta.description,
+    images: ["https://mpsgroup.energy/wellfi/og-wellfi.png"],
   },
 };
 

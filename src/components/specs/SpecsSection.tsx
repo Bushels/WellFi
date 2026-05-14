@@ -79,10 +79,10 @@ export default function SpecsSection() {
           className="details-cta rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(18,24,34,0.92)_0%,rgba(24,30,42,0.94)_100%)] p-8 shadow-[0_22px_80px_rgba(0,0,0,0.44)]"
         >
           <h3 className="display-heading text-[clamp(2rem,3.4vw,3.2rem)] leading-[1.02] text-text-primary">
-            Start the first <span className="text-gradient">Canadian install.</span>
+            Review a <span className="text-gradient">candidate well.</span>
           </h3>
           <p className="mt-4 max-w-[34rem] text-base leading-7 text-text-secondary">
-            Talk directly with MPS Group about candidate wells, changeout timing, and the fastest path to a clean first deployment.
+            Talk directly with MPS Group about candidate wells, changeout timing, fit, and what data you need before a deployment decision.
           </p>
 
           <a
@@ -95,7 +95,7 @@ export default function SpecsSection() {
 
           <div className="mt-8 flex flex-wrap gap-2">
             <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs text-text-secondary">
-              130+ tools installed globally
+              100+ installed internationally
             </span>
             <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs text-text-secondary">
               Planned PCP changeout installs

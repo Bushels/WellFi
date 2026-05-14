@@ -103,6 +103,20 @@ export const animation = {
     headlineRestOpacity: 0.12,
   },
   navSlide: { duration: 0.3, ease: 'back.out(1.2)' },
+  scrollReveal: {
+    duration: 0.7,
+    ease: 'power2.out',
+    stagger: 0.1,
+    start: 'top 82%',
+  },
+  counter: {
+    duration: 1.4,
+    ease: 'power1.inOut',
+  },
+  glowPulse: {
+    duration: 0.6,
+    ease: 'power1.inOut',
+  },
 } as const;
 
 // ---------------------------------------------------------------------------

@@ -1,12 +1,12 @@
 'use client';
 
 import { useDeferredValue, useMemo, useState } from 'react';
-import { ArrowRight, Mail, Clock, TrendingDown, DollarSign, Droplets } from 'lucide-react';
+import { Mail, Clock, TrendingDown, DollarSign, Droplets } from 'lucide-react';
 import { calculateWellFiResults, type CalculatorInputs } from '@/lib/calculator';
 import { cn } from '@/lib/utils';
 
 /*
- * Hidden WellFi assumptions — based on all current data from WellFi deployments.
+ * Hidden WellFi assumptions for private screening only.
  * These are NOT shown to the user. The calculator applies them silently.
  */
 const WELLFI_COST_PER_WELL = 20_000;

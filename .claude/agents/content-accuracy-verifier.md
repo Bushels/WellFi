@@ -13,7 +13,7 @@ WellFi is a wireless downhole pressure/temperature gauge that transmits through 
 ## Verified WellFi Specifications
 ```
 Temperature Rating:     302°F (150°C)
-Pressure Rating:        10,000 psi
+Pressure Rating:        10,000 psia
 Battery Life:           5+ years
 Outer Diameter:         1.83" (46mm)
 Pressure Res (Piezo):   0.04 psi

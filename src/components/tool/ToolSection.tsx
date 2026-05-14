@@ -11,7 +11,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 const installSteps = [
   'Run it on the planned pump changeout.',
-  'Clamp it to the string without adding another intervention.',
+  'Clamp it to the string without a dedicated cable-run intervention.',
   'Start reading downhole pressure at surface right away.',
 ] as const;
 
@@ -68,7 +68,7 @@ export default function ToolSection() {
         <div className="install-copy max-w-[30rem]">
           <p className="label-text mb-4">Product / install</p>
           <h2 className="display-heading text-[clamp(2rem,4vw,3.5rem)] text-text-primary">
-            No extra rig time. <span className="text-gradient">Immediate surface value.</span>
+            Planned changeout install. <span className="text-gradient">Surface pressure data.</span>
           </h2>
           <p className="mt-5 text-base leading-7 text-text-secondary md:text-lg">
             WellFi is valuable because it fits into work that is already happening. Run it on the planned changeout, keep the install path clean, and start tuning with real pressure instead of surface guesswork.

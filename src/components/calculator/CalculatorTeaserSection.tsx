@@ -1,17 +1,22 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Clock, TrendingDown, DollarSign, Layers } from 'lucide-react';
+import { useGSAP } from '@gsap/react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { ArrowRight, Clock, TrendingDown, DollarSign } from 'lucide-react';
 import { calculator as calculatorCopy } from '@/lib/content';
 import { presets } from '@/lib/presets';
 import {
   getCalculatorInputsFromPreset,
   calculateWellFiResults,
-  type CalculatorResults,
 } from '@/lib/calculator';
-import { spacing } from '@/lib/design-tokens';
+import { animation, spacing } from '@/lib/design-tokens';
+import { animateCounter } from '@/lib/animate-counter';
 import { cn } from '@/lib/utils';
+
+gsap.registerPlugin(ScrollTrigger);
 
 /** Pre-compute results for all presets so we can show the "best" payout as the hero number. */
 const presetResults = presets.map((p) => ({
@@ -21,15 +26,16 @@ const presetResults = presets.map((p) => ({
 const bestPayout = Math.min(
   ...presetResults.map((r) => r.results.payoutDays ?? Infinity),
 );
-const bestEfficiency = Math.max(
-  ...presetResults.map((r) => r.results.capitalEfficiencyAdvantagePct ?? 0),
-);
 
 export default function CalculatorTeaserSection() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const payoutRef = useRef<HTMLSpanElement>(null);
+  const hasEnteredRef = useRef(false);
+
   const [activeIndex, setActiveIndex] = useState(
     presetResults.findIndex((r) => r.results.payoutDays === bestPayout),
   );
-  const { preset, results } = presetResults[activeIndex];
+  const { results } = presetResults[activeIndex];
 
   const capexMax = Math.max(
     results.capexPerIncrementalBpdWellFiCad ?? 1,
@@ -38,8 +44,172 @@ export default function CalculatorTeaserSection() {
   const wellfiBarPct = ((results.capexPerIncrementalBpdWellFiCad ?? 0) / capexMax) * 100;
   const drillBarPct = ((results.drillCapexPerIncrementalBpdCad ?? 0) / capexMax) * 100;
 
+  /* ── Scroll-triggered entrance (plays once) ────────────────── */
+  useGSAP(() => {
+    if (!sectionRef.current) return;
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReduced) {
+      // Make everything visible immediately
+      gsap.set(sectionRef.current.querySelectorAll(
+        '.calc-eyebrow, .calc-word, .calc-desc, .calc-chip, .calc-payout-number, .calc-payout-label, .calc-cards-label, .calc-card, .calc-ctas'
+      ), { opacity: 1, y: 0, x: 0, scale: 1, filter: 'none' });
+      if (payoutRef.current) {
+        payoutRef.current.textContent = String(Math.round(results.payoutDays ?? 0));
+      }
+      hasEnteredRef.current = true;
+      return;
+    }
+
+    const section = sectionRef.current;
+    const { scrollReveal, counter } = animation;
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: section,
+        start: scrollReveal.start,
+        toggleActions: 'play none none none',
+      },
+      onComplete: () => { hasEnteredRef.current = true; },
+    });
+
+    // 1. Eyebrow
+    tl.fromTo('.calc-eyebrow',
+      { opacity: 0, y: 12 },
+      { opacity: 1, y: 0, duration: 0.5, ease: scrollReveal.ease },
+    );
+
+    // 2. Headline words — staggered reveal
+    tl.fromTo('.calc-word',
+      { opacity: 0, y: 20 },
+      { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out', stagger: 0.08 },
+      '-=0.2',
+    );
+
+    // 3. Gradient glow pulse after words land
+    tl.fromTo('.calc-gradient-word',
+      { textShadow: '0 0 0px rgba(34,211,238,0)' },
+      {
+        textShadow: '0 0 20px rgba(34,211,238,0.5), 0 0 40px rgba(34,211,238,0.25)',
+        duration: animation.glowPulse.duration,
+        ease: animation.glowPulse.ease,
+        yoyo: true,
+        repeat: 1,
+      },
+      '-=0.1',
+    );
+
+    // 4. Description
+    tl.fromTo('.calc-desc',
+      { opacity: 0, y: 14 },
+      { opacity: 1, y: 0, duration: scrollReveal.duration, ease: scrollReveal.ease },
+      '-=0.5',
+    );
+
+    // 5. Proof chips — stagger from left
+    tl.fromTo('.calc-chip',
+      { opacity: 0, x: -16, scale: 0.92 },
+      { opacity: 1, x: 0, scale: 1, duration: 0.45, ease: 'back.out(1.4)', stagger: 0.1 },
+      '-=0.4',
+    );
+
+    // 6. Hero payout counter
+    const payoutEl = payoutRef.current;
+    if (payoutEl) {
+      const targetValue = Math.round(results.payoutDays ?? 0);
+      tl.add(
+        animateCounter(payoutEl, targetValue, {
+          duration: counter.duration,
+          ease: counter.ease,
+        }),
+        '-=0.3',
+      );
+    }
+
+    // 7. Payout labels
+    tl.fromTo('.calc-payout-label',
+      { opacity: 0 },
+      { opacity: 1, duration: 0.4, ease: 'power2.out', stagger: 0.08 },
+      '-=0.8',
+    );
+
+    // 8. Comparison bars grow from 0
+    tl.to('.calc-bar-wellfi',
+      { width: `${Math.max(wellfiBarPct, 4)}%`, duration: 0.8, ease: 'power2.out' },
+      '-=0.5',
+    );
+    tl.to('.calc-bar-drill',
+      { width: `${Math.max(drillBarPct, 4)}%`, duration: 0.8, ease: 'power2.out' },
+      '-=0.5',
+    );
+
+    // 9. Provenance line
+    tl.fromTo('.calc-provenance',
+      { opacity: 0 },
+      { opacity: 1, duration: 0.4, ease: 'power2.out' },
+      '-=0.4',
+    );
+
+    // 10. Cards label + operator cards cascade
+    tl.fromTo('.calc-cards-label',
+      { opacity: 0, y: 10 },
+      { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' },
+      '-=0.3',
+    );
+
+    tl.fromTo('.calc-card',
+      { opacity: 0, y: 24, scale: 0.97 },
+      {
+        opacity: 1, y: 0, scale: 1,
+        duration: 0.5,
+        ease: 'power2.out',
+        stagger: { amount: 0.4, from: 'start' },
+      },
+      '-=0.2',
+    );
+
+    // 11. CTA buttons
+    tl.fromTo('.calc-ctas',
+      { opacity: 0, y: 16 },
+      { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' },
+      '-=0.2',
+    );
+  }, { scope: sectionRef });
+
+  /* ── Reactive animation on card switch ─────────────────────── */
+  useEffect(() => {
+    if (!hasEnteredRef.current) return;
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Animate bars to new widths
+    gsap.to('.calc-bar-wellfi', {
+      width: `${Math.max(wellfiBarPct, 4)}%`,
+      duration: prefersReduced ? 0 : 0.6,
+      ease: 'power2.out',
+    });
+    gsap.to('.calc-bar-drill', {
+      width: `${Math.max(drillBarPct, 4)}%`,
+      duration: prefersReduced ? 0 : 0.6,
+      ease: 'power2.out',
+    });
+
+    // Animate counter to new value
+    const payoutEl = payoutRef.current;
+    if (payoutEl) {
+      const targetValue = Math.round(results.payoutDays ?? 0);
+      if (prefersReduced) {
+        payoutEl.textContent = String(targetValue);
+      } else {
+        animateCounter(payoutEl, targetValue, {
+          duration: 0.8,
+          ease: 'power2.out',
+        });
+      }
+    }
+  }, [activeIndex, wellfiBarPct, drillBarPct, results.payoutDays]);
+
   return (
     <section
+      ref={sectionRef}
       id="calculator"
       className="relative overflow-hidden"
       style={{ padding: `${spacing.sectionY} ${spacing.containerX}` }}
@@ -61,11 +231,15 @@ export default function CalculatorTeaserSection() {
         {/* ── IMPACT ZONE ─────────────────────────────────── */}
         <div className="grid items-end gap-6 lg:grid-cols-[1fr_auto]">
           <div>
-            <p className="label-text mb-5">{calculatorCopy.teaserEyebrow}</p>
+            <p className="calc-eyebrow label-text mb-5">{calculatorCopy.teaserEyebrow}</p>
             <h2 className="display-heading text-[clamp(2.4rem,6vw,4.6rem)] leading-[1.05] tracking-[-0.03em]">
-              <span className="text-text-primary">Add Barrels,</span>
+              {['Data', 'Below.'].map((w) => (
+                <span key={w} className="calc-word inline-block text-text-primary">{w}&nbsp;</span>
+              ))}
               <br />
-              <span className="text-gradient">Not Capex.</span>
+              {['Insight', 'Above.'].map((w) => (
+                <span key={w} className="calc-word calc-gradient-word inline-block text-gradient">{w}&nbsp;</span>
+              ))}
             </h2>
           </div>
 
@@ -74,7 +248,7 @@ export default function CalculatorTeaserSection() {
             {calculatorCopy.teaserChips.map((chip) => (
               <span
                 key={chip}
-                className="inline-flex items-center gap-1.5 rounded-full border border-em-cyan/20 bg-em-cyan/8 px-3.5 py-1.5 text-[0.8rem] font-medium text-[#b8f0fa]"
+                className="calc-chip inline-flex items-center gap-1.5 rounded-full border border-em-cyan/20 bg-em-cyan/8 px-3.5 py-1.5 text-[0.8rem] font-medium text-[#b8f0fa]"
               >
                 <span className="inline-block h-1.5 w-1.5 rounded-full bg-em-cyan" />
                 {chip}
@@ -83,7 +257,7 @@ export default function CalculatorTeaserSection() {
           </div>
         </div>
 
-        <p className="mt-5 max-w-2xl text-[1.05rem] leading-8 text-[#a8bfce]">
+        <p className="calc-desc mt-5 max-w-2xl text-[1.05rem] leading-8 text-[#a8bfce]">
           {calculatorCopy.teaserDescription}
         </p>
 
@@ -92,14 +266,17 @@ export default function CalculatorTeaserSection() {
           {/* Left: Hero payout number + comparison bars */}
           <div>
             <div className="flex items-baseline gap-3">
-              <span className="tech-text text-[clamp(5rem,12vw,9rem)] font-bold leading-none text-text-primary">
-                {Math.round(results.payoutDays ?? 0)}
+              <span
+                ref={payoutRef}
+                className="calc-payout-number tech-text text-[clamp(5rem,12vw,9rem)] font-bold leading-none text-text-primary"
+              >
+                0
               </span>
               <div>
-                <span className="tech-text block text-[clamp(1.4rem,3vw,2.4rem)] font-medium text-[#a8bfce]">
+                <span className="calc-payout-label tech-text block text-[clamp(1.4rem,3vw,2.4rem)] font-medium text-[#a8bfce]">
                   days
                 </span>
-                <span className="tech-text block text-[0.72rem] uppercase tracking-[0.18em] text-[#88e6f4]">
+                <span className="calc-payout-label tech-text block text-[0.72rem] uppercase tracking-[0.18em] text-[#88e6f4]">
                   to full payout
                 </span>
               </div>
@@ -110,13 +287,11 @@ export default function CalculatorTeaserSection() {
               <ComparisonRow
                 label="WellFi retrofit"
                 value={results.capexPerIncrementalBpdWellFiCad}
-                widthPct={wellfiBarPct}
                 tone="wellfi"
               />
               <ComparisonRow
                 label="New drill"
                 value={results.drillCapexPerIncrementalBpdCad}
-                widthPct={drillBarPct}
                 tone="drill"
               />
               <p className="text-[0.72rem] uppercase tracking-[0.15em] text-[#6b8393]">
@@ -125,14 +300,14 @@ export default function CalculatorTeaserSection() {
             </div>
 
             {/* Provenance line */}
-            <p className="mt-6 text-xs leading-5 text-[#5a7080]">
+            <p className="calc-provenance mt-6 text-xs leading-5 text-[#5a7080]">
               {calculatorCopy.provenance.aer} · {calculatorCopy.provenance.uplift.toLowerCase()}
             </p>
           </div>
 
           {/* Right: Operator cards */}
           <div>
-            <p className="tech-text mb-4 text-[0.68rem] uppercase tracking-[0.22em] text-[#6b8393]">
+            <p className="calc-cards-label tech-text mb-4 text-[0.68rem] uppercase tracking-[0.22em] text-[#6b8393]">
               Flip through four operators
             </p>
             <div className="grid gap-3 sm:grid-cols-2">
@@ -152,7 +327,7 @@ export default function CalculatorTeaserSection() {
             </div>
 
             {/* CTAs */}
-            <div className="mt-6 flex flex-wrap gap-3">
+            <div className="calc-ctas mt-6 flex flex-wrap gap-3">
               <Link
                 href="/calculator"
                 className="btn-primary inline-flex items-center gap-2 text-sm"
@@ -200,10 +375,10 @@ function OperatorCard({
       type="button"
       onClick={onClick}
       className={cn(
-        'group relative rounded-[1.2rem] border p-4 text-left transition-all duration-200',
+        'calc-card group relative rounded-[1.2rem] border p-4 text-left',
         isActive
           ? 'border-em-cyan/30 bg-[linear-gradient(135deg,rgba(6,182,212,0.12),rgba(6,182,212,0.04))] shadow-[0_0_32px_rgba(6,182,212,0.08)]'
-          : 'border-white/8 bg-white/[0.03] hover:border-white/14 hover:bg-white/[0.05]',
+          : 'border-white/8 bg-white/[0.03]',
       )}
     >
       {/* Header */}
@@ -267,12 +442,10 @@ function LabeledMetric({
 function ComparisonRow({
   label,
   value,
-  widthPct,
   tone,
 }: {
   label: string;
   value: number | null;
-  widthPct: number;
   tone: 'wellfi' | 'drill';
 }) {
   return (
@@ -286,12 +459,12 @@ function ComparisonRow({
       <div className="h-3 overflow-hidden rounded-full bg-white/[0.06]">
         <div
           className={cn(
-            'h-full rounded-full transition-[width] duration-500 ease-out',
+            'h-full rounded-full',
             tone === 'wellfi'
-              ? 'bg-gradient-to-r from-em-cyan/60 to-em-cyan'
-              : 'bg-gradient-to-r from-hw-amber/60 to-hw-amber',
+              ? 'calc-bar-wellfi bg-gradient-to-r from-em-cyan/60 to-em-cyan'
+              : 'calc-bar-drill bg-gradient-to-r from-hw-amber/60 to-hw-amber',
           )}
-          style={{ width: `${Math.max(widthPct, 4)}%` }}
+          style={{ width: '0%' }}
         />
       </div>
     </div>
