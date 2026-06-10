@@ -41,13 +41,24 @@ function makeFloorGeometry(): THREE.BufferGeometry {
     // Outside the cavity the floor tucks flat under the upper block edge.
     pos.setY(i, inCavity(x, z) ? floorY(x, z) : FLOOR_Y - 0.01);
   }
+  pos.needsUpdate = true;
   geom.computeVertexNormals();
   return geom;
 }
 
+// SSR fallback — the island only mounts client-side (IslandCanvas gates on a
+// post-mount effect), but guard anyway so a stray server render can't break
+// the static-export build.
+function fallbackTexture(): THREE.Texture {
+  const tex = new THREE.DataTexture(new Uint8Array([128, 128, 128, 255]), 1, 1);
+  tex.needsUpdate = true;
+  return tex;
+}
+
 // One shared grain texture (spec §5) — without it stylized flat-color strata
 // read as plastic. Used as a subtle bumpMap on every rock material.
-function makeNoiseTexture(): THREE.CanvasTexture {
+function makeNoiseTexture(): THREE.Texture {
+  if (typeof document === 'undefined') return fallbackTexture();
   const size = 512;
   const canvas = document.createElement('canvas');
   canvas.width = size;
@@ -71,7 +82,8 @@ function makeNoiseTexture(): THREE.CanvasTexture {
   return tex;
 }
 
-function makeShadowTexture(): THREE.CanvasTexture {
+function makeShadowTexture(): THREE.Texture {
+  if (typeof document === 'undefined') return fallbackTexture();
   const size = 256;
   const canvas = document.createElement('canvas');
   canvas.width = size;
@@ -112,6 +124,9 @@ export default function Terrain() {
   const shadowTex = useMemo(() => makeShadowTexture(), []);
   const noiseTex = useMemo(() => makeNoiseTexture(), []);
 
+  // Resources are intentionally not disposed: the hero mounts once per page and
+  // lives for its lifetime. (Dev hot-reload remounts leak a little VRAM —
+  // acceptable; revisit only if this component ever mounts repeatedly.)
   return (
     <group>
       {STRATA.map((s, i) => (
@@ -135,7 +150,7 @@ export default function Terrain() {
         />
       </mesh>
       {coalGeoms.map((g, i) => (
-        <mesh key={`coal-${i}`} geometry={g} scale={[1.001, 1, 1.001]}>
+        <mesh key={`coal-y${COAL_YS[i]}`} geometry={g} scale={[1.001, 1, 1.001]}>
           <meshStandardMaterial color="#0d0b08" roughness={0.4} metalness={0.1} />
         </mesh>
       ))}
