@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   SLAB, STRATA, LOWER, FLOOR_Y, CAVITY, CAP_OUTLINE,
-  pointInPolygon, inCavity, onCap, floorY, COLORS, PAD_RECT, ROAD_RECT,
+  pointInPolygon, inCavity, onCap, floorY, COLORS, PAD_RECT, ROAD_RECT, COAL_YS,
 } from './layout';
 
 describe('strata stack', () => {
@@ -10,7 +10,8 @@ describe('strata stack', () => {
     for (let i = 1; i < STRATA.length; i++) {
       expect(STRATA[i].topY).toBe(STRATA[i - 1].bottomY);
     }
-    expect(STRATA[STRATA.length - 1].bottomY).toBe(FLOOR_Y);
+    expect(STRATA[STRATA.length - 1].bottomY).toBe(LOWER.topY);
+    expect(LOWER.topY).toBeLessThan(FLOOR_Y);
   });
   it('lower block continues from the floor to the slab base', () => {
     expect(LOWER.topY).toBeLessThanOrEqual(FLOOR_Y);
@@ -24,6 +25,11 @@ describe('pointInPolygon', () => {
     expect(pointInPolygon(1, 1, square)).toBe(true);
     expect(pointInPolygon(3, 1, square)).toBe(false);
     expect(pointInPolygon(-0.1, 1, square)).toBe(false);
+  });
+  it('handles concave polygons', () => {
+    const lShape: [number, number][] = [[0, 0], [3, 0], [3, 1], [1, 1], [1, 3], [0, 3]];
+    expect(pointInPolygon(0.5, 2.5, lShape)).toBe(true);
+    expect(pointInPolygon(2, 2, lShape)).toBe(false);
   });
 });
 
@@ -52,7 +58,7 @@ describe('floorY', () => {
     expect(floorY(2.6, 1.9)).toBeLessThan(FLOOR_Y - 0.1);
   });
   it('returns to near-flat away from the bowl', () => {
-    expect(Math.abs(floorY(-1.0, 4.5) - FLOOR_Y)).toBeLessThan(0.08);
+    expect(Math.abs(floorY(-1.0, 4.5) - FLOOR_Y)).toBeLessThan(0.035);
   });
 });
 
@@ -64,5 +70,11 @@ describe('exclusion rects + palette', () => {
   it('brand colors are present', () => {
     expect(COLORS.emCyan).toBe('#06B6D4');
     expect(COLORS.signalRed).toBe('#EF4444');
+  });
+  it('coal stringers sit within the lower block', () => {
+    for (const y of COAL_YS) {
+      expect(y).toBeLessThanOrEqual(LOWER.topY);
+      expect(y).toBeGreaterThanOrEqual(LOWER.bottomY);
+    }
   });
 });
