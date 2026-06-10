@@ -15,8 +15,8 @@ import ProofSection from '@/components/proof/ProofSection';
 // Restore when ROI numbers are locked.
 // import CalculatorTeaserSection from '@/components/calculator/CalculatorTeaserSection';
 //
-// CuriosityHintSection merged into HeroSection 2026-05-10 — the entire hero now acts
-// as the cursor-flashlight stage. Standalone hint section is no longer needed.
+// CuriosityHintSection was retired 2026-06-10 along with HeroSection — its
+// cursor-flashlight role is superseded by the IslandHero living diorama.
 // import CuriosityHintSection from '@/components/hint/CuriosityHintSection';
 
 gsap.registerPlugin(ScrollTrigger);

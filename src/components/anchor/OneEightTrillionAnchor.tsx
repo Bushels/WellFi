@@ -17,7 +17,7 @@ gsap.registerPlugin(ScrollTrigger);
  * Design notes:
  * - V2 portrait image as faint blurred background — suggests the formation without competing with text
  * - Three lines of caption use <p> elements (not headings) — they're decorative flourishes mirroring a poem,
- *   not document structure. The page's <h1> is "Know the Unknown" in HeroSection.
+ *   not document structure. The page's <h1> is "Know the Unknown" in IslandHero.
  * - "Waiting" gets the strongest visual emphasis; the candle motif visually pulses underneath if motion enabled
  * - No CTA, no link — this section is intentionally a moment of recognition, not a conversion point
  */

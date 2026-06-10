@@ -61,7 +61,7 @@ wellfi-marketing/
 ### Motion Stack
 
 - GSAP for hero sequencing and scroll reveals
-- React Three Fiber for the island hero (R3F + drei + postprocessing)
+- React Three Fiber for the island hero; GSAP for scroll reveals in sibling sections
 - SVG for the hero logo signal arcs
 - Respect `prefers-reduced-motion`
 
@@ -83,7 +83,7 @@ The wave-sweep startup hero was retired 2026-06-10 (Kyle-approved).
 
 - Do not let the canvas block first paint (poster-first stays)
 - Red #EF4444 belongs to WellFi B only; transmission stays cyan
-- Pure-math modules (`layout.ts`, `cycle.ts`, `wellPath.ts`) keep their unit tests green (`npm test`)
+- Pure-math modules under src/lib/island/ (layout, cycle, wellPath, quality) keep their unit tests green (npm test)
 - The cycle must stay seamless (state at t=12 ≡ t=0)
 - No scroll hijacking in the hero
 
