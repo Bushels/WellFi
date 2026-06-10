@@ -16,15 +16,17 @@ export interface CycleState {
 }
 
 export function smooth(a: number, b: number, t: number): number {
+  if (a >= b) return t >= b ? 1 : 0; // degenerate range guard (precondition: a < b)
   const x = Math.min(1, Math.max(0, (t - a) / (b - a)));
   return x * x * (3 - 2 * x);
 }
 
-const RELAY_START = 5;
-const RELAY_END = 9;
-const BREATH = (RELAY_END - RELAY_START) / 3;
+export const RELAY_START = 5;
+export const RELAY_END = 9;
+export const BREATH = (RELAY_END - RELAY_START) / 3;
 
 export function cycleState(t: number): CycleState {
+  if (!Number.isFinite(t)) t = 0; // guard glitched frame clocks (tab-refocus deltas etc.)
   t = ((t % CYCLE_S) + CYCLE_S) % CYCLE_S;
 
   // Master light level — piecewise over the five phases.
@@ -49,6 +51,8 @@ export function cycleState(t: number): CycleState {
 
     if (f >= 0.08 && f < 0.45) pulseLateral = (f - 0.08) / 0.37;
     if (f >= 0.45 && f < 0.8) pulseCased = (f - 0.45) / 0.35;
+    // Intentional ~0.08-breath overlap with pulseCased: the ring starts
+    // expanding as the signal arrives at surface, before the pulse clears.
     if (f >= 0.72) receiver = (f - 0.72) / 0.28;
   }
 

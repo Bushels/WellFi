@@ -1,7 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { CYCLE_S, EMBER, cycleState, type CycleState } from './cycle';
-
-const BREATH = 4 / 3;
+import { BREATH, CYCLE_S, EMBER, cycleState, type CycleState } from './cycle';
 
 function expectSameState(a: CycleState, b: CycleState) {
   for (const k of Object.keys(a) as (keyof CycleState)[]) {
@@ -44,6 +42,10 @@ describe('cycleState', () => {
 
     const late = cycleState(5 + 0.85 * BREATH);   // f=0.85 → receiver ring live
     expect(late.receiver).toBeGreaterThanOrEqual(0);
+    expect(late.pulseCased).toBe(-1);
+    const overlap = cycleState(5 + 0.76 * BREATH); // ring + cased pulse coexist
+    expect(overlap.receiver).toBeGreaterThanOrEqual(0);
+    expect(overlap.pulseCased).toBeGreaterThan(0);
   });
 
   it('pulse heads progress monotonically within their windows', () => {
@@ -60,16 +62,19 @@ describe('cycleState', () => {
   });
 
   it('all envelope fields stay in range', () => {
+    let maxCollar = 0;
     for (let t = 0; t < CYCLE_S; t += 0.05) {
       const s = cycleState(t);
+      maxCollar = Math.max(maxCollar, s.collarA, s.collarB);
       for (const k of ['sun', 'sky', 'collarA', 'collarB'] as const) {
         expect(s[k]).toBeGreaterThanOrEqual(0);
         expect(s[k]).toBeLessThanOrEqual(1);
       }
       for (const k of ['pulseLateral', 'pulseCased', 'receiver'] as const) {
         expect(s[k]).toBeLessThanOrEqual(1);
-        expect(s[k] === -1 || s[k] >= 0).toBe(true);
+        expect(s[k] === -1 || (s[k] >= 0 && s[k] <= 1)).toBe(true);
       }
     }
+    expect(maxCollar).toBeGreaterThan(EMBER + 0.5);
   });
 });
