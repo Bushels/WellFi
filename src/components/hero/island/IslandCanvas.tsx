@@ -26,7 +26,7 @@ export default function IslandCanvas({ reducedMotion, compact, onReady }: Island
 
   // Pause the render loop when the hero scrolls out of view.
   useEffect(() => {
-    if (!container.current) return;
+    if (!container.current || tier === null) return;
     const io = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting), {
       threshold: 0.02,
     });

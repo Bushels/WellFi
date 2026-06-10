@@ -8,7 +8,9 @@ import IslandCanvas from './IslandCanvas';
 const PROOF_CHIPS = ['130+ Installed Globally', 'Modbus Ready', 'Seamless Install'];
 
 function useCompactViewport(): boolean {
-  const [compact, setCompact] = useState(false);
+  const [compact, setCompact] = useState(() =>
+    typeof window !== 'undefined' ? window.matchMedia('(max-width: 768px)').matches : false,
+  );
   useEffect(() => {
     const media = window.matchMedia('(max-width: 768px)');
     const update = () => setCompact(media.matches);
@@ -37,15 +39,21 @@ export default function IslandHero() {
           Until then it reuses the existing responsive hero art classes. */}
       <div
         aria-hidden="true"
-        className="hero-art-direction absolute inset-0 transition-opacity duration-[1200ms]"
-        style={{ opacity: canvasReady ? 0 : 1 }}
+        className="hero-art-direction absolute inset-0"
+        style={{
+          opacity: canvasReady ? 0 : 1,
+          transition: prefersReducedMotion ? 'none' : 'opacity 1200ms ease',
+        }}
       />
 
       {/* Live canvas — fades in over the poster */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 transition-opacity duration-[1200ms]"
-        style={{ opacity: canvasReady ? 1 : 0 }}
+        className="absolute inset-0"
+        style={{
+          opacity: canvasReady ? 1 : 0,
+          transition: prefersReducedMotion ? 'none' : 'opacity 1200ms ease',
+        }}
       >
         <IslandCanvas
           reducedMotion={prefersReducedMotion}
