@@ -4,11 +4,13 @@
 
 export type GpuTier = 'high' | 'low';
 
+// NOTE: Adreno 6xx/7xx and Apple M-series intentionally NOT listed — coarsePointer
+// is the primary mobile gate; fine-pointer devices with those GPUs run 'high' fine.
 const WEAK_GPU = /Mali|Adreno [1-5]\d\d|PowerVR|Intel\(R\) (U?HD|HD) Graphics [2-6]\d{3}/i;
 
 export function tierFromSignals(s: {
   coarsePointer: boolean;
-  dpr: number;
+  dpr: number; // reserved signal — plumbed from the browser but not consulted yet
   renderer: string;
 }): GpuTier {
   if (s.coarsePointer) return 'low';
@@ -16,8 +18,12 @@ export function tierFromSignals(s: {
   return 'high';
 }
 
+let cachedTier: GpuTier | undefined;
+
+/** Browser-only — call from client components (e.g. in useEffect/useState init). */
 export function detectTier(): GpuTier {
   if (typeof window === 'undefined') return 'low';
+  if (cachedTier !== undefined) return cachedTier;
   let renderer = '';
   try {
     const canvas = document.createElement('canvas');
@@ -32,9 +38,10 @@ export function detectTier(): GpuTier {
   } catch {
     // renderer stays '' — heuristic falls through on pointer type alone
   }
-  return tierFromSignals({
+  cachedTier = tierFromSignals({
     coarsePointer: window.matchMedia('(pointer: coarse)').matches,
     dpr: window.devicePixelRatio ?? 1,
     renderer,
   });
+  return cachedTier;
 }

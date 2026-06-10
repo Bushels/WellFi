@@ -23,4 +23,18 @@ describe('tierFromSignals', () => {
   it('unknown renderer string defaults to high on fine-pointer devices', () => {
     expect(tierFromSignals({ coarsePointer: false, dpr: 2, renderer: '' })).toBe('high');
   });
+  it('ANGLE-wrapped discrete GPU strings (real Windows Chrome) are high tier', () => {
+    expect(
+      tierFromSignals({
+        coarsePointer: false,
+        dpr: 1,
+        renderer: 'ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 Direct3D11 vs_5_0 ps_5_0, D3D11)',
+      }),
+    ).toBe('high');
+  });
+  it('Apple GPU on a fine-pointer Mac is high tier (coarse pointer was the gate, not the GPU)', () => {
+    expect(
+      tierFromSignals({ coarsePointer: false, dpr: 2, renderer: 'Apple M1' }),
+    ).toBe('high');
+  });
 });
