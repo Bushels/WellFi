@@ -19,6 +19,7 @@ export interface ToolAnchor {
   tangent: Vector3;
 }
 
+// Returned vectors/curves are live objects — treat them as read-only.
 export interface WellPaths {
   cased: CatmullRomCurve3;
   openHole: CatmullRomCurve3;
@@ -56,13 +57,15 @@ function buildLateral(kop: Vector3, toe2d: [number, number]): CatmullRomCurve3 {
     kop.x + (toe.x - kop.x) * 0.7,
     kop.z + (toe.z - kop.z) * 0.7,
   );
+  // tension 0.5 = centripetal CatmullRom: loop/cusp-free through tight control spacing
   return new CatmullRomCurve3([kop.clone(), m1, m2, toe], false, 'catmullrom', 0.5);
 }
 
+// Allocates fresh curves/vectors each call — call once and memoize (useMemo) in React.
 export function buildWellPaths(): WellPaths {
   const wellhead = v(-5.2, 0.05, Z_FACE);
 
-  const heel = drape(-0.9, 3.4, 0.12);
+  const heel = drape(-0.9, 3.4, 0.12); // extra lift: cased/open-hole transition needs clearance
   const cased = new CatmullRomCurve3(
     [
       wellhead.clone(),
@@ -99,11 +102,11 @@ export function buildWellPaths(): WellPaths {
 
   const toolA: ToolAnchor = {
     position: openHole.getPointAt(0.03),
-    tangent: openHole.getTangentAt(0.03).normalize(),
+    tangent: openHole.getTangentAt(0.03).normalize().clone(),
   };
   const toolB: ToolAnchor = {
     position: laterals[4].getPointAt(TOOL_B_PARAM),
-    tangent: laterals[4].getTangentAt(TOOL_B_PARAM).normalize(),
+    tangent: laterals[4].getTangentAt(TOOL_B_PARAM).normalize().clone(),
   };
 
   return { cased, openHole, laterals, shoe, wellhead, toolA, toolB };

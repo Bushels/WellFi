@@ -19,6 +19,10 @@ describe('well system continuity', () => {
 });
 
 describe('gate-v9 wide fan', () => {
+  it('KOP params and laterals stay in lock-step', () => {
+    expect(KOP_PARAMS.length).toBe(paths.laterals.length);
+  });
+
   it('has exactly 5 laterals', () => {
     expect(paths.laterals).toHaveLength(5);
   });
@@ -37,6 +41,15 @@ describe('gate-v9 wide fan', () => {
       const toe = lat.getPointAt(1);
       expect(inCavity(toe.x, toe.z)).toBe(true);
       expect(Math.abs(toe.y - floorY(toe.x, toe.z))).toBeLessThan(0.25);
+    }
+  });
+
+  it('laterals stay inside the cavity along their whole length', () => {
+    for (const lat of paths.laterals) {
+      for (const u of [0.25, 0.5, 0.75]) {
+        const p = lat.getPointAt(u);
+        expect(inCavity(p.x, p.z)).toBe(true);
+      }
     }
   });
 
