@@ -220,7 +220,7 @@ export default function CalculatorTeaserSection() {
         className="pointer-events-none absolute inset-0"
         style={{
           background: [
-            'radial-gradient(ellipse 60% 50% at 25% 0%, rgba(6,182,212,0.14), transparent)',
+            'radial-gradient(ellipse 60% 50% at 25% 0%, rgba(239,68,68,0.14), transparent)',
             'radial-gradient(ellipse 40% 60% at 85% 80%, rgba(217,119,6,0.06), transparent)',
             'linear-gradient(180deg, rgba(4,10,18,0.95) 0%, rgba(10,14,26,1) 100%)',
           ].join(', '),
@@ -248,7 +248,7 @@ export default function CalculatorTeaserSection() {
             {calculatorCopy.teaserChips.map((chip) => (
               <span
                 key={chip}
-                className="calc-chip inline-flex items-center gap-1.5 rounded-full border border-em-cyan/20 bg-em-cyan/8 px-3.5 py-1.5 text-[0.8rem] font-medium text-[#b8f0fa]"
+                className="calc-chip inline-flex items-center gap-1.5 rounded-full border border-em-cyan/20 bg-em-cyan/8 px-3.5 py-1.5 text-[0.8rem] font-medium text-[#FEE2E2]"
               >
                 <span className="inline-block h-1.5 w-1.5 rounded-full bg-em-cyan" />
                 {chip}
@@ -276,7 +276,7 @@ export default function CalculatorTeaserSection() {
                 <span className="calc-payout-label tech-text block text-[clamp(1.4rem,3vw,2.4rem)] font-medium text-[#a8bfce]">
                   days
                 </span>
-                <span className="calc-payout-label tech-text block text-[0.72rem] uppercase tracking-[0.18em] text-[#88e6f4]">
+                <span className="calc-payout-label tech-text block text-[0.72rem] uppercase tracking-[0.18em] text-[#FCA5A5]">
                   to full payout
                 </span>
               </div>
@@ -377,7 +377,7 @@ function OperatorCard({
       className={cn(
         'calc-card group relative rounded-[1.2rem] border p-4 text-left',
         isActive
-          ? 'border-em-cyan/30 bg-[linear-gradient(135deg,rgba(6,182,212,0.12),rgba(6,182,212,0.04))] shadow-[0_0_32px_rgba(6,182,212,0.08)]'
+          ? 'border-em-cyan/30 bg-[linear-gradient(135deg,rgba(239,68,68,0.12),rgba(239,68,68,0.04))] shadow-[0_0_32px_rgba(239,68,68,0.08)]'
           : 'border-white/8 bg-white/[0.03]',
       )}
     >
@@ -429,7 +429,7 @@ function LabeledMetric({
   return (
     <div>
       <div className="flex items-center gap-1.5">
-        <span className="text-[#88e6f4]">{icon}</span>
+        <span className="text-[#FCA5A5]">{icon}</span>
         <span className="tech-text text-[0.82rem] font-semibold text-[#e0ecf3]">{value}</span>
       </div>
       <p className="mt-0.5 text-[0.6rem] uppercase tracking-[0.12em] text-[#5a7080]">{label}</p>

@@ -88,6 +88,12 @@ export default function HeroSection() {
         className="hero-art-lit absolute inset-0"
       />
 
+      {/* Localized pulsing glow overlay */}
+      <div
+        aria-hidden="true"
+        className="hero-candle-glow absolute inset-0"
+      />
+
       {/* Bottom fade for clean separation from next section */}
       <div
         aria-hidden="true"
@@ -102,7 +108,7 @@ export default function HeroSection() {
           <WellFiLogo
             interactiveSignal
             wordmarkColor="#d3e2ec"
-            signalColor="#78f4ff"
+            signalColor="#ef4444"
             className="w-[10rem] sm:w-[12rem] lg:w-[14rem]"
           />
         </div>

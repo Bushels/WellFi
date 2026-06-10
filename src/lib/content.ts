@@ -213,8 +213,8 @@ export const hero: HeroContent = {
 
 export const navLinks: NavLink[] = [
   { label: 'Closer',   href: '#anchor' },
-  { label: 'The Tool', href: '#proof' },
-  { label: 'Contact',  href: '#contact' },
+  { label: 'SAGD',     href: '#sagd-interactive' },
+  { label: 'Telemetry', href: '#proof' },
 ];
 
 // ---------------------------------------------------------------------------

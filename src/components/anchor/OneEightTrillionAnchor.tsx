@@ -73,13 +73,13 @@ export default function OneEightTrillionAnchor() {
         }}
       />
 
-      {/* Subtle cyan glow underneath "Waiting" */}
+      {/* Subtle red glow underneath "Waiting" */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute left-1/2 top-1/2 h-[24rem] w-[36rem] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-25"
         style={{
           background:
-            'radial-gradient(circle, rgba(79,183,199,0.35) 0%, rgba(79,183,199,0.08) 40%, rgba(2,4,8,0) 70%)',
+            'radial-gradient(circle, rgba(239,68,68,0.35) 0%, rgba(239,68,68,0.08) 40%, rgba(2,4,8,0) 70%)',
         }}
       />
 
@@ -107,7 +107,7 @@ export default function OneEightTrillionAnchor() {
           className="text-[clamp(2.5rem,6vw,5rem)] font-semibold leading-[0.92] tracking-[-0.04em] text-[#f5fbff]"
           style={{
             textShadow:
-              '0 0 60px rgba(120, 244, 255, 0.18), 0 0 24px rgba(120, 244, 255, 0.12)',
+              '0 0 60px rgba(239, 68, 68, 0.18), 0 0 24px rgba(239, 68, 68, 0.12)',
           }}
         >
           Waiting

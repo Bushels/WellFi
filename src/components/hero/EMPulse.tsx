@@ -26,14 +26,14 @@ const EMPulse = forwardRef<SVGSVGElement, EMPulseProps>(
           <feColorMatrix
             in="blur"
             type="matrix"
-            values="0 0 0 0 0.133
-                    0 0 0 0 0.827
-                    0 0 0 0 0.933
+            values="0 0 0 0 0.937
+                    0 0 0 0 0.267
+                    0 0 0 0 0.267
                     0 0 0 1 0"
-            result="cyan"
+            result="red"
           />
           <feMerge>
-            <feMergeNode in="cyan" />
+            <feMergeNode in="red" />
             <feMergeNode in="SourceGraphic" />
           </feMerge>
         </filter>
@@ -43,7 +43,7 @@ const EMPulse = forwardRef<SVGSVGElement, EMPulseProps>(
         cx="50"
         cy="700"
         r="5"
-        fill="#22D3EE"
+        fill="#EF4444"
         filter="url(#pulse-bloom)"
         opacity="0"
       />

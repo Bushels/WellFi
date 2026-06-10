@@ -87,7 +87,7 @@ export default function CalculatorResults({
           {formatNumber(results.payoutDays, 0)} days
         </h2>
         <div className="mt-4 rounded-[1rem] border border-em-cyan/20 bg-em-cyan/8 px-4 py-3">
-          <p className="text-sm font-medium leading-6 text-[#c8f4fd]">
+          <p className="text-sm font-medium leading-6 text-[#FEE2E2]">
             {buildDecisionMessage(results)}
           </p>
         </div>
@@ -125,7 +125,7 @@ export default function CalculatorResults({
       </div>
 
       <div className="calc-panel">
-        <p className="tech-text text-[0.72rem] uppercase tracking-[0.22em] text-[#88e6f4]">
+        <p className="tech-text text-[0.72rem] uppercase tracking-[0.22em] text-[#FCA5A5]">
           Retrofit versus drill
         </p>
         <p className="mt-2 text-sm leading-6 text-text-secondary">
@@ -164,7 +164,7 @@ export default function CalculatorResults({
       </div>
 
       <div className="calc-panel">
-        <p className="tech-text text-[0.68rem] uppercase tracking-[0.22em] text-[#88e6f4] mb-3">
+        <p className="tech-text text-[0.68rem] uppercase tracking-[0.22em] text-[#FCA5A5] mb-3">
           Data sources
         </p>
         <p className="text-sm leading-6 text-[#d4dfe9]">
@@ -212,7 +212,7 @@ interface MetricCardProps {
 function MetricCard({ label, value, caption }: MetricCardProps) {
   return (
     <article className="rounded-[1.15rem] border border-white/8 bg-white/4 p-4">
-      <p className="tech-text text-[0.68rem] uppercase tracking-[0.2em] text-[#88e6f4]">{label}</p>
+      <p className="tech-text text-[0.68rem] uppercase tracking-[0.2em] text-[#FCA5A5]">{label}</p>
       <p className="mt-3 display-heading text-[clamp(1.4rem,3vw,2.2rem)] text-[#f6fbff]">{value}</p>
       <p className="mt-2 text-sm leading-6 text-text-secondary">{caption}</p>
     </article>

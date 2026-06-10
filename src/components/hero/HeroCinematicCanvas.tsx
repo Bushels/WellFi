@@ -74,30 +74,30 @@ function LightingRig() {
     <>
       {/* Very low ambient — darkness is the default state */}
       <ambientLight ref={ambientRef} intensity={0} />
-      <hemisphereLight intensity={0.08} color="#8fdfff" groundColor="#020610" />
+      <hemisphereLight intensity={0.08} color="#ff8f8f" groundColor="#020408" />
 
       {/* Rim — cold edge catch from behind-left — FIRST visible light */}
       <spotLight
         ref={rimRef}
         position={[-2.5, 2, -3]}
         intensity={0}
-        color="#E8F4FF"
+        color="#FFE8E8"
         angle={0.22}
         penumbra={0.9}
         castShadow
       />
 
       {/* Key — main illumination from upper right, dramatic */}
-      <directionalLight ref={keyRef} position={[3, 5, 4]} intensity={0} color="#F7FBFF" castShadow />
+      <directionalLight ref={keyRef} position={[3, 5, 4]} intensity={0} color="#FFF7F7" castShadow />
 
       {/* Fill — cyan from the left, subtle industrial accent */}
-      <directionalLight ref={fillRef} position={[-4, 1, 3]} intensity={0} color="#6DF2FF" />
+      <directionalLight ref={fillRef} position={[-4, 1, 3]} intensity={0} color="#FF6D6D" />
 
       {/* Top — specular highlight catching the clamp windows */}
-      <spotLight ref={topRef} position={[0.3, 6, 2]} intensity={0} color="#EFFBFF" angle={0.25} penumbra={1} />
+      <spotLight ref={topRef} position={[0.3, 6, 2]} intensity={0} color="#FFEFF0" angle={0.25} penumbra={1} />
 
       {/* Accent — cyan rim from lower right, adds depth */}
-      <spotLight ref={accentRef} position={[2.5, -1.5, 2.5]} intensity={0} color="#67F4FF" angle={0.3} penumbra={1} />
+      <spotLight ref={accentRef} position={[2.5, -1.5, 2.5]} intensity={0} color="#FF6767" angle={0.3} penumbra={1} />
 
       {/* Barrel — long specular highlight running parallel to tool body */}
       <spotLight ref={barrelRef} position={[1.5, 0.5, 1]} intensity={0} color="#FFFFFF" angle={0.12} penumbra={0.65} castShadow />
@@ -261,8 +261,8 @@ export default function HeroCinematicCanvas() {
         background: 'transparent',
       }}
     >
-      <color attach="background" args={['#020610']} />
-      <fog attach="fog" args={['#020610', 2, 8]} />
+      <color attach="background" args={['#020408']} />
+      <fog attach="fog" args={['#020408', 2, 8]} />
       <PerspectiveCamera makeDefault position={[0.5, 0.3, 3.2]} fov={32} />
 
       <LightingRig />

@@ -12,7 +12,6 @@ import {
   Gauge,
   Thermometer,
   Ruler,
-  Mail,
   type LucideIcon,
 } from 'lucide-react';
 import { proof, footer } from '@/lib/content';
@@ -20,6 +19,7 @@ import { animation, spacing } from '@/lib/design-tokens';
 import { animateCounter } from '@/lib/animate-counter';
 import { animateTextScramble } from '@/lib/animate-text-scramble';
 import { cn } from '@/lib/utils';
+import WellFiLogo from '@/components/ui/WellFiLogo';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -148,9 +148,9 @@ export default function ProofSection() {
 
     // ── 4. Icon glow flash on enter ─────────────────────────
     tl.fromTo('.proof-icon',
-      { boxShadow: '0 0 0px rgba(34,211,238,0)' },
+      { boxShadow: '0 0 0px rgba(248,113,113,0)' },
       {
-        boxShadow: '0 0 16px rgba(34,211,238,0.5), 0 0 32px rgba(34,211,238,0.2)',
+        boxShadow: '0 0 16px rgba(248,113,113,0.5), 0 0 32px rgba(239,68,68,0.2)',
         duration: 0.4,
         ease: 'power1.out',
         stagger: 0.08,
@@ -160,7 +160,7 @@ export default function ProofSection() {
 
     // Fade the glow back after flash
     tl.to('.proof-icon', {
-      boxShadow: '0 0 0px rgba(34,211,238,0)',
+      boxShadow: '0 0 0px rgba(248,113,113,0)',
       duration: 0.8,
       ease: 'power1.inOut',
       stagger: 0.05,
@@ -186,6 +186,30 @@ export default function ProofSection() {
       );
     });
 
+    // ── 5b. Proof value scrambles (non-countable) ───────────
+    const scrambleValueEls = section.querySelectorAll('.proof-value-scramble');
+    scrambleValueEls.forEach((el) => {
+      const htmlEl = el as HTMLElement;
+      const finalText = htmlEl.dataset.target ?? htmlEl.textContent ?? '';
+      htmlEl.textContent = '';
+      tl.add(
+        animateTextScramble(htmlEl, finalText, { duration: 1.0, charset: '0123456789X#+-' }),
+        '-=0.8',
+      );
+    });
+
+    // ── 5c. Label text scrambles ────────────────────────────
+    const labelEls = section.querySelectorAll('.proof-scramble-label');
+    labelEls.forEach((el) => {
+      const htmlEl = el as HTMLElement;
+      const finalText = htmlEl.textContent ?? '';
+      htmlEl.textContent = '';
+      tl.add(
+        animateTextScramble(htmlEl, finalText, { duration: 0.8 }),
+        '-=0.6',
+      );
+    });
+
     // ── 6. Trust badge — scale + glow pulse ─────────────────
     tl.fromTo('.proof-trust',
       { opacity: 0, y: 16, scale: 0.94 },
@@ -200,9 +224,9 @@ export default function ProofSection() {
 
     // Trust badge glow pulse
     tl.fromTo('.proof-trust-badge',
-      { boxShadow: '0 0 0px rgba(34,211,238,0)' },
+      { boxShadow: '0 0 0px rgba(248,113,113,0)' },
       {
-        boxShadow: '0 0 20px rgba(34,211,238,0.25), 0 0 40px rgba(34,211,238,0.1)',
+        boxShadow: '0 0 20px rgba(248,113,113,0.25), 0 0 40px rgba(239,68,68,0.1)',
         duration: animation.glowPulse.duration,
         ease: animation.glowPulse.ease,
         yoyo: true,
@@ -220,7 +244,7 @@ export default function ProofSection() {
     tl.fromTo('.proof-cta',
       { boxShadow: '0 22px 80px rgba(0,0,0,0.44)' },
       {
-        boxShadow: '0 22px 80px rgba(0,0,0,0.44), 0 0 30px rgba(6,182,212,0.12)',
+        boxShadow: '0 22px 80px rgba(0,0,0,0.44), 0 0 30px rgba(239,68,68,0.12)',
         duration: 0.6,
         ease: 'power1.inOut',
       },
@@ -262,7 +286,7 @@ export default function ProofSection() {
                       <span
                         className={cn(
                           'display-heading text-[clamp(1.4rem,3vw,2.2rem)] leading-none text-text-primary',
-                          countable && 'proof-value',
+                          countable ? 'proof-value' : 'proof-value-scramble',
                         )}
                         data-target={point.value}
                       >
@@ -274,7 +298,7 @@ export default function ProofSection() {
                         </span>
                       )}
                     </div>
-                    <p className="mt-1 text-xs font-medium uppercase tracking-[0.14em] text-text-secondary">
+                    <p className="proof-scramble-label mt-1 text-xs font-medium uppercase tracking-[0.14em] text-text-secondary">
                       {point.label}
                     </p>
                   </div>
@@ -290,7 +314,7 @@ export default function ProofSection() {
           <div className="proof-image order-1 mx-auto w-full max-w-[280px] lg:order-2 lg:max-w-none">
             <div className="relative aspect-[9/16] overflow-hidden rounded-[2rem]">
               <Image
-                src="/images/wellfi-signal-dark.jpeg"
+                src="/wellfi/images/wellfi-signal-dark.jpeg"
                 alt="WellFi electromagnetic signal visualization on black background"
                 fill
                 sizes="(min-width: 1024px) 320px, 280px"
@@ -320,7 +344,7 @@ export default function ProofSection() {
                       <span
                         className={cn(
                           'display-heading text-[clamp(1.4rem,3vw,2.2rem)] leading-none text-text-primary',
-                          countable && 'proof-value',
+                          countable ? 'proof-value' : 'proof-value-scramble',
                         )}
                         data-target={point.value}
                       >
@@ -332,7 +356,7 @@ export default function ProofSection() {
                         </span>
                       )}
                     </div>
-                    <p className="mt-1 text-xs font-medium uppercase tracking-[0.14em] text-text-secondary">
+                    <p className="proof-scramble-label mt-1 text-xs font-medium uppercase tracking-[0.14em] text-text-secondary">
                       {point.label}
                     </p>
                   </div>
@@ -357,31 +381,17 @@ export default function ProofSection() {
           id="contact"
           className="proof-cta mx-auto mt-14 max-w-2xl rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(18,24,34,0.92)_0%,rgba(24,30,42,0.94)_100%)] p-8 text-center shadow-[0_22px_80px_rgba(0,0,0,0.44)]"
         >
-          <Image
-            src="/images/wellfi-logo-v3-transparent.png"
-            alt="WellFi"
-            width={180}
-            height={98}
-            className="mx-auto mb-6 h-auto w-[120px] md:w-[160px]"
-          />
+          <WellFiLogo className="mx-auto mb-6 h-7 w-auto opacity-30" />
 
-          <h3 className="display-heading text-[clamp(1.4rem,2.8vw,2rem)] text-text-primary">
-            Downhole Pressure. Surface Decisions.
+          <h3 className="display-heading text-[clamp(1.4rem,2.8vw,2.5rem)] text-text-primary">
+            Unlocking Downhole Vision.
           </h3>
-          <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-text-secondary md:text-base md:leading-7">
-            Talk with MPS Group about candidate wells, changeout timing, and deployment fit.
+          <p className="mx-auto mt-3 max-w-md text-sm font-heading tracking-[0.16em] uppercase text-em-glow opacity-80">
+            A quiet light below the casing.
           </p>
 
-          <a
-            href={`mailto:${footer.email}`}
-            className="btn-primary mt-6 inline-flex items-center gap-2 text-base"
-          >
-            <Mail size={18} />
-            Contact Us
-          </a>
-
           <div className="mt-8 border-t border-white/8 pt-5">
-            <p className="text-xs text-text-secondary">{footer.copyright}</p>
+            <p className="text-xs text-text-secondary/50">{footer.copyright}</p>
           </div>
         </div>
       </div>

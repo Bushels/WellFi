@@ -103,7 +103,7 @@ function NumericField({ field, value, onNumberChange }: NumericFieldProps) {
           {copy.label}
         </span>
         {copy.unit && (
-          <span className="tech-text text-[0.72rem] uppercase tracking-[0.2em] text-[#88e6f4]">
+          <span className="tech-text text-[0.72rem] uppercase tracking-[0.2em] text-[#FCA5A5]">
             {copy.unit}
           </span>
         )}
@@ -134,7 +134,7 @@ function SectionBlock({ title, description, children }: SectionBlockProps) {
   return (
     <section className="rounded-[1.35rem] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02))] p-5">
       <div className="mb-5">
-        <p className="tech-text text-[0.72rem] uppercase tracking-[0.22em] text-[#88e6f4]">{title}</p>
+        <p className="tech-text text-[0.72rem] uppercase tracking-[0.22em] text-[#FCA5A5]">{title}</p>
         <p className="mt-2 max-w-3xl text-sm leading-6 text-text-secondary">{description}</p>
       </div>
       {children}

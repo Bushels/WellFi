@@ -9,8 +9,8 @@
   --charcoal: #111827;
   --text-primary: #F9FAFB;
   --text-secondary: #9CA3AF;
-  --em-cyan: #06B6D4;
-  --em-glow: #22D3EE;
+  --em-cyan: #EF4444;
+  --em-glow: #F87171;
   --hw-amber: #D97706;
   --border-subtle: #1F2937;
 }
@@ -81,10 +81,10 @@ body {
 }
 
 .glass-card:hover {
-  border-color: rgba(6, 182, 212, 0.3);
+  border-color: rgba(239, 68, 68, 0.3);
   box-shadow:
     0 8px 40px rgba(0, 0, 0, 0.4),
-    0 0 40px rgba(6, 182, 212, 0.1);
+    0 0 40px rgba(239, 68, 68, 0.1);
   transform: translateY(-2px);
 }
 
@@ -94,16 +94,16 @@ body {
 
 .glow-cyan {
   box-shadow:
-    0 0 20px rgba(6, 182, 212, 0.4),
-    0 0 40px rgba(6, 182, 212, 0.2),
-    0 0 60px rgba(6, 182, 212, 0.1);
+    0 0 20px rgba(239, 68, 68, 0.4),
+    0 0 40px rgba(239, 68, 68, 0.2),
+    0 0 60px rgba(239, 68, 68, 0.1);
 }
 
 .text-glow {
   text-shadow:
-    0 0 10px rgba(6, 182, 212, 0.8),
-    0 0 20px rgba(6, 182, 212, 0.5),
-    0 0 40px rgba(6, 182, 212, 0.3);
+    0 0 10px rgba(239, 68, 68, 0.8),
+    0 0 20px rgba(239, 68, 68, 0.5),
+    0 0 40px rgba(239, 68, 68, 0.3);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -119,8 +119,8 @@ body {
 
 .bg-gradient-mesh {
   background:
-    radial-gradient(at 40% 20%, rgba(6, 182, 212, 0.12) 0px, transparent 50%),
-    radial-gradient(at 80% 0%, rgba(6, 182, 212, 0.06) 0px, transparent 50%),
+    radial-gradient(at 40% 20%, rgba(239, 68, 68, 0.12) 0px, transparent 50%),
+    radial-gradient(at 80% 0%, rgba(239, 68, 68, 0.06) 0px, transparent 50%),
     radial-gradient(at 0% 50%, rgba(217, 119, 6, 0.04) 0px, transparent 50%),
     var(--navy-void);
 }
@@ -155,7 +155,7 @@ body {
 
 .btn-primary {
   position: relative;
-  background: linear-gradient(135deg, var(--em-cyan) 0%, #0891b2 100%);
+  background: linear-gradient(135deg, var(--em-cyan) 0%, #B91C1C 100%);
   color: var(--navy-void);
   font-weight: 600;
   padding: 0.875rem 2rem;
@@ -167,8 +167,8 @@ body {
 .btn-primary:hover {
   transform: translateY(-2px);
   box-shadow:
-    0 10px 30px rgba(6, 182, 212, 0.4),
-    0 0 60px rgba(6, 182, 212, 0.2);
+    0 10px 30px rgba(239, 68, 68, 0.4),
+    0 0 60px rgba(239, 68, 68, 0.2);
 }
 
 .btn-secondary {
@@ -183,8 +183,8 @@ body {
 }
 
 .btn-secondary:hover {
-  background: rgba(6, 182, 212, 0.1);
-  box-shadow: 0 0 30px rgba(6, 182, 212, 0.2);
+  background: rgba(239, 68, 68, 0.1);
+  box-shadow: 0 0 30px rgba(239, 68, 68, 0.2);
 }
 
 /* Calculator */
@@ -195,7 +195,7 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 1.75rem;
   background:
-    radial-gradient(circle at 18% 22%, rgba(34, 211, 238, 0.08), transparent 26%),
+    radial-gradient(circle at 18% 22%, rgba(248, 113, 113, 0.08), transparent 26%),
     radial-gradient(circle at 84% 10%, rgba(217, 119, 6, 0.08), transparent 22%),
     linear-gradient(160deg, rgba(11, 17, 30, 0.94), rgba(10, 14, 26, 0.92));
   box-shadow:
@@ -216,7 +216,7 @@ body {
 
 .calc-panel--accent {
   background:
-    radial-gradient(circle at 18% 16%, rgba(34, 211, 238, 0.16), transparent 32%),
+    radial-gradient(circle at 18% 16%, rgba(248, 113, 113, 0.16), transparent 32%),
     linear-gradient(160deg, rgba(8, 15, 28, 0.96), rgba(7, 12, 21, 0.9));
 }
 
@@ -250,10 +250,10 @@ body {
 
 .calc-input:focus {
   outline: none;
-  border-color: rgba(34, 211, 238, 0.6);
+  border-color: rgba(248, 113, 113, 0.6);
   box-shadow:
-    0 0 0 3px rgba(34, 211, 238, 0.12),
-    0 0 24px rgba(34, 211, 238, 0.08);
+    0 0 0 3px rgba(248, 113, 113, 0.12),
+    0 0 24px rgba(248, 113, 113, 0.08);
 }
 
 .calc-segment {
@@ -278,17 +278,17 @@ body {
 
 .calc-segment:hover {
   transform: translateY(-1px);
-  border-color: rgba(34, 211, 238, 0.24);
+  border-color: rgba(248, 113, 113, 0.24);
   background: rgba(255, 255, 255, 0.065);
 }
 
 .calc-segment--active {
-  border-color: rgba(34, 211, 238, 0.4);
+  border-color: rgba(248, 113, 113, 0.4);
   background:
-    linear-gradient(135deg, rgba(34, 211, 238, 0.18), rgba(34, 211, 238, 0.06)),
+    linear-gradient(135deg, rgba(248, 113, 113, 0.18), rgba(248, 113, 113, 0.06)),
     rgba(255, 255, 255, 0.05);
   color: #f5fbff;
-  box-shadow: 0 0 24px rgba(34, 211, 238, 0.08);
+  box-shadow: 0 0 24px rgba(248, 113, 113, 0.08);
 }
 
 .calc-comparison-track {
@@ -305,7 +305,7 @@ body {
 }
 
 .calc-comparison-bar--wellfi {
-  background: linear-gradient(90deg, rgba(34, 211, 238, 0.72), rgba(34, 211, 238, 1));
+  background: linear-gradient(90deg, rgba(248, 113, 113, 0.72), rgba(248, 113, 113, 1));
 }
 
 .calc-comparison-bar--drill {
@@ -353,9 +353,9 @@ body {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(6, 182, 212, 0.15) 20%,
-    rgba(6, 182, 212, 0.25) 50%,
-    rgba(6, 182, 212, 0.15) 80%,
+    rgba(239, 68, 68, 0.15) 20%,
+    rgba(239, 68, 68, 0.25) 50%,
+    rgba(239, 68, 68, 0.15) 80%,
     transparent 100%
   );
   max-width: 0%;
@@ -370,7 +370,7 @@ body {
 main {
   background:
     radial-gradient(ellipse 60% 40% at 30% 40%,
-      rgba(6, 182, 212, var(--bg-cyan-intensity, 0.04)),
+      rgba(239, 68, 68, var(--bg-red-intensity, 0.04)),
       transparent 60%),
     radial-gradient(ellipse 50% 40% at 70% 60%,
       rgba(217, 119, 6, var(--bg-amber-intensity, 0.02)),
@@ -393,7 +393,7 @@ main {
   transform: translateY(-3px);
   box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.3),
-    0 0 24px rgba(6, 182, 212, 0.12);
+    0 0 24px rgba(239, 68, 68, 0.12);
 }
 
 /* Proof icon containers — hover glow */
@@ -404,7 +404,7 @@ main {
 }
 .proof-icon:hover {
   transform: scale(1.08);
-  box-shadow: 0 0 16px rgba(34, 211, 238, 0.4);
+  box-shadow: 0 0 16px rgba(248, 113, 113, 0.4);
 }
 
 /* Contact CTA — border glow on hover */
@@ -414,15 +414,15 @@ main {
     box-shadow 400ms ease;
 }
 .proof-cta:hover {
-  border-color: rgba(6, 182, 212, 0.3);
+  border-color: rgba(239, 68, 68, 0.3);
   box-shadow:
     0 22px 80px rgba(0, 0, 0, 0.44),
-    0 0 40px rgba(6, 182, 212, 0.15);
+    0 0 40px rgba(239, 68, 68, 0.15);
 }
 
 .bg-section-alt {
   background:
-    radial-gradient(ellipse at 20% 50%, rgba(6, 182, 212, 0.03) 0%, transparent 60%),
+    radial-gradient(ellipse at 20% 50%, rgba(239, 68, 68, 0.03) 0%, transparent 60%),
     radial-gradient(ellipse at 80% 50%, rgba(217, 119, 6, 0.015) 0%, transparent 60%);
 }
 
@@ -703,40 +703,45 @@ main {
   12%,
   100% {
     opacity: 0.18;
-    filter: drop-shadow(0 0 0 rgba(34, 211, 238, 0));
+    filter: drop-shadow(0 0 0 rgba(239, 68, 68, 0));
   }
 
+  /* Deeper rest state — formation barely visible (brightness 0.22). The
+     always-on candle-glow overlay (opacity 0.15) keeps the WellFi device
+     faintly burning even when the formation falls into deeper shadow. The
+     burst-to-rest contrast is now ~7.5x (was ~5x), making the piercing flash
+     even more dramatic against the near-darkness. */
   18%,
   34% {
     opacity: 1;
-    filter: drop-shadow(0 0 4px rgba(34, 211, 238, 0.65));
+    filter: drop-shadow(0 0 4px rgba(239, 68, 68, 0.65));
   }
 
   42% {
     opacity: 0.28;
-    filter: drop-shadow(0 0 1px rgba(34, 211, 238, 0.12));
+    filter: drop-shadow(0 0 1px rgba(239, 68, 68, 0.12));
   }
 }
 
 @keyframes wellfiSignalBurst {
   0% {
     opacity: 0.22;
-    filter: drop-shadow(0 0 0 rgba(34, 211, 238, 0));
+    filter: drop-shadow(0 0 0 rgba(239, 68, 68, 0));
   }
 
   28% {
     opacity: 1;
-    filter: drop-shadow(0 0 7px rgba(34, 211, 238, 0.85));
+    filter: drop-shadow(0 0 7px rgba(239, 68, 68, 0.85));
   }
 
   62% {
     opacity: 0.42;
-    filter: drop-shadow(0 0 3px rgba(34, 211, 238, 0.2));
+    filter: drop-shadow(0 0 3px rgba(239, 68, 68, 0.2));
   }
 
   100% {
     opacity: 0.2;
-    filter: drop-shadow(0 0 0 rgba(34, 211, 238, 0));
+    filter: drop-shadow(0 0 0 rgba(239, 68, 68, 0));
   }
 }
 
@@ -887,15 +892,15 @@ main {
 
 .hero-candle-glow {
   /* Radial gradient anchored where the candle sits in the source image.
-     The R3 V3 candle is at roughly 50% horizontal, 72% vertical of the
+     The R3 V3 candle is at roughly 50% horizontal, 69% vertical of the
      square frame. Responsive variants stay close to this position because
      the candle is roughly center-bottom in all three art-direction crops. */
   background: radial-gradient(
-    circle 28rem at 50% 72%,
-    rgba(120, 244, 255, 0.55) 0%,
-    rgba(79, 183, 199, 0.32) 22%,
-    rgba(79, 183, 199, 0.14) 48%,
-    rgba(79, 183, 199, 0.04) 72%,
+    circle 28rem at 50% 69%,
+    rgba(252, 241, 233, 0.55) 0%,
+    rgba(239, 68, 68, 0.32) 22%,
+    rgba(220, 38, 38, 0.14) 48%,
+    rgba(153, 27, 27, 0.04) 72%,
     rgba(2, 4, 8, 0) 90%
   );
   mix-blend-mode: screen;
@@ -935,11 +940,11 @@ main {
 @media (max-width: 767px) {
   .hero-candle-glow {
     background: radial-gradient(
-      circle 18rem at 50% 65%,
-      rgba(120, 244, 255, 0.55) 0%,
-      rgba(79, 183, 199, 0.32) 22%,
-      rgba(79, 183, 199, 0.14) 48%,
-      rgba(79, 183, 199, 0.04) 72%,
+      circle 18rem at 50% 69%,
+      rgba(252, 241, 233, 0.55) 0%,
+      rgba(239, 68, 68, 0.32) 22%,
+      rgba(220, 38, 38, 0.14) 48%,
+      rgba(153, 27, 27, 0.04) 72%,
       rgba(2, 4, 8, 0) 90%
     );
   }

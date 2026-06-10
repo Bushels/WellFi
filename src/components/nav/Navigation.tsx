@@ -75,7 +75,7 @@ export default function Navigation() {
 
       {/* Desktop links */}
       <div className="hidden md:flex items-center gap-8 mx-auto">
-        {navLinks.slice(0, -1).map((link) => (
+        {navLinks.map((link) => (
           <a
             key={link.href}
             href={link.href}
@@ -87,14 +87,8 @@ export default function Navigation() {
         ))}
       </div>
 
-      {/* Desktop CTA */}
-      <a
-        href="#contact"
-        onClick={(e) => handleNavClick(e, '#contact')}
-        className="hidden md:inline-block btn-primary text-sm py-2 px-5 shrink-0"
-      >
-        Contact
-      </a>
+      {/* Desktop CTA spacer to balance logo */}
+      <div className="hidden md:block w-14 shrink-0" />
 
       {/* Mobile hamburger */}
       <button

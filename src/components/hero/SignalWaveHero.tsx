@@ -65,8 +65,8 @@ const POINTER_FORCE_FINE = 54;
 const POINTER_FORCE_PEN = 42;
 const POINTER_FORCE_COARSE = 24;
 
-const COLOR_CORE = '#8DF6FF';
-const COLOR_GLOW = '#35DFFF';
+const COLOR_CORE = '#FFECEC';
+const COLOR_GLOW = '#EF4444';
 
 function isMobile() {
   return typeof window !== 'undefined' && window.innerWidth < 1024;
@@ -194,25 +194,25 @@ const SignalWaveHero = forwardRef<SignalWaveHeroHandle, SignalWaveHeroProps>(
         dimsRef.current = { w: width, h: height, dpr, xs, nxs };
 
         const harmonic = ctx.createLinearGradient(0, 0, width, 0);
-        harmonic.addColorStop(0, 'rgba(10, 80, 126, 0.12)');
-        harmonic.addColorStop(0.14, 'rgba(14, 165, 216, 0.34)');
-        harmonic.addColorStop(0.5, 'rgba(141, 246, 255, 0.74)');
-        harmonic.addColorStop(0.86, 'rgba(14, 165, 216, 0.34)');
-        harmonic.addColorStop(1, 'rgba(10, 80, 126, 0.12)');
+        harmonic.addColorStop(0, 'rgba(127, 29, 29, 0.12)');
+        harmonic.addColorStop(0.14, 'rgba(239, 68, 68, 0.34)');
+        harmonic.addColorStop(0.5, 'rgba(254, 202, 202, 0.74)');
+        harmonic.addColorStop(0.86, 'rgba(239, 68, 68, 0.34)');
+        harmonic.addColorStop(1, 'rgba(127, 29, 29, 0.12)');
 
         const core = ctx.createLinearGradient(0, 0, width, 0);
-        core.addColorStop(0, 'rgba(53, 223, 255, 0.06)');
-        core.addColorStop(0.2, 'rgba(53, 223, 255, 0.18)');
-        core.addColorStop(0.5, 'rgba(141, 246, 255, 0.28)');
-        core.addColorStop(0.8, 'rgba(53, 223, 255, 0.18)');
-        core.addColorStop(1, 'rgba(53, 223, 255, 0.06)');
+        core.addColorStop(0, 'rgba(239, 68, 68, 0.06)');
+        core.addColorStop(0.2, 'rgba(239, 68, 68, 0.18)');
+        core.addColorStop(0.5, 'rgba(254, 202, 202, 0.28)');
+        core.addColorStop(0.8, 'rgba(239, 68, 68, 0.18)');
+        core.addColorStop(1, 'rgba(239, 68, 68, 0.06)');
 
         const carrier = ctx.createLinearGradient(0, 0, width, 0);
-        carrier.addColorStop(0, 'rgba(14, 165, 216, 0)');
-        carrier.addColorStop(0.2, 'rgba(14, 165, 216, 0.36)');
-        carrier.addColorStop(0.5, 'rgba(141, 246, 255, 0.95)');
-        carrier.addColorStop(0.8, 'rgba(14, 165, 216, 0.36)');
-        carrier.addColorStop(1, 'rgba(14, 165, 216, 0)');
+        carrier.addColorStop(0, 'rgba(239, 68, 68, 0)');
+        carrier.addColorStop(0.2, 'rgba(239, 68, 68, 0.36)');
+        carrier.addColorStop(0.5, 'rgba(254, 226, 226, 0.95)');
+        carrier.addColorStop(0.8, 'rgba(239, 68, 68, 0.36)');
+        carrier.addColorStop(1, 'rgba(239, 68, 68, 0)');
 
         gradients = { harmonic, core, carrier };
       };
@@ -371,18 +371,18 @@ const SignalWaveHero = forwardRef<SignalWaveHeroHandle, SignalWaveHeroProps>(
             cy,
             mobileRef.current ? 110 : 170,
           );
-          pulseGlow.addColorStop(0, 'rgba(141, 246, 255, 0.55)');
-          pulseGlow.addColorStop(0.35, 'rgba(53, 223, 255, 0.18)');
-          pulseGlow.addColorStop(1, 'rgba(53, 223, 255, 0)');
+          pulseGlow.addColorStop(0, 'rgba(254, 202, 202, 0.55)');
+          pulseGlow.addColorStop(0.35, 'rgba(239, 68, 68, 0.18)');
+          pulseGlow.addColorStop(1, 'rgba(239, 68, 68, 0)');
           ctx.fillStyle = pulseGlow;
           ctx.fillRect(0, 0, w, h);
 
           if (lensMix > 0.05) {
             ctx.globalAlpha = 0.1 + lensMix * 0.08;
             const lensGlow = ctx.createRadialGradient(lensCenterX, cy, 0, lensCenterX, cy, lensRadiusX);
-            lensGlow.addColorStop(0, 'rgba(141, 246, 255, 0.16)');
-            lensGlow.addColorStop(0.45, 'rgba(53, 223, 255, 0.07)');
-            lensGlow.addColorStop(1, 'rgba(53, 223, 255, 0)');
+            lensGlow.addColorStop(0, 'rgba(254, 202, 202, 0.16)');
+            lensGlow.addColorStop(0.45, 'rgba(239, 68, 68, 0.07)');
+            lensGlow.addColorStop(1, 'rgba(239, 68, 68, 0)');
             ctx.fillStyle = lensGlow;
             ctx.fillRect(0, 0, w, h);
 
@@ -575,9 +575,9 @@ const SignalWaveHero = forwardRef<SignalWaveHeroHandle, SignalWaveHeroProps>(
             pointer.y,
             pointerRadius,
           );
-          pointerGlow.addColorStop(0, 'rgba(141, 246, 255, 0.35)');
-          pointerGlow.addColorStop(0.42, 'rgba(53, 223, 255, 0.14)');
-          pointerGlow.addColorStop(1, 'rgba(53, 223, 255, 0)');
+          pointerGlow.addColorStop(0, 'rgba(254, 202, 202, 0.35)');
+          pointerGlow.addColorStop(0.42, 'rgba(239, 68, 68, 0.14)');
+          pointerGlow.addColorStop(1, 'rgba(239, 68, 68, 0)');
           ctx.fillStyle = pointerGlow;
           ctx.fillRect(0, 0, w, h);
         }

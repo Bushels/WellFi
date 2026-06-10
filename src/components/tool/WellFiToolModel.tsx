@@ -129,15 +129,15 @@ export default function WellFiToolModel({ onReady }: WellFiToolModelProps) {
       <color attach="background" args={['#050a14']} />
       <fog attach="fog" args={['#050a14', 6, 18]} />
       <ambientLight intensity={0.9} />
-      <hemisphereLight intensity={0.9} color="#8cdcff" groundColor="#0a0e1a" />
+      <hemisphereLight intensity={0.9} color="#ff8c8c" groundColor="#0a0e1a" />
       <directionalLight position={[4, 7, 6]} intensity={2.1} color="#ffffff" />
-      <directionalLight position={[-5, -3, 4]} intensity={0.65} color="#06b6d4" />
+      <directionalLight position={[-5, -3, 4]} intensity={0.65} color="#ef4444" />
       <spotLight
         position={[0, 8, 8]}
         angle={0.4}
         penumbra={1}
         intensity={1.3}
-        color="#7de9ff"
+        color="#ff7d7d"
       />
 
       <Suspense fallback={null}>

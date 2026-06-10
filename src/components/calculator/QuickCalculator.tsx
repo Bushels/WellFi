@@ -86,7 +86,7 @@ export default function QuickCalculator() {
     <div className="grid gap-6 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:items-start">
       {/* ── LEFT: Inputs ─────────────────────────────── */}
       <div className="calc-panel">
-        <p className="tech-text text-[0.68rem] uppercase tracking-[0.2em] text-[#88e6f4] mb-1">
+        <p className="tech-text text-[0.68rem] uppercase tracking-[0.2em] text-[#FCA5A5] mb-1">
           Your well
         </p>
         <p className="text-xs text-[#5a7080] mb-5">
@@ -98,7 +98,7 @@ export default function QuickCalculator() {
             <label key={f.key} className="block">
               <div className="mb-1 flex items-center justify-between">
                 <span className="text-[0.78rem] font-semibold text-[#e0ecf3]">{f.label}</span>
-                <span className="tech-text text-[0.62rem] uppercase tracking-[0.18em] text-[#88e6f4]">{f.unit}</span>
+                <span className="tech-text text-[0.62rem] uppercase tracking-[0.18em] text-[#FCA5A5]">{f.unit}</span>
               </div>
               <input
                 className="calc-input w-full"
@@ -160,7 +160,7 @@ function ResultsReward({
           className="pointer-events-none absolute -top-20 -right-20 h-40 w-40 rounded-full bg-em-cyan/10 blur-3xl"
         />
         <div className="relative">
-          <p className="tech-text text-[0.68rem] uppercase tracking-[0.2em] text-[#88e6f4] mb-2">
+          <p className="tech-text text-[0.68rem] uppercase tracking-[0.2em] text-[#FCA5A5] mb-2">
             {isCheaper ? 'Capital saved vs drilling' : 'Capital comparison'}
           </p>
 
@@ -169,14 +169,14 @@ function ResultsReward({
           </p>
 
           {isCheaper && isFaster && (
-            <p className="mt-3 text-sm font-medium text-[#b8f0fa]">
+            <p className="mt-3 text-sm font-medium text-[#FEE2E2]">
               WellFi pays back in {Math.round(results.payoutDays ?? 0)} days and buys barrels {Math.round(results.capitalEfficiencyAdvantagePct ?? 0)}% cheaper than drilling.
             </p>
           )}
 
           {freeWells !== null && freeWells > 0.1 && (
             <div className="mt-4 rounded-[0.8rem] border border-em-cyan/15 bg-em-cyan/6 px-3.5 py-2.5">
-              <p className="text-[0.82rem] font-medium text-[#c8f4fd]">
+              <p className="text-[0.82rem] font-medium text-[#FEE2E2]">
                 That&apos;s enough savings to fund{' '}
                 <span className="tech-text font-bold text-text-primary">
                   {freeWells.toFixed(1)}
@@ -301,7 +301,7 @@ function MetricCard({
 }) {
   return (
     <div className="rounded-[1rem] border border-white/8 bg-white/[0.03] p-3.5">
-      <div className="mb-2 text-[#88e6f4]">{icon}</div>
+      <div className="mb-2 text-[#FCA5A5]">{icon}</div>
       <p className="display-heading text-[clamp(1.3rem,3vw,1.8rem)] text-text-primary">
         {value}
         {unit && <span className="ml-1 tech-text text-[0.7rem] font-normal text-[#6b8393]">{unit}</span>}

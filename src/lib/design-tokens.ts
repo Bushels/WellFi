@@ -23,8 +23,8 @@ export const colors = {
     secondary: '#9CA3AF',   // muted labels and captions
   },
   accent: {
-    cyan:  '#06B6D4',       // EM energy / primary accent
-    glow:  '#22D3EE',       // bright cyan for animations & hover
+    cyan:  '#EF4444',       // EM energy / primary accent (red-500)
+    glow:  '#F87171',       // bright red for animations & hover (red-400)
     amber: '#D97706',       // hardware / industrial callouts
   },
   border: {

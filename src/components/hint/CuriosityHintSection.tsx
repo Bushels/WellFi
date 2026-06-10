@@ -130,7 +130,7 @@ export default function CuriosityHintSection() {
             aria-hidden="true"
             className="absolute inset-0"
             style={{
-              backgroundImage: 'url(/hero-v2-portrait.png)',
+              backgroundImage: 'url(/wellfi/hero-v2-portrait.png)',
               backgroundSize: 'cover',
               backgroundPosition: 'center',
               filter: 'brightness(0.32) saturate(1.1)',
@@ -152,7 +152,7 @@ export default function CuriosityHintSection() {
               marginLeft: '-10rem',
               marginTop: '-10rem',
               background:
-                'radial-gradient(circle, rgba(120,244,255,0.55) 0%, rgba(79,183,199,0.28) 30%, rgba(79,183,199,0.06) 60%, rgba(2,4,8,0) 78%)',
+                'radial-gradient(circle, rgba(252,241,233,0.55) 0%, rgba(239,68,68,0.28) 30%, rgba(220,38,38,0.06) 60%, rgba(2,4,8,0) 78%)',
             }}
           />
 
@@ -171,7 +171,7 @@ export default function CuriosityHintSection() {
             ref={fragmentRef}
             className="invisible max-w-[40ch] text-[clamp(1.4rem,2.6vw,2rem)] font-semibold leading-snug tracking-[-0.02em] text-[#f5fbff]"
             style={{
-              textShadow: '0 0 40px rgba(120, 244, 255, 0.16)',
+              textShadow: '0 0 40px rgba(239, 68, 68, 0.16)',
             }}
           >
             A faint signal in deep formation.

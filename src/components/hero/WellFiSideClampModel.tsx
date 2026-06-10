@@ -116,7 +116,7 @@ export default function WellFiSideClampModel({
           clearcoat: 1.0,
           clearcoatRoughness: 0.06,
           envMapIntensity: 0,
-          emissive: new THREE.Color('#66EFFF'),
+          emissive: new THREE.Color('#FF3333'),
           emissiveIntensity: 0,
         });
       }

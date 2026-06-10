@@ -31,7 +31,7 @@ export default function SignalRing({
   endY = 1.4,
   radius = 0.25,
   duration = 0.4,
-  color = '#22D3EE',
+  color = '#EF4444',
   maxOpacity = 0.6,
 }: SignalRingProps) {
   const meshRef = useRef<THREE.Mesh>(null);

@@ -49,14 +49,14 @@ export default function ToolSection() {
       <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[1.08fr_0.92fr] lg:items-center">
         <figure className="install-visual relative aspect-[5/4] overflow-hidden rounded-[2.1rem] border border-white/10 bg-[#0d1520] shadow-[0_34px_90px_rgba(0,0,0,0.46)]">
           <Image
-            src="/images/wellfi-photo-031.jpg"
+            src="/wellfi/images/wellfi-photo-031.jpg"
             alt="WellFi side-clamp installed beside carbon-steel pipe and fiberglass isolation section"
             fill
             sizes="(min-width: 1024px) 54vw, 100vw"
             className="object-cover object-center"
           />
           <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(2,7,14,0.72)_0%,rgba(2,7,14,0.18)_42%,rgba(2,7,14,0.76)_100%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_24%_26%,rgba(255,255,255,0.14),transparent_24%),radial-gradient(circle_at_62%_42%,rgba(34,211,238,0.08),transparent_28%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_24%_26%,rgba(255,255,255,0.14),transparent_24%),radial-gradient(circle_at_62%_42%,rgba(248,113,113,0.08),transparent_28%)]" />
           <div className="absolute bottom-5 left-5 right-5 rounded-[1.35rem] border border-white/10 bg-black/28 px-4 py-4 backdrop-blur-md">
             <p className="label-text mb-2">Installed state</p>
             <p className="max-w-md text-sm leading-6 text-text-primary/88">

@@ -7,7 +7,9 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import HeroSection from '@/components/hero/HeroSection';
 import Navigation from '@/components/nav/Navigation';
 import OneEightTrillionAnchor from '@/components/anchor/OneEightTrillionAnchor';
-import ToolRevealSection from '@/components/reveal/ToolRevealSection';
+import SagdPresentationSection from '@/components/sagd-presentation/SagdPresentationSection';
+// Tool closeup image hidden 2026-05-22 — requested to be removed as incorrect.
+// import ToolRevealSection from '@/components/reveal/ToolRevealSection';
 import ProofSection from '@/components/proof/ProofSection';
 // Calculator hidden 2026-05-09 — pivoted to curiosity-driven page.
 // Restore when ROI numbers are locked.
@@ -43,9 +45,9 @@ export default function Home() {
 
     // Background gradient shift — scroll-linked color temperature
     gsap.fromTo('main',
-      { '--bg-cyan-intensity': 0.04, '--bg-amber-intensity': 0.02 },
+      { '--bg-red-intensity': 0.04, '--bg-amber-intensity': 0.02 },
       {
-        '--bg-cyan-intensity': 0.12,
+        '--bg-red-intensity': 0.12,
         '--bg-amber-intensity': 0.03,
         ease: 'none',
         scrollTrigger: {
@@ -59,9 +61,9 @@ export default function Home() {
 
     // Warmer shift near proof section
     gsap.fromTo('main',
-      { '--bg-cyan-intensity': 0.12, '--bg-amber-intensity': 0.03 },
+      { '--bg-red-intensity': 0.12, '--bg-amber-intensity': 0.03 },
       {
-        '--bg-cyan-intensity': 0.06,
+        '--bg-red-intensity': 0.06,
         '--bg-amber-intensity': 0.08,
         ease: 'none',
         scrollTrigger: {
@@ -78,14 +80,16 @@ export default function Home() {
     <main
       ref={mainRef}
       style={{
-        '--bg-cyan-intensity': '0.04',
+        '--bg-red-intensity': '0.04',
         '--bg-amber-intensity': '0.02',
       } as React.CSSProperties}
     >
       <HeroSection />
       <Navigation />
       <OneEightTrillionAnchor />
-      <ToolRevealSection />
+      {/* Hidden 2026-05-22 — requested to be removed as incorrect: <ToolRevealSection /> */}
+      <div className="section-divider" />
+      <SagdPresentationSection />
       <div className="section-divider" />
       <ProofSection />
     </main>

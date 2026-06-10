@@ -76,12 +76,12 @@ export default function ToolRevealSection() {
           className="invisible aspect-square w-full overflow-hidden rounded-md"
           style={{
             boxShadow:
-              '0 24px 80px rgba(0, 0, 0, 0.6), 0 0 60px rgba(79, 183, 199, 0.08)',
+              '0 24px 80px rgba(0, 0, 0, 0.6), 0 0 60px rgba(239, 68, 68, 0.08)',
           }}
         >
           <Image
             src="/wellfi/tool-closeup.png"
-            alt="A wireless telemetry tool installed inside production tubing in a bitumen-saturated WCSB cold heavy oil reservoir, with a faint cyan glow at the fiberglass collar."
+            alt="A wireless telemetry tool connected inline with stainless steel production tubing on both ends, joined by industrial green coupling collars, in a dark, bitumen-saturated reservoir with a warm red electromagnetic signal glow."
             width={1200}
             height={1200}
             className="block h-full w-full object-cover"
