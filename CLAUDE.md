@@ -61,31 +61,31 @@ wellfi-marketing/
 ### Motion Stack
 
 - GSAP for hero sequencing and scroll reveals
-- Canvas 2D for the startup wave
+- React Three Fiber for the island hero (R3F + drei + postprocessing)
 - SVG for the hero logo signal arcs
 - Respect `prefers-reduced-motion`
 
-## Hero Startup Animation
+## Hero — Living Island Diorama (R3F)
 
-Source of truth: `docs/hero-startup-animation.md`
+Source of truth: `docs/hero-startup-animation.md` and the design spec in
+`wellfi-marketing/docs/superpowers/specs/2026-06-10-wellfi-island-hero-r3f-design.md`.
+The wave-sweep startup hero was retired 2026-06-10 (Kyle-approved).
 
-### Approved Sequence
+### Approved behavior
 
-- Ultra-faint ghost baseline
-- Fixed-height left-to-right sine-wave sweep
-- WellFi logo at 75% sweep
-- `Know the Unknown` at full sweep
-- Supporting copy, chips, and CTAs after the headline
-- Mouse/touch interaction only after sweep completion
-- Hero logo WiFi arcs may pulse only on direct hover/touch/focus interaction
+- Poster paints first (LCP); the R3F canvas cross-fades in when ready
+- 12 s seamless lighting cycle: day → dark → 3 relay pulses → relight (`src/lib/island/cycle.ts`)
+- Relay grammar: WellFi B (red #EF4444) fires deep in the lateral → WellFi A (cyan) answers at the casing shoe → surface ring
+- Drag = PresentationControls with spring-back; pointer parallax when idle; page scroll is never captured
+- `prefers-reduced-motion`: frozen lit state, no pulses
 
 ### Non-Negotiables
 
-- Do not reintroduce bottom-up wave motion
-- Do not tighten or reshape the wave during intro
-- Do not reveal supporting copy before the headline
-- Do not decouple GSAP timing from the shared sweep duration constant
-- Do not pile extra startup effects onto the approved sequence
+- Do not let the canvas block first paint (poster-first stays)
+- Red #EF4444 belongs to WellFi B only; transmission stays cyan
+- Pure-math modules (`layout.ts`, `cycle.ts`, `wellPath.ts`) keep their unit tests green (`npm test`)
+- The cycle must stay seamless (state at t=12 ≡ t=0)
+- No scroll hijacking in the hero
 
 ## Code Style
 

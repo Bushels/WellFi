@@ -4,7 +4,7 @@ import { useRef } from 'react';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import HeroSection from '@/components/hero/HeroSection';
+import IslandHero from '@/components/hero/island/IslandHero';
 import Navigation from '@/components/nav/Navigation';
 import OneEightTrillionAnchor from '@/components/anchor/OneEightTrillionAnchor';
 import SagdPresentationSection from '@/components/sagd-presentation/SagdPresentationSection';
@@ -84,7 +84,7 @@ export default function Home() {
         '--bg-amber-intensity': '0.02',
       } as React.CSSProperties}
     >
-      <HeroSection />
+      <IslandHero />
       <Navigation />
       <OneEightTrillionAnchor />
       {/* Hidden 2026-05-22 — requested to be removed as incorrect: <ToolRevealSection /> */}
