@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { onCap, PAD_RECT, ROAD_RECT, SLAB } from '@/lib/island/layout';
@@ -57,13 +57,17 @@ const inRect = (
 
 export default function Forest({ tier }: { tier: GpuTier }) {
   const geometries = useMemo(() => VARIANTS.map(spruceGeometry), []);
+  const meshRefs = useRef<(THREE.InstancedMesh | null)[]>([]);
 
   const instances = useMemo(() => {
+    // One shared PRNG stream across variants: variant 2/3 offsets depend on how
+    // many draws variant 1 consumed, so their scatter is NOT tier-stable (fine —
+    // tier only changes across page loads).
     const rand = mulberry32(20260610);
     const counts = COUNTS[tier];
     const dummy = new THREE.Object3D();
     const color = new THREE.Color();
-    return counts.map((count) => {
+    return counts.map((count, vi) => {
       const matrices: THREE.Matrix4[] = [];
       const colors: THREE.Color[] = [];
       let guard = 0;
@@ -79,9 +83,26 @@ export default function Forest({ tier }: { tier: GpuTier }) {
         matrices.push(dummy.matrix.clone());
         colors.push(color.setHSL(0.33 + (rand() - 0.5) * 0.06, 0.5, 0.24 + rand() * 0.14).clone());
       }
+      if (process.env.NODE_ENV !== 'production' && matrices.length < count) {
+        console.warn(
+          `Forest: variant ${vi} placed ${matrices.length}/${count} trees — guard exhausted.`,
+        );
+      }
       return { matrices, colors };
     });
   }, [tier]);
+
+  // Write matrices/colors once per instances change — NOT in an inline ref,
+  // which React re-invokes on every parent re-render.
+  useEffect(() => {
+    meshRefs.current.forEach((mesh, vi) => {
+      if (!mesh) return;
+      instances[vi].matrices.forEach((m, i) => mesh.setMatrixAt(i, m));
+      instances[vi].colors.forEach((c, i) => mesh.setColorAt(i, c));
+      mesh.instanceMatrix.needsUpdate = true;
+      if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
+    });
+  }, [instances]);
 
   return (
     <group>
@@ -90,11 +111,7 @@ export default function Forest({ tier }: { tier: GpuTier }) {
           key={vi}
           args={[geom, undefined, instances[vi].matrices.length]}
           ref={(mesh) => {
-            if (!mesh) return;
-            instances[vi].matrices.forEach((m, i) => mesh.setMatrixAt(i, m));
-            instances[vi].colors.forEach((c, i) => mesh.setColorAt(i, c));
-            mesh.instanceMatrix.needsUpdate = true;
-            if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
+            meshRefs.current[vi] = mesh;
           }}
         >
           <meshStandardMaterial color="#ffffff" roughness={0.95} flatShading />
