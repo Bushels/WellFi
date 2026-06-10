@@ -25,7 +25,7 @@ interface IslandSceneProps {
 }
 
 const CAMERA = {
-  desktop: { position: [13.5, 9.5, 15.5] as const, target: new THREE.Vector3(0.8, -1.6, 0.6) },
+  desktop: { position: [25.1, 19.9, 28.3] as const, target: new THREE.Vector3(-1.8, -1.5, 2.2) },
   compact: { position: [15.5, 11.5, 17.5] as const, target: new THREE.Vector3(0.5, -1.4, 0.5) },
 };
 
