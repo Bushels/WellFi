@@ -18,17 +18,23 @@ const chip = (accent: string): CSSProperties => ({
   pointerEvents: 'none',
 });
 
+const CHIP_A = { ...chip(COLORS.emGlow), transform: 'translateY(-26px)' };
+const CHIP_B = { ...chip(COLORS.signalRed), transform: 'translateY(-26px)' };
+const CHIP_SHOE = { ...chip(COLORS.casing), transform: 'translateY(22px)' };
+
 export default function IslandLabels({ paths }: { paths: WellPaths }) {
   return (
     <group>
-      <Html position={paths.toolA.position} center distanceFactor={14} style={{ transform: 'translateY(-26px)' }}>
-        <div style={chip(COLORS.emGlow)}>WellFi A</div>
+      {/* Labels are deliberately always-visible (no occlude) — persistent
+          engineering callouts per the reference image, not depth-tested HUD. */}
+      <Html position={paths.toolA.position} center distanceFactor={14}>
+        <div style={CHIP_A}>WellFi A</div>
       </Html>
-      <Html position={paths.toolB.position} center distanceFactor={14} style={{ transform: 'translateY(-26px)' }}>
-        <div style={chip(COLORS.signalRed)}>WellFi B</div>
+      <Html position={paths.toolB.position} center distanceFactor={14}>
+        <div style={CHIP_B}>WellFi B</div>
       </Html>
-      <Html position={paths.shoe} center distanceFactor={14} style={{ transform: 'translateY(22px)' }}>
-        <div style={chip('#9bb5c7')}>Casing Shoe</div>
+      <Html position={paths.shoe} center distanceFactor={14}>
+        <div style={CHIP_SHOE}>Casing Shoe</div>
       </Html>
     </group>
   );
