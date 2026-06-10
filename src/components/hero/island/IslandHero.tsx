@@ -39,21 +39,15 @@ export default function IslandHero() {
           Until then it reuses the existing responsive hero art classes. */}
       <div
         aria-hidden="true"
-        className="hero-art-direction absolute inset-0"
-        style={{
-          opacity: canvasReady ? 0 : 1,
-          transition: prefersReducedMotion ? 'none' : 'opacity 1200ms ease',
-        }}
+        className="hero-art-direction absolute inset-0 motion-safe:transition-opacity motion-safe:duration-[1200ms]"
+        style={{ opacity: canvasReady ? 0 : 1 }}
       />
 
       {/* Live canvas — fades in over the poster */}
       <div
         aria-hidden="true"
-        className="absolute inset-0"
-        style={{
-          opacity: canvasReady ? 1 : 0,
-          transition: prefersReducedMotion ? 'none' : 'opacity 1200ms ease',
-        }}
+        className="absolute inset-0 motion-safe:transition-opacity motion-safe:duration-[1200ms]"
+        style={{ opacity: canvasReady ? 1 : 0 }}
       >
         <IslandCanvas
           reducedMotion={prefersReducedMotion}
