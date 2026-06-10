@@ -10,7 +10,7 @@ import type { ToolAnchor } from '@/lib/island/wellPath';
 
 const MODEL_PATH = '/wellfi/models/wellfi-gauge.glb';
 useGLTF.setDecoderPath('/wellfi/draco/');
-useGLTF.preload(MODEL_PATH);
+useGLTF.preload(MODEL_PATH, true);
 
 const TOOL_LENGTH = 0.55; // scene units
 
@@ -25,9 +25,10 @@ class GlbBoundary extends Component<{ fallback: ReactNode; children: ReactNode }
 }
 
 function GaugeGlb() {
-  const { scene } = useGLTF(MODEL_PATH);
+  const { scene } = useGLTF(MODEL_PATH, true);
   const prepared = useMemo(() => {
     const clone = scene.clone(true);
+    clone.updateMatrixWorld(true); // detached clone: recompute world matrices before measuring
     const box = new THREE.Box3().setFromObject(clone);
     const size = box.getSize(new THREE.Vector3());
     const longest = Math.max(size.x, size.y, size.z);
@@ -95,7 +96,7 @@ function Tool({ anchor, glowColor, readBoost, cycleRef }: ToolProps) {
           <GaugeGlb />
         </Suspense>
       </GlbBoundary>
-      {/* Emissive collar sleeve — independent of the GLB, never fails */}
+      {/* Emissive collar sleeve — independent of the GLB, never fails. At peak pulse the color exceeds 1.0 (×2.8) BY DESIGN: that's what trips the Bloom threshold for the candle halo. */}
       <mesh rotation={[0, 0, Math.PI / 2]}>
         <cylinderGeometry args={[0.062, 0.062, 0.15, 16]} />
         <meshBasicMaterial ref={sleeve} color={glowColor} toneMapped={false} />
