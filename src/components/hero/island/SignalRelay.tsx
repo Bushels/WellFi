@@ -29,7 +29,7 @@ export default function SignalRelay({ cycleRef, wellhead }: SignalRelayProps) {
     <mesh
       ref={ring}
       visible={false}
-      // +0.06 above the (already drape-lifted) wellhead: clears the grade cap, no z-fight
+      // +0.06 above the wellhead point (itself slightly above grade): clears the cap, no z-fight
       position={[wellhead.x, wellhead.y + 0.06, wellhead.z]}
       rotation={[-Math.PI / 2, 0, 0]}
     >

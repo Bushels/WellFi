@@ -1,8 +1,9 @@
 import * as THREE from 'three';
 
-// three caches programs by onBeforeCompile SOURCE TEXT, identical for every
-// factory instance — without a unique key, the 2nd pulse material silently
-// reuses the 1st's program and its closure uniforms never install.
+// three caches programs keyed (by default) on onBeforeCompile SOURCE TEXT,
+// identical for every factory instance — without a unique key the 2nd material
+// silently reuses the 1st's COMPILED SHADER TEXT (its uniforms still install,
+// but any divergent GLSL edits would be discarded). Unique key = own program.
 let pulseMaterialId = 0;
 
 export interface PulseHandle {

@@ -63,6 +63,7 @@ function buildLateral(kop: Vector3, toe2d: [number, number]): CatmullRomCurve3 {
 
 // Allocates fresh curves/vectors each call — call once and memoize (useMemo) in React.
 export function buildWellPaths(): WellPaths {
+  if (KOP_PARAMS.length !== LATERAL_TOES.length) throw new Error('KOP_PARAMS and LATERAL_TOES must stay in lock-step');
   const wellhead = v(-5.2, 0.05, Z_FACE);
 
   const heel = drape(-0.9, 3.4, 0.12); // extra lift: cased/open-hole transition needs clearance

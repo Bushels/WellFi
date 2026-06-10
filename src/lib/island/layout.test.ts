@@ -60,6 +60,9 @@ describe('floorY', () => {
   it('returns to near-flat away from the bowl', () => {
     expect(Math.abs(floorY(-1.0, 4.5) - FLOOR_Y)).toBeLessThan(0.035);
   });
+  it('floor never reaches the solid-block joint', () => {
+    expect(floorY(2.6, 1.9)).toBeGreaterThan(LOWER.topY);
+  });
 });
 
 describe('exclusion rects + palette', () => {
