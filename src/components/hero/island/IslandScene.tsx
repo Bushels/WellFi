@@ -91,12 +91,15 @@ export default function IslandScene({ tier, reducedMotion, compact }: IslandScen
   return (
     <>
       <color attach="background" args={[COLORS.void]} />
+      {/* key forces a remount when framing flips — drei's onUpdate (and thus
+          lookAt) only fires on mount/camera-change, not on prop updates. */}
       <PerspectiveCamera
+        key={compact ? 'compact' : 'desktop'}
         makeDefault
         fov={20}
         near={0.5}
         far={120}
-        position={cam.position as unknown as [number, number, number]}
+        position={[...cam.position]}
         onUpdate={(c) => c.lookAt(cam.target)}
       />
 
