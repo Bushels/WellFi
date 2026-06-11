@@ -35,11 +35,14 @@ export default function IslandHero() {
       id="hero"
       className="relative isolate min-h-[100svh] overflow-hidden bg-[#020408] text-white"
     >
-      {/* Poster layer — replaced with the island still in Task 16.
-          Until then it reuses the existing responsive hero art classes. */}
-      <div
+      {/* Poster = a still of this very scene, so the poster→canvas crossfade is invisible. */}
+      {/* eslint-disable-next-line @next/next/no-img-element -- raw img matches the repo's basePath'd-asset convention; fetchPriority makes it the LCP */}
+      <img
         aria-hidden="true"
-        className="hero-art-direction absolute inset-0 motion-safe:transition-opacity motion-safe:duration-[1200ms]"
+        src="/wellfi/hero-island-poster.webp"
+        alt=""
+        fetchPriority="high"
+        className="absolute inset-0 h-full w-full object-cover motion-safe:transition-opacity motion-safe:duration-[1200ms]"
         style={{ opacity: canvasReady ? 0 : 1 }}
       />
 
