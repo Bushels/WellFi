@@ -8,10 +8,10 @@ import { CatmullRomCurve3, Vector3 } from 'three';
 import { floorY } from './layout';
 
 export const RADII = {
-  surfaceStub: 0.12,
-  cased: 0.09,
-  openHole: 0.062,
-  lateral: 0.05,
+  surfaceStub: 0.15,
+  cased: 0.125,
+  openHole: 0.085,
+  lateral: 0.068,
 } as const;
 
 export interface ToolAnchor {

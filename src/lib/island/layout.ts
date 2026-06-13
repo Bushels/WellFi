@@ -89,7 +89,7 @@ export const COLORS = {
   emCyan: '#06B6D4',
   emGlow: '#22D3EE',
   signalRed: '#EF4444',
-  casing: '#9fb6c4',
+  casing: '#6b7d8a',
   casingShell: '#7dd3e8',
   openHole: '#c2ab7d',
   lateral: '#b59a6b',

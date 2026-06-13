@@ -40,6 +40,7 @@ export default function IslandScene({ tier, reducedMotion, compact }: IslandScen
       createPulseMaterial({
         base: { color: COLORS.casing, roughness: 0.35, metalness: 0.85 },
         pulseColor: COLORS.emGlow,
+        flowCount: 10,
       }),
     [],
   );
@@ -48,6 +49,25 @@ export default function IslandScene({ tier, reducedMotion, compact }: IslandScen
       createPulseMaterial({
         base: { color: COLORS.lateral, roughness: 0.9, metalness: 0 },
         pulseColor: COLORS.signalRed,
+        flowCount: 8,
+      }),
+    [],
+  );
+  const motherboreFlow = useMemo(
+    () =>
+      createPulseMaterial({
+        base: { color: COLORS.openHole, roughness: 0.9, metalness: 0 },
+        pulseColor: COLORS.emGlow,
+        flowCount: 12,
+      }),
+    [],
+  );
+  const lateralFlow = useMemo(
+    () =>
+      createPulseMaterial({
+        base: { color: COLORS.lateral, roughness: 0.9, metalness: 0 },
+        pulseColor: COLORS.emGlow,
+        flowCount: 8,
       }),
     [],
   );
@@ -77,6 +97,18 @@ export default function IslandScene({ tier, reducedMotion, compact }: IslandScen
     } else {
       casedPulse.setPulse(-1, 0);
     }
+
+    // Lit-phase production-flow chevrons on every bore (freeze time under reduced motion).
+    // Wrap at 20 s: the dash shader is periodic in uTime*0.45, and 20*0.45 = 9.0 (an
+    // integer number of dash periods), so the wrap is seamless AND keeps uTime small —
+    // raw unbounded elapsedTime would lose fragment-shader fract() precision (dash jitter)
+    // after a long session.
+    const flowTime = reducedMotion ? REDUCED_MOTION_T : state.clock.elapsedTime % 20;
+    const flowStrength = 0.9 * s.flow;
+    casedPulse.setFlow(flowStrength, flowTime);
+    lateralPulse.setFlow(flowStrength, flowTime);
+    motherboreFlow.setFlow(flowStrength, flowTime);
+    lateralFlow.setFlow(flowStrength, flowTime);
 
     if (parallax.current && !reducedMotion) {
       const targetY = state.pointer.x * 0.05;
@@ -124,6 +156,8 @@ export default function IslandScene({ tier, reducedMotion, compact }: IslandScen
             paths={paths}
             casedMaterial={casedPulse.material}
             lateralFiveMaterial={lateralPulse.material}
+            openHoleMaterial={motherboreFlow.material}
+            lateralMaterial={lateralFlow.material}
           />
           <WellFiTools toolA={paths.toolA} toolB={paths.toolB} cycleRef={cycleRef} />
           <SignalRelay cycleRef={cycleRef} wellhead={paths.wellhead} />

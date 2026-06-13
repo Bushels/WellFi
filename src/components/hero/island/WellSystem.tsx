@@ -13,9 +13,11 @@ interface WellSystemProps {
   // Pulse-carrying materials, owned by IslandScene (created via createPulseMaterial).
   casedMaterial: THREE.Material;
   lateralFiveMaterial: THREE.Material;
+  openHoleMaterial: THREE.Material;
+  lateralMaterial: THREE.Material;
 }
 
-export default function WellSystem({ paths, casedMaterial, lateralFiveMaterial }: WellSystemProps) {
+export default function WellSystem({ paths, casedMaterial, lateralFiveMaterial, openHoleMaterial, lateralMaterial }: WellSystemProps) {
   const geoms = useMemo(() => {
     const cased = new THREE.TubeGeometry(paths.cased, 72, RADII.cased, 12, false);
     const shell = new THREE.TubeGeometry(paths.cased, 72, RADII.cased * 1.55, 12, false);
@@ -70,18 +72,14 @@ export default function WellSystem({ paths, casedMaterial, lateralFiveMaterial }
       <mesh geometry={geoms.cased} material={casedMaterial} />
 
       {/* Open-hole pilot */}
-      <mesh geometry={geoms.openHole}>
-        <meshStandardMaterial color={COLORS.openHole} roughness={0.9} metalness={0} />
-      </mesh>
+      <mesh geometry={geoms.openHole} material={openHoleMaterial} />
 
       {/* Laterals — L5 (index 4) carries the red pulse from WellFi B */}
       {geoms.laterals.map((g, i) =>
         i === PULSE_LATERAL_INDEX ? (
           <mesh key={`lat-${i}`} geometry={g} material={lateralFiveMaterial} />
         ) : (
-          <mesh key={`lat-${i}`} geometry={g}>
-            <meshStandardMaterial color={COLORS.lateral} roughness={0.9} metalness={0} />
-          </mesh>
+          <mesh key={`lat-${i}`} geometry={g} material={lateralMaterial} />
         ),
       )}
 

@@ -13,6 +13,7 @@ export interface CycleState {
   pulseLateral: number; // B → junction pulse progress, or -1
   pulseCased: number;   // shoe → wellhead pulse progress, or -1
   receiver: number;     // surface ring progress, or -1
+  flow: number;         // 0..1 — lit-phase production-flow chevron strength
 }
 
 export function smooth(a: number, b: number, t: number): number {
@@ -64,6 +65,7 @@ export function cycleState(t: number): CycleState {
     pulseLateral,
     pulseCased,
     receiver,
+    flow: light,
   };
 }
 

@@ -82,6 +82,58 @@ function makeNoiseTexture(): THREE.Texture {
   return tex;
 }
 
+// Laminated bedding driven by WORLD-Y, injected into a MeshStandardMaterial via
+// onBeforeCompile. A bumpMap (the prior approach) only perturbs normals — on flat,
+// smoothly-lit slab walls that is nearly invisible, and it never touches base color.
+// Real lithology lamination IS color variation (light/dark beds), so we modulate the
+// albedo directly. World-Y means the beds read perfectly horizontal on EVERY cut face
+// regardless of the extrude UV layout, and the multiply happens before lighting so the
+// day→dark cycle still dims the whole slab naturally.
+//   freq  — bedding-plane spacing (higher = finer beds)
+//   depth — how dark the bedding planes cut (0..1)
+//   phase — per-band offset so adjacent strata don't share identical bands
+function makeBeddingMaterial(
+  color: string,
+  roughness: number,
+  freq: number,
+  depth: number,
+  phase: number,
+  bump?: THREE.Texture,
+): THREE.MeshStandardMaterial {
+  const mat = new THREE.MeshStandardMaterial({ color, roughness, metalness: 0 });
+  if (bump) {
+    mat.bumpMap = bump;
+    mat.bumpScale = 0.018;
+  }
+  mat.onBeforeCompile = (shader) => {
+    shader.vertexShader = shader.vertexShader
+      .replace('#include <common>', '#include <common>\nvarying float vBedY;')
+      .replace(
+        '#include <begin_vertex>',
+        '#include <begin_vertex>\nvBedY = (modelMatrix * vec4(position, 1.0)).y;',
+      );
+    shader.fragmentShader = shader.fragmentShader
+      .replace(
+        '#include <common>',
+        `#include <common>
+        varying float vBedY;
+        const float BED_FREQ = ${freq.toFixed(1)};
+        const float BED_DEPTH = ${depth.toFixed(2)};
+        const float BED_PHASE = ${phase.toFixed(2)};`,
+      )
+      .replace(
+        '#include <color_fragment>',
+        `#include <color_fragment>
+        float bed = abs(sin(vBedY * BED_FREQ + BED_PHASE));
+        float line = smoothstep(0.45, 0.97, bed);            // sharp bedding planes
+        float lam = 0.5 + 0.5 * sin(vBedY * BED_FREQ * 0.31); // slow bed-to-bed value drift
+        diffuseColor.rgb *= (1.0 - BED_DEPTH * line);         // darken the planes
+        diffuseColor.rgb *= (0.90 + 0.18 * lam);              // gentle lamination shading`,
+      );
+  };
+  return mat;
+}
+
 function makeShadowTexture(): THREE.Texture {
   if (typeof document === 'undefined') return fallbackTexture();
   const size = 256;
@@ -124,31 +176,49 @@ export default function Terrain() {
   const shadowTex = useMemo(() => makeShadowTexture(), []);
   const noiseTex = useMemo(() => makeNoiseTexture(), []);
 
+  // Per-band bedding character: shale (overburden) is finely laminated; sand is
+  // coarser-bedded; the deep zones get subtler, slower beds. Phase offsets keep
+  // adjacent strata from sharing identical bedding lines across their shared edge.
+  const BEDDING: Record<string, { freq: number; depth: number; phase: number }> = {
+    overburden: { freq: 34, depth: 0.34, phase: 0.0 },
+    sand: { freq: 22, depth: 0.26, phase: 1.1 },
+    bitumenUp: { freq: 26, depth: 0.3, phase: 2.3 },
+  };
+
+  // One bedding material per rock band (topsoil/grass stays plain). Built once.
+  const strataMats = useMemo(
+    () =>
+      STRATA.map((s) => {
+        if (s.name === 'topsoil') {
+          const m = new THREE.MeshStandardMaterial({
+            color: s.color,
+            roughness: s.roughness,
+            metalness: 0,
+          });
+          m.bumpMap = noiseTex;
+          m.bumpScale = 0.02;
+          return m;
+        }
+        const b = BEDDING[s.name] ?? { freq: 26, depth: 0.3, phase: 0 };
+        return makeBeddingMaterial(s.color, s.roughness, b.freq, b.depth, b.phase, noiseTex);
+      }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [noiseTex],
+  );
+  const lowerMat = useMemo(
+    () => makeBeddingMaterial(LOWER.color, LOWER.roughness, 20, 0.28, 0.6, noiseTex),
+    [noiseTex],
+  );
+
   // Resources are intentionally not disposed: the hero mounts once per page and
   // lives for its lifetime. (Dev hot-reload remounts leak a little VRAM —
   // acceptable; revisit only if this component ever mounts repeatedly.)
   return (
     <group>
       {STRATA.map((s, i) => (
-        <mesh key={s.name} geometry={strataGeoms[i]}>
-          <meshStandardMaterial
-            color={s.color}
-            roughness={s.roughness}
-            metalness={0}
-            bumpMap={noiseTex}
-            bumpScale={0.02}
-          />
-        </mesh>
+        <mesh key={s.name} geometry={strataGeoms[i]} material={strataMats[i]} />
       ))}
-      <mesh geometry={lowerGeom}>
-        <meshStandardMaterial
-          color={LOWER.color}
-          roughness={LOWER.roughness}
-          metalness={0}
-          bumpMap={noiseTex}
-          bumpScale={0.02}
-        />
-      </mesh>
+      <mesh geometry={lowerGeom} material={lowerMat} />
       {coalGeoms.map((g, i) => (
         <mesh key={`coal-y${COAL_YS[i]}`} geometry={g} scale={[1.001, 1, 1.001]}>
           <meshStandardMaterial color="#0d0b08" roughness={0.4} metalness={0.1} />

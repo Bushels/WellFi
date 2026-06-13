@@ -61,12 +61,19 @@ describe('cycleState', () => {
     expect(f06.collarA).toBeGreaterThan(EMBER + 0.2);
   });
 
+  it('flow follows the lit phase', () => {
+    expect(cycleState(1).flow).toBe(1);
+    expect(cycleState(6).flow).toBe(0);
+    expect(cycleState(4).flow).toBeGreaterThan(0);
+    expect(cycleState(4).flow).toBeLessThan(1);
+  });
+
   it('all envelope fields stay in range', () => {
     let maxCollar = 0;
     for (let t = 0; t < CYCLE_S; t += 0.05) {
       const s = cycleState(t);
       maxCollar = Math.max(maxCollar, s.collarA, s.collarB);
-      for (const k of ['sun', 'sky', 'collarA', 'collarB'] as const) {
+      for (const k of ['sun', 'sky', 'collarA', 'collarB', 'flow'] as const) {
         expect(s[k]).toBeGreaterThanOrEqual(0);
         expect(s[k]).toBeLessThanOrEqual(1);
       }
