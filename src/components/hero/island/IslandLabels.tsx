@@ -22,7 +22,19 @@ const CHIP_A = { ...chip(COLORS.emGlow), transform: 'translateY(-26px)' };
 const CHIP_B = { ...chip(COLORS.signalRed), transform: 'translateY(-26px)' };
 const CHIP_SHOE = { ...chip(COLORS.casing), transform: 'translateY(22px)' };
 
-export default function IslandLabels({ paths }: { paths: WellPaths }) {
+export default function IslandLabels({
+  paths,
+  compact = false,
+}: {
+  paths: WellPaths;
+  compact?: boolean;
+}) {
+  // On mobile (<768px) the copy column spans nearly the full width, so the chips
+  // collide with the headline/CTA and read as clutter. Drop them there — the relay
+  // color story (red B → cyan A → surface) still carries the scene. Desktop keeps the
+  // full engineering callouts. Safe to gate on JS `compact`: labels live inside the
+  // client-only canvas, so there's no SSR/hydration markup to mismatch.
+  if (compact) return null;
   return (
     <group>
       {/* Labels are deliberately always-visible (no occlude) — persistent

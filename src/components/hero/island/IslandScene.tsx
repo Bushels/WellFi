@@ -162,7 +162,7 @@ export default function IslandScene({ tier, reducedMotion, compact }: IslandScen
           <WellFiTools toolA={paths.toolA} toolB={paths.toolB} cycleRef={cycleRef} />
           <SignalRelay cycleRef={cycleRef} wellhead={paths.wellhead} />
           <LeasePad />
-          <IslandLabels paths={paths} />
+          <IslandLabels paths={paths} compact={compact} />
         </group>
       </PresentationControls>
 
