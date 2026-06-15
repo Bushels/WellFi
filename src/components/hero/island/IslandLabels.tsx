@@ -20,7 +20,6 @@ const chip = (accent: string): CSSProperties => ({
 
 const CHIP_A = { ...chip(COLORS.emGlow), transform: 'translateY(-26px)' };
 const CHIP_B = { ...chip(COLORS.signalRed), transform: 'translateY(-26px)' };
-const CHIP_SHOE = { ...chip(COLORS.casing), transform: 'translateY(22px)' };
 
 export default function IslandLabels({
   paths,
@@ -37,16 +36,13 @@ export default function IslandLabels({
   if (compact) return null;
   return (
     <group>
-      {/* Labels are deliberately always-visible (no occlude) — persistent
-          engineering callouts per the reference image, not depth-tested HUD. */}
+      {/* Labels are deliberately always-visible (no occlude) — the two tool
+          callouts, not depth-tested HUD. (Casing Shoe label removed per Kyle.) */}
       <Html position={paths.toolA.position} center distanceFactor={14}>
         <div style={CHIP_A}>WellFi A</div>
       </Html>
       <Html position={paths.toolB.position} center distanceFactor={14}>
         <div style={CHIP_B}>WellFi B</div>
-      </Html>
-      <Html position={paths.shoe} center distanceFactor={14}>
-        <div style={CHIP_SHOE}>Casing Shoe</div>
       </Html>
     </group>
   );

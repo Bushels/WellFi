@@ -6,7 +6,16 @@ import { PerspectiveCamera, PresentationControls } from '@react-three/drei';
 import { Bloom, EffectComposer } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import { COLORS } from '@/lib/island/layout';
-import { CYCLE_S, REDUCED_MOTION_T, cycleState, type CycleState } from '@/lib/island/cycle';
+import {
+  BREATH,
+  CYCLE_S,
+  RELAY_END,
+  RELAY_START,
+  REDUCED_MOTION_T,
+  cycleState,
+  smooth,
+  type CycleState,
+} from '@/lib/island/cycle';
 import { buildWellPaths, TOOL_B_PARAM } from '@/lib/island/wellPath';
 import { createPulseMaterial } from '@/lib/island/pulseMaterial';
 import type { GpuTier } from '@/lib/island/quality';
@@ -17,6 +26,7 @@ import WellFiTools from './WellFiTools';
 import SignalRelay from './SignalRelay';
 import LeasePad from './LeasePad';
 import IslandLabels from './IslandLabels';
+import PressureReadout, { type PressureState } from './PressureReadout';
 
 interface IslandSceneProps {
   tier: GpuTier;
@@ -31,9 +41,16 @@ const CAMERA = {
 
 const pulseShape = (p: number) => 2.6 * Math.sin(Math.PI * Math.min(1, Math.max(0, p)));
 
+// Downhole pressure readout (kPa) shown when each relay pulse reaches surface.
+// A live-sensor feel: a base reading, a small per-breath step, and a faint tick.
+// Well within the tool's 10,000 psia (~68,950 kPa) rating. Tunable.
+const PRESSURE_BASE = 8450;
+const PRESSURE_STEPS = [0, 95, -55]; // one per relay breath (3 per cycle)
+
 export default function IslandScene({ tier, reducedMotion, compact }: IslandSceneProps) {
   const paths = useMemo(() => buildWellPaths(), []);
   const cycleRef = useRef<CycleState>(cycleState(REDUCED_MOTION_T));
+  const pressureRef = useRef<PressureState>({ intensity: 0, kpa: PRESSURE_BASE });
 
   const casedPulse = useMemo(
     () =>
@@ -110,6 +127,20 @@ export default function IslandScene({ tier, reducedMotion, compact }: IslandScen
     motherboreFlow.setFlow(flowStrength, flowTime);
     lateralFlow.setFlow(flowStrength, flowTime);
 
+    // Downhole pressure readout — appears as the transmit (dark) phase begins and
+    // HOLDS through all three pulses so it's actually readable, then fades at relight.
+    // The value steps per pulse (+ a faint tick) so it reads as a live data feed —
+    // "the tool is delivering a real downhole pressure to surface."
+    if (!reducedMotion && t >= RELAY_START - 0.4 && t < RELAY_END + 0.5) {
+      const appear = smooth(RELAY_START - 0.4, RELAY_START + 0.6, t);
+      const leave = 1 - smooth(RELAY_END - 0.2, RELAY_END + 0.5, t);
+      pressureRef.current.intensity = appear * leave;
+      const breath = Math.min(2, Math.max(0, Math.floor((t - RELAY_START) / BREATH)));
+      pressureRef.current.kpa = PRESSURE_BASE + PRESSURE_STEPS[breath] + 4 * Math.sin(t * 9);
+    } else {
+      pressureRef.current.intensity = 0;
+    }
+
     if (parallax.current && !reducedMotion) {
       const targetY = state.pointer.x * 0.05;
       const targetX = -state.pointer.y * 0.025;
@@ -163,6 +194,7 @@ export default function IslandScene({ tier, reducedMotion, compact }: IslandScen
           <SignalRelay cycleRef={cycleRef} wellhead={paths.wellhead} />
           <LeasePad />
           <IslandLabels paths={paths} compact={compact} />
+          <PressureReadout pressureRef={pressureRef} anchor={paths.wellhead} />
         </group>
       </PresentationControls>
 
