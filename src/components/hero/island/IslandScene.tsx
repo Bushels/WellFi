@@ -26,7 +26,7 @@ import WellFiTools from './WellFiTools';
 import SignalRelay from './SignalRelay';
 import LeasePad from './LeasePad';
 import IslandLabels from './IslandLabels';
-import PressureReadout, { type PressureState } from './PressureReadout';
+import TelemetryReadout, { type TelemetryState } from './TelemetryReadout';
 
 interface IslandSceneProps {
   tier: GpuTier;
@@ -41,16 +41,18 @@ const CAMERA = {
 
 const pulseShape = (p: number) => 2.6 * Math.sin(Math.PI * Math.min(1, Math.max(0, p)));
 
-// Downhole pressure readout (kPa) shown when each relay pulse reaches surface.
-// A live-sensor feel: a base reading, a small per-breath step, and a faint tick.
-// Well within the tool's 10,000 psia (~68,950 kPa) rating. Tunable.
-const PRESSURE_BASE = 8450;
-const PRESSURE_STEPS = [0, 95, -55]; // one per relay breath (3 per cycle)
+// Telemetry channels carried up by the 3 relay pulses — the readout SNAPS to the
+// next channel only when each uplink reaches surface. Values are tunable.
+//   0 pressure (hydrostatic head, kPa) · 1 temperature (°C) · 2 resistivity (Ω·m)
+// Resistivity's on-screen value is the fluid calc it yields — WATER CUT (the only
+// defensible derivation; see TelemetryReadout CHANNELS). 1.2 Ω·m ≈ 35% WC.
+const CHANNEL_VALUES = [223, 24, 1.2];
+const ARRIVAL_F = 0.74; // within-breath fraction where the uplink hits surface
 
 export default function IslandScene({ tier, reducedMotion, compact }: IslandSceneProps) {
   const paths = useMemo(() => buildWellPaths(), []);
   const cycleRef = useRef<CycleState>(cycleState(REDUCED_MOTION_T));
-  const pressureRef = useRef<PressureState>({ intensity: 0, kpa: PRESSURE_BASE });
+  const readoutRef = useRef<TelemetryState>({ intensity: 0, channel: 0, value: CHANNEL_VALUES[0] });
 
   const casedPulse = useMemo(
     () =>
@@ -127,18 +129,27 @@ export default function IslandScene({ tier, reducedMotion, compact }: IslandScen
     motherboreFlow.setFlow(flowStrength, flowTime);
     lateralFlow.setFlow(flowStrength, flowTime);
 
-    // Downhole pressure readout — appears as the transmit (dark) phase begins and
-    // HOLDS through all three pulses so it's actually readable, then fades at relight.
-    // The value steps per pulse (+ a faint tick) so it reads as a live data feed —
-    // "the tool is delivering a real downhole pressure to surface."
-    if (!reducedMotion && t >= RELAY_START - 0.4 && t < RELAY_END + 0.5) {
-      const appear = smooth(RELAY_START - 0.4, RELAY_START + 0.6, t);
-      const leave = 1 - smooth(RELAY_END - 0.2, RELAY_END + 0.5, t);
-      pressureRef.current.intensity = appear * leave;
-      const breath = Math.min(2, Math.max(0, Math.floor((t - RELAY_START) / BREATH)));
-      pressureRef.current.kpa = PRESSURE_BASE + PRESSURE_STEPS[breath] + 4 * Math.sin(t * 9);
+    // Telemetry readout — the channel/value SNAP only at the instant each uplink
+    // reaches surface (pulse 1 → pressure, 2 → temperature, 3 → resistivity), so the
+    // numbers change exactly when the signal "hits", then the box holds, then fades
+    // at relight. This shows the tool delivering real downhole data, one reading per
+    // transmission.
+    if (!reducedMotion && t >= RELAY_START && t < RELAY_END + 0.5) {
+      const progress = (t - RELAY_START) / BREATH;
+      const breath = Math.floor(progress);
+      const within = progress - breath;
+      const arrived = Math.min(3, breath + (within >= ARRIVAL_F ? 1 : 0)); // 0..3
+      const channel = arrived - 1; // -1 until the first uplink lands
+      const firstArrival = RELAY_START + ARRIVAL_F * BREATH;
+      // Hold the last reading (resistivity → water cut, the most info-dense) well
+      // into the relight so it's actually readable, then fade.
+      const env =
+        smooth(firstArrival - 0.04, firstArrival + 0.28, t) * (1 - smooth(RELAY_END + 0.6, RELAY_END + 1.4, t));
+      readoutRef.current.intensity = channel >= 0 ? env : 0;
+      readoutRef.current.channel = Math.max(0, Math.min(2, channel));
+      readoutRef.current.value = CHANNEL_VALUES[readoutRef.current.channel];
     } else {
-      pressureRef.current.intensity = 0;
+      readoutRef.current.intensity = 0;
     }
 
     if (parallax.current && !reducedMotion) {
@@ -194,7 +205,7 @@ export default function IslandScene({ tier, reducedMotion, compact }: IslandScen
           <SignalRelay cycleRef={cycleRef} wellhead={paths.wellhead} />
           <LeasePad />
           <IslandLabels paths={paths} compact={compact} />
-          <PressureReadout pressureRef={pressureRef} anchor={paths.wellhead} />
+          <TelemetryReadout readoutRef={readoutRef} anchor={paths.wellhead} />
         </group>
       </PresentationControls>
 
