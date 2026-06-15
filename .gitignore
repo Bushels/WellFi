@@ -67,3 +67,9 @@ Desktop.ini
 /playwright-report/
 /vitest-results/
 /.nyc_output/
+
+# stray dev/serve server logs (never commit)
+dev-*.log
+serve-*.log
+start-*.log
+/tmp/
