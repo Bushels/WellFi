@@ -43,10 +43,10 @@ const pulseShape = (p: number) => 2.6 * Math.sin(Math.PI * Math.min(1, Math.max(
 
 // Telemetry channels carried up by the 3 relay pulses — the readout SNAPS to the
 // next channel only when each uplink reaches surface. Values are tunable.
-//   0 pressure (hydrostatic head, kPa) · 1 temperature (°C) · 2 resistivity (Ω·m)
-// Resistivity's on-screen value is the fluid calc it yields — WATER CUT (the only
-// defensible derivation; see TelemetryReadout CHANNELS). 1.2 Ω·m ≈ 35% WC.
-const CHANNEL_VALUES = [223, 24, 1.2];
+//   0 pressure (hydrostatic head, kPa) · 1 temperature (°C) · 2 WATER CUT (%)
+// Pulse 3 shows water cut directly (derived from the tool's fluid-resistivity
+// measurement against an operator water-sample baseline; the raw Ω·m stays off-screen).
+const CHANNEL_VALUES = [223, 24, 35];
 const ARRIVAL_F = 0.74; // within-breath fraction where the uplink hits surface
 
 export default function IslandScene({ tier, reducedMotion, compact }: IslandSceneProps) {

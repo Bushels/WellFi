@@ -20,16 +20,19 @@ interface Channel {
   label: string;
   unit: string;
   decimals: number;
-  // Optional derived line — resistivity's real value is the fluid calc it yields.
-  // Per a completions-engineer review: resistivity → WATER CUT is the only
-  // defensible derivation (oil/gas insulate, brine conducts); NOT API/density/flow.
-  derived?: string;
+  // `approx` prefixes the value with "≈" — used for derived/calibration-dependent
+  // figures (water cut) so we never imply false precision to an engineer audience.
+  approx?: boolean;
 }
 
+// Pulse 3 shows WATER CUT directly (the defensible fluid calc resistivity yields —
+// per a completions-engineer review: oil/gas insulate, brine conducts, so resistivity
+// is a water-presence sensor → water cut; NOT API/density/flow). The raw Ω·m is left
+// off-screen by Kyle's call; "≈" flags that it's a derived, salinity-calibrated value.
 const CHANNELS: Channel[] = [
   { label: 'DOWNHOLE PRESSURE', unit: 'kPa', decimals: 0 },
   { label: 'TEMPERATURE', unit: '°C', decimals: 0 },
-  { label: 'FLUID RESISTIVITY', unit: 'Ω·m', decimals: 1, derived: 'WATER CUT ≈ 35%' },
+  { label: 'WATER CUT', unit: '%', decimals: 0, approx: true },
 ];
 
 // Inline style objects (not a CSS-in-JS lib) — same convention as IslandLabels.
@@ -85,16 +88,6 @@ const UNIT: CSSProperties = {
   color: 'rgba(155, 210, 225, 0.85)',
 };
 
-const DERIVED: CSSProperties = {
-  marginTop: '4px',
-  paddingTop: '3px',
-  borderTop: '1px solid rgba(34, 211, 238, 0.2)',
-  fontSize: '9px',
-  fontWeight: 600,
-  letterSpacing: '0.1em',
-  color: 'rgba(155, 210, 225, 0.92)',
-};
-
 const POINTER: CSSProperties = {
   position: 'absolute',
   bottom: '-6px',
@@ -118,7 +111,6 @@ export default function TelemetryReadout({
   const labelEl = useRef<HTMLSpanElement>(null);
   const valueEl = useRef<HTMLSpanElement>(null);
   const unitEl = useRef<HTMLSpanElement>(null);
-  const derivedEl = useRef<HTMLDivElement>(null);
   const shownChannel = useRef(-2);
   const shownValue = useRef('');
 
@@ -138,14 +130,9 @@ export default function TelemetryReadout({
       shownChannel.current = channel;
       if (labelEl.current) labelEl.current.textContent = ch.label;
       if (unitEl.current) unitEl.current.textContent = ch.unit;
-      if (derivedEl.current) {
-        derivedEl.current.textContent = ch.derived ?? '';
-        derivedEl.current.style.display = ch.derived ? 'block' : 'none';
-      }
     }
-    const formatted = ch.decimals
-      ? value.toFixed(ch.decimals)
-      : Math.round(value).toLocaleString('en-US');
+    const num = ch.decimals ? value.toFixed(ch.decimals) : Math.round(value).toLocaleString('en-US');
+    const formatted = (ch.approx ? '≈ ' : '') + num; // "≈" flags a derived/calibrated figure
     if (valueEl.current && shownValue.current !== formatted) {
       shownValue.current = formatted;
       valueEl.current.textContent = formatted;
@@ -170,7 +157,6 @@ export default function TelemetryReadout({
             kPa
           </span>
         </div>
-        <div ref={derivedEl} style={{ ...DERIVED, display: 'none' }} />
         <div style={POINTER} />
       </div>
     </Html>
