@@ -76,6 +76,9 @@ The wave-sweep startup hero was retired 2026-06-10 (Kyle-approved).
 - Poster paints first (LCP); the R3F canvas cross-fades in when ready
 - 12 s seamless lighting cycle: day → dark → 3 relay pulses → relight (`src/lib/island/cycle.ts`)
 - Relay grammar: WellFi B (red #EF4444) fires deep in the lateral → WellFi A (cyan) answers at the casing shoe → surface ring
+- Lit phase: cyan production-flow chevrons along the bores; strata use a world-Y procedural bedding shader (`Terrain.tsx`)
+- Telemetry readout (`TelemetryReadout.tsx`) pops above the wellhead during the dark phase and snaps to a new channel on each pulse arrival: pressure (kPa) → temperature (°C) → water cut (%, derived from fluid resistivity; "≈" flags it's salinity-calibrated). Values: `IslandScene.tsx` `CHANNEL_VALUES`.
+- Mobile (<768px): in-scene labels hidden (they collide with the copy column); the relay color story carries it
 - Drag = PresentationControls with spring-back; pointer parallax when idle; page scroll is never captured
 - `prefers-reduced-motion`: frozen lit state, no pulses
 
@@ -86,6 +89,24 @@ The wave-sweep startup hero was retired 2026-06-10 (Kyle-approved).
 - Pure-math modules under src/lib/island/ (layout, cycle, wellPath, quality) keep their unit tests green (npm test)
 - The cycle must stay seamless (state at t=12 ≡ t=0)
 - No scroll hijacking in the hero
+
+## Deploy + local dev (basePath `/wellfi`) — READ THIS
+
+This app is `output: 'export'` + `basePath: '/wellfi'`. The export writes files to `out/`
+root but the HTML references `/wellfi/...` assets. The rewrite that strips `/wellfi`
+lives on the **mps-corporate-site (mpsgroup.energy)**, NOT on this Vercel project. So:
+
+- ✅ The site only renders correctly at **`mpsgroup.energy/wellfi`** (production rewrite)
+  or a **local dev server** (`localhost:<port>/wellfi`).
+- ❌ Any raw `wellfi-marketing*.vercel.app/...` URL — production OR preview — serves HTML
+  whose assets 404. **A Vercel preview deploy is NOT directly viewable.** To review the
+  full site before going live, use the **local dev server**, not the preview URL.
+- Promote to production: `vercel --prod` from this dir. After promoting, verify
+  `mpsgroup.energy/wellfi/calculator` (and any new sub-route) resolves through the rewrite.
+
+Local dev: `$env:PORT='3002'; npm run dev` (PowerShell). Do NOT use `npm --prefix <dir>
+run dev -- -p 3002` — the `-p` mis-forwards as a directory arg. Git worktrees of this
+repo need their OWN `node_modules` (`npm ci`); a junction makes Turbopack panic.
 
 ## Code Style
 
