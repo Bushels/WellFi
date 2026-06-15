@@ -2,7 +2,7 @@
 
 import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { PerspectiveCamera, PresentationControls } from '@react-three/drei';
+import { ContactShadows, PerspectiveCamera, PresentationControls } from '@react-three/drei';
 import { Bloom, EffectComposer } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import { COLORS } from '@/lib/island/layout';
@@ -38,6 +38,11 @@ const CAMERA = {
   desktop: { position: [25.1, 19.9, 28.3] as const, target: new THREE.Vector3(-1.8, -1.5, 2.2) },
   compact: { position: [15.5, 11.5, 17.5] as const, target: new THREE.Vector3(0.5, -1.4, 0.5) },
 };
+
+// On desktop the readout floats above the wellhead. On mobile the wellhead projects
+// off-screen left, so use a central in-frame anchor so the telemetry value-prop still
+// shows (tuned to the clear upper zone above the copy column). See TelemetryReadout.
+const READOUT_COMPACT_ANCHOR = new THREE.Vector3(2.4, 2.2, 1.2);
 
 const pulseShape = (p: number) => 2.6 * Math.sin(Math.PI * Math.min(1, Math.max(0, p)));
 
@@ -93,6 +98,7 @@ export default function IslandScene({ tier, reducedMotion, compact }: IslandScen
 
   const sun = useRef<THREE.DirectionalLight>(null);
   const hemi = useRef<THREE.HemisphereLight>(null);
+  const rim = useRef<THREE.DirectionalLight>(null);
   const parallax = useRef<THREE.Group>(null);
 
   // The one clock — priority -1 runs before every other useFrame consumer.
@@ -103,6 +109,9 @@ export default function IslandScene({ tier, reducedMotion, compact }: IslandScen
 
     if (sun.current) sun.current.intensity = 0.12 + 2.5 * s.sun;
     if (hemi.current) hemi.current.intensity = 0.16 + 0.6 * s.sky;
+    // Cool rim brightens as the scene darkens — catches the tool/island silhouettes
+    // in the dark phase so the product reads against the void (per Codex review).
+    if (rim.current) rim.current.intensity = 0.22 + 0.6 * (1 - s.sun);
 
     // Red pulse runs from WellFi B (u≈0.75) back toward the junction (u=0).
     if (s.pulseLateral >= 0) {
@@ -123,7 +132,9 @@ export default function IslandScene({ tier, reducedMotion, compact }: IslandScen
     // raw unbounded elapsedTime would lose fragment-shader fract() precision (dash jitter)
     // after a long session.
     const flowTime = reducedMotion ? REDUCED_MOTION_T : state.clock.elapsedTime % 20;
-    const flowStrength = 0.9 * s.flow;
+    // Slightly dimmer than the relay pulses so the B→A→surface story stays the lead
+    // and the lit-phase chevrons read as supporting "production flow" (pulse hierarchy).
+    const flowStrength = 0.7 * s.flow;
     casedPulse.setFlow(flowStrength, flowTime);
     lateralPulse.setFlow(flowStrength, flowTime);
     motherboreFlow.setFlow(flowStrength, flowTime);
@@ -179,7 +190,7 @@ export default function IslandScene({ tier, reducedMotion, compact }: IslandScen
 
       <hemisphereLight ref={hemi} color={COLORS.skyFill} groundColor={COLORS.ground} intensity={0.7} />
       <directionalLight ref={sun} color={COLORS.sunWarm} position={[-7, 10, 5]} intensity={2.6} />
-      <directionalLight color="#4a6e8a" position={[8, 4, -7]} intensity={0.22} />
+      <directionalLight ref={rim} color="#5e86c4" position={[8, 4, -7]} intensity={0.22} />
 
       {/* Drag stays enabled even under reduced-motion (user-initiated motion
           is fine per spec §7) — only the cycle and idle parallax freeze. */}
@@ -193,6 +204,22 @@ export default function IslandScene({ tier, reducedMotion, compact }: IslandScen
       >
         <group ref={parallax}>
           <Terrain />
+          {/* Grounds the forest/pad onto the grass with a soft baked contact shadow
+              (high-tier only; baked once — trees are static relative to the cap).
+              Sits just above grass; transparent where nothing casts, so it doesn't
+              veil the cut-away cavity below. */}
+          {tier === 'high' && (
+            <ContactShadows
+              position={[0, 0.05, 0]}
+              scale={17}
+              resolution={1024}
+              blur={2.6}
+              far={3.2}
+              opacity={0.5}
+              color="#05140c"
+              frames={1}
+            />
+          )}
           <Forest tier={tier} />
           <WellSystem
             paths={paths}
@@ -205,7 +232,11 @@ export default function IslandScene({ tier, reducedMotion, compact }: IslandScen
           <SignalRelay cycleRef={cycleRef} wellhead={paths.wellhead} />
           <LeasePad />
           <IslandLabels paths={paths} compact={compact} />
-          <TelemetryReadout readoutRef={readoutRef} anchor={paths.wellhead} />
+          <TelemetryReadout
+            readoutRef={readoutRef}
+            anchor={compact ? READOUT_COMPACT_ANCHOR : paths.wellhead}
+            compact={compact}
+          />
         </group>
       </PresentationControls>
 

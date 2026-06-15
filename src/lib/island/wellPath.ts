@@ -1,7 +1,8 @@
 // Authored well geometry (gate-v9 read): left-entry on the front section face,
-// J-build half-proud of the z=+5 plane, heel into the cavity, then a ~65°
-// six-leg wide fan from a tight junction cluster. Informed by OBE 102 HZ but
-// deliberately precomputed — smaller, deterministic, art-directable.
+// J-build half-proud of the z=+5 plane, heel into the cavity, then a ~65° wide fan —
+// a pilot open-hole motherbore + 5 laterals from a tight junction cluster (5+1, the
+// real architecture for this application). Informed by OBE 102 HZ but deliberately
+// precomputed — smaller, deterministic, art-directable.
 // "Visual storytelling beats literal 11° parallelism — Kyle's annotation is the spec."
 
 import { CatmullRomCurve3, Vector3 } from 'three';

@@ -103,9 +103,11 @@ const POINTER: CSSProperties = {
 export default function TelemetryReadout({
   readoutRef,
   anchor,
+  compact = false,
 }: {
   readoutRef: MutableRefObject<TelemetryState>;
   anchor: THREE.Vector3;
+  compact?: boolean;
 }) {
   const box = useRef<HTMLDivElement>(null);
   const labelEl = useRef<HTMLSpanElement>(null);
@@ -113,23 +115,34 @@ export default function TelemetryReadout({
   const unitEl = useRef<HTMLSpanElement>(null);
   const shownChannel = useRef(-2);
   const shownValue = useRef('');
+  const flash = useRef(0); // 0..1 "arrival hit" pop, set on channel change, decays
 
   // Default-priority useFrame — runs after the scene clock (priority -1), so the
   // ref is fresh this frame. Mutate the DOM directly; no per-frame React state.
-  useFrame(() => {
+  useFrame((_, delta) => {
     const { intensity, channel, value } = readoutRef.current;
-    if (box.current) {
-      box.current.style.opacity = intensity.toFixed(3);
-      box.current.style.transform = `scale(${(0.82 + 0.18 * intensity).toFixed(3)})`;
-    }
     const ch = CHANNELS[channel];
     if (!ch) return;
 
-    // Channel switched (only happens when a new uplink arrives) — swap the labels.
+    // Channel switched (only happens when a new uplink ARRIVES at surface) — swap the
+    // labels and fire an arrival "hit": a quick scale pop + border flash so the new
+    // reading lands with emphasis instead of just appearing.
     if (shownChannel.current !== channel) {
       shownChannel.current = channel;
+      flash.current = 1;
       if (labelEl.current) labelEl.current.textContent = ch.label;
       if (unitEl.current) unitEl.current.textContent = ch.unit;
+    }
+    flash.current = Math.max(0, flash.current - delta / 0.32); // ~0.32s decay
+
+    if (box.current) {
+      box.current.style.opacity = intensity.toFixed(3);
+      const pop = 1 + 0.16 * flash.current;
+      box.current.style.transform = `scale(${((0.82 + 0.18 * intensity) * pop).toFixed(3)})`;
+      box.current.style.boxShadow =
+        flash.current > 0.01
+          ? `0 0 ${(22 + 26 * flash.current).toFixed(0)}px rgba(34,211,238,${(0.28 + 0.5 * flash.current).toFixed(2)}), inset 0 0 12px rgba(34,211,238,0.06)`
+          : '0 0 22px rgba(34, 211, 238, 0.28), inset 0 0 12px rgba(34, 211, 238, 0.06)';
     }
     const num = ch.decimals ? value.toFixed(ch.decimals) : Math.round(value).toLocaleString('en-US');
     const formatted = (ch.approx ? '≈ ' : '') + num; // "≈" flags a derived/calibrated figure
@@ -141,9 +154,12 @@ export default function TelemetryReadout({
 
   return (
     <Html
-      position={[anchor.x, anchor.y + 1.75, anchor.z]}
+      // Desktop: lift above the wellhead. Compact: the anchor is already a tuned
+      // in-frame point (wellhead projects off-screen on mobile), so use it directly
+      // and scale down a touch so it fits the narrow viewport.
+      position={[anchor.x, anchor.y + (compact ? 0 : 1.75), anchor.z]}
       center
-      distanceFactor={13}
+      distanceFactor={compact ? 9 : 13}
       zIndexRange={[30, 0]}
     >
       <div ref={box} style={BOX}>
