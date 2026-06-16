@@ -2,6 +2,24 @@
 
 Use these agents as focused review passes for the WellFi marketing site. Invoke the narrowest reviewer that matches the failure mode, and route hero or product-shot work through reference fidelity before spending time on broader design, animation, or performance critique.
 
+## Project context & guardrails (read before building or deploying)
+
+This repo (`site/`, git `Bushels/WellFi`) is the **WellFi public marketing site** — Next.js 16 static export (`output: 'export'`, `basePath: '/wellfi'`). The homepage hero is a React-Three-Fiber "island diorama". It is **LIVE in production** (shipped 2026-06-16) at **https://mpsgroup.energy/wellfi**. (This is a different property from the internal `wellfi-app` Obsidian command-hub dashboard — don't conflate them.)
+
+**Deploy**
+- `vercel --prod` from this `site/` dir. Vercel project = `wellfi-marketing`.
+- Canonical public URL: `mpsgroup.energy/wellfi` (the corporate site rewrites `/wellfi/*` → the Vercel deployment, stripping `/wellfi`).
+- The bare `wellfi-marketing.vercel.app` also renders standalone via `vercel.json` (`/wellfi/:path* → /:path*`); it returns 401 to anyone not signed into the Vercel team (Deployment Protection, left ON intentionally).
+- After renaming or removing a route, delete `.next` and `out` before rebuilding — a stale generated typed-route validator otherwise fails the build.
+
+**The calculator is PARKED (do not un-park without Kyle's OK)**
+- The interactive ROI calculator is intentionally NOT deployed. Its route lives at `src/app/_calculator` (leading underscore = excluded from App Router routing). The numbers are unverified; don't surface them publicly until Kyle confirms. Re-enable by renaming the folder back to `calculator`.
+
+**Gates before commit**
+- `npx tsc --noEmit`, `npm run lint`, `npm test` (40 unit tests). The pure-math modules under `src/lib/island/` must stay green, and `cycle.ts` must keep its seam invariant `state(12) ≡ state(0)`.
+
+**Full project rules** (brand, design tokens, hero non-negotiables, deploy details): see `CLAUDE.md`.
+
 ## accessibility-checker
 
 Purpose: Audits WCAG 2.1 AA accessibility for keyboard navigation, screen readers, contrast, semantic HTML, ARIA, focus states, touch targets, and reduced-motion support.
