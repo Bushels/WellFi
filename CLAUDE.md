@@ -96,11 +96,17 @@ This app is `output: 'export'` + `basePath: '/wellfi'`. The export writes files 
 root but the HTML references `/wellfi/...` assets. The rewrite that strips `/wellfi`
 lives on the **mps-corporate-site (mpsgroup.energy)**, NOT on this Vercel project. So:
 
-- ✅ The site only renders correctly at **`mpsgroup.energy/wellfi`** (production rewrite)
-  or a **local dev server** (`localhost:<port>/wellfi`).
-- ❌ Any raw `wellfi-marketing*.vercel.app/...` URL — production OR preview — serves HTML
-  whose assets 404. **A Vercel preview deploy is NOT directly viewable.** To review the
-  full site before going live, use the **local dev server**, not the preview URL.
+- ✅ Canonical public URL: **`mpsgroup.energy/wellfi`** (corporate rewrite strips `/wellfi`).
+  Local dev: **`localhost:<port>/wellfi`**.
+- ✅ The raw **`wellfi-marketing.vercel.app`** URL now renders **standalone** too. `vercel.json`
+  adds a `/wellfi/:path* → /:path*` rewrite so the `/wellfi`-prefixed asset refs resolve on the
+  bare Vercel domain (applies to production AND preview deploys). Added 2026-06-16. Vercel checks
+  the filesystem before rewrites, so `/wellfi/_next/x` (no such file) falls through to `/_next/x`
+  (exists) → 200. This does NOT affect `mpsgroup.energy/wellfi` (its proxy strips `/wellfi`
+  before Vercel sees it).
+- ⚠️ **Deployment Protection** still returns **401 to anonymous** on any `*.vercel.app` URL —
+  view it signed into the Vercel team, or turn protection off in project settings to make the
+  Vercel URL publicly shareable. (`mpsgroup.energy/wellfi` is public regardless.)
 - Promote to production: `vercel --prod` from this dir. After promoting, verify
   `mpsgroup.energy/wellfi/calculator` (and any new sub-route) resolves through the rewrite.
 
