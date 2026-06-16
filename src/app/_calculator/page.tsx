@@ -1,3 +1,9 @@
+// PARKED OUT OF ROUTING (2026-06-16): this folder is named `_calculator` so the
+// Next.js App Router excludes it from the build — the /calculator route is NOT
+// deployed to production, per the "deploy everything but the calculator" call.
+// The interactive calculator (with unverified ROI numbers) was already hidden
+// (homepage teaser commented out in app/page.tsx); this was only a placeholder.
+// To re-enable the route: rename this folder back to `calculator`.
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
