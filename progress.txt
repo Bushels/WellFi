@@ -2,29 +2,32 @@
 
 This file is a current-state handoff, not a historical archive. Remove stale hero direction when the approved sequence changes.
 
-## Current Approved Hero State
+## Current Parked Hero State
 
-### Startup Sequence
-- ultra-faint ghost baseline
-- fixed-height left-to-right sine-wave sweep
-- WellFi logo appears at 75% sweep
-- `Know the Unknown` lands at full sweep
-- subheadline, proof chips, and CTAs reveal only after the headline
-- mouse/touch interaction turns on only after the sweep completes
-- hero logo arcs can pulse on direct hover/touch/focus without adding a looping distraction
+### Island Diorama Rendition
+
+- Hero is the R3F island diorama, not the retired wave-sweep startup sequence.
+- One signal-sending WellFi is shown inside the intermediate casing on the lower cased run.
+- The cycle is a 12 s seamless loop: lit hold -> darken/dolly into cutaway -> three relay pulses -> relight/pan back out.
+- The cutaway moment includes a downhole telemetry bubble:
+  - Pressure `158 kPa`
+  - Temperature `26 C`
+  - Pump vibration `4.2 mm/s RMS`
+- The bubble is an R3F `Html` overlay and must keep `data-wellfi-export-overlay` so MP4/GIF exports include it.
+- Exported assets are under `exports/`; normal-speed and fast MP4/GIF pairs were generated on 2026-06-17.
+
+### Branch Decision
+
+- Do not merge this rendition yet.
+- Park this version and compare it against the next/third rendering before selecting the preferred public hero.
 
 ### Regression Triggers To Avoid
-- bottom-up band motion during intro
-- changing wave height, spread, or amplitude during intro
-- spark bursts, lens spikes, or other cinematic startup effects
-- revealing copy before the sweep completes
-- hardcoded GSAP times that drift away from the shared wave duration
-- separate mouse and touch codepaths that drift apart instead of one pointer-event path
-- large hero dead space caused by full-screen min-height choices that do not serve the layout
 
-### Maintenance Rule
-- When hero startup behavior changes, update both `docs/hero-startup-animation.md` and `CLAUDE.md` in the same pass.
-- When Playwright is used for verification, keep artifacts out of git and only retain them intentionally.
+- Returning to two WellFi tools.
+- Moving the active WellFi out of the intermediate casing.
+- Dropping the telemetry bubble from the export path.
+- Letting the cutaway bubble clip mobile viewports.
+- Reintroducing scroll capture or canvas-only exports that hide HTML overlays.
 
 ## Current Calculator State
 

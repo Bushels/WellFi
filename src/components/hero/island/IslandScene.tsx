@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useRef } from 'react';
+import { useCallback, useMemo, useRef, useState, type MutableRefObject } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { ContactShadows, PerspectiveCamera, PresentationControls } from '@react-three/drei';
 import { Bloom, EffectComposer } from '@react-three/postprocessing';
@@ -16,7 +16,7 @@ import {
   smooth,
   type CycleState,
 } from '@/lib/island/cycle';
-import { buildWellPaths, TOOL_B_PARAM } from '@/lib/island/wellPath';
+import { buildWellPaths, WELLFI_TOOL_PARAM } from '@/lib/island/wellPath';
 import { createPulseMaterial } from '@/lib/island/pulseMaterial';
 import type { GpuTier } from '@/lib/island/quality';
 import Terrain from './Terrain';
@@ -32,6 +32,7 @@ interface IslandSceneProps {
   tier: GpuTier;
   reducedMotion: boolean;
   compact: boolean; // mobile framing
+  forcedTime: number | null;
 }
 
 const CAMERA = {
@@ -39,41 +40,75 @@ const CAMERA = {
   compact: { position: [15.5, 11.5, 17.5] as const, target: new THREE.Vector3(0.5, -1.4, 0.5) },
 };
 
-// On desktop the readout floats above the wellhead. On mobile the wellhead projects
-// off-screen left, so use a central in-frame anchor so the telemetry value-prop still
-// shows (tuned to the clear upper zone above the copy column). See TelemetryReadout.
-const READOUT_COMPACT_ANCHOR = new THREE.Vector3(2.4, 2.2, 1.2);
+const FOCUS_CAMERA = {
+  desktop: { offset: new THREE.Vector3(7.6, 4.4, 6.35), targetOffset: new THREE.Vector3(0.08, 0.2, -0.02), fov: 18 },
+  compact: { offset: new THREE.Vector3(5.8, 3.55, 5.2), targetOffset: new THREE.Vector3(0.18, -0.3, -0.08), fov: 22 },
+};
 
 const pulseShape = (p: number) => 3.8 * Math.sin(Math.PI * Math.min(1, Math.max(0, p)));
+const ARRIVAL_F = 0.74; // within-breath fraction where the pulse reaches the active readout row
 
-// Telemetry channels carried up by the 3 relay pulses — the readout SNAPS to the
-// next channel only when each uplink reaches surface. Values are tunable.
-//   0 pressure (hydrostatic head, kPa) · 1 temperature (°C) · 2 WATER CUT (%)
-// Pulse 3 shows water cut directly (derived from the tool's fluid-resistivity
-// measurement against an operator water-sample baseline; the raw Ω·m stays off-screen).
-const CHANNEL_VALUES = [223, 24, 35];
-const ARRIVAL_F = 0.74; // within-breath fraction where the uplink hits surface
+interface CameraRig {
+  widePosition: THREE.Vector3;
+  wideTarget: THREE.Vector3;
+  focusPosition: THREE.Vector3;
+  focusTarget: THREE.Vector3;
+  focusFov: number;
+}
 
-export default function IslandScene({ tier, reducedMotion, compact }: IslandSceneProps) {
+function FocusCameraController({
+  rig,
+  cycleRef,
+}: {
+  rig: CameraRig;
+  cycleRef: MutableRefObject<CycleState>;
+}) {
+  const cameraPosition = useRef(new THREE.Vector3());
+  const cameraTarget = useRef(new THREE.Vector3());
+
+  useFrame((state) => {
+    const focus = cycleRef.current.focus;
+    cameraPosition.current.copy(rig.widePosition).lerp(rig.focusPosition, focus);
+    cameraTarget.current.copy(rig.wideTarget).lerp(rig.focusTarget, focus);
+    state.camera.position.copy(cameraPosition.current);
+    state.camera.lookAt(cameraTarget.current);
+    state.camera.updateMatrixWorld();
+    if (state.camera instanceof THREE.PerspectiveCamera) {
+      state.camera.fov = THREE.MathUtils.lerp(20, rig.focusFov, focus);
+      state.camera.updateProjectionMatrix();
+    }
+  }, 1);
+
+  return null;
+}
+
+export default function IslandScene({ tier, reducedMotion, compact, forcedTime }: IslandSceneProps) {
   const paths = useMemo(() => buildWellPaths(), []);
   const cycleRef = useRef<CycleState>(cycleState(REDUCED_MOTION_T));
-  const readoutRef = useRef<TelemetryState>({ intensity: 0, channel: 0, value: CHANNEL_VALUES[0] });
+  const readoutRef = useRef<TelemetryState>({ intensity: 0, channel: -1 });
+  const [composerCamera, setComposerCamera] = useState<THREE.PerspectiveCamera | null>(null);
+  const cam = compact ? CAMERA.compact : CAMERA.desktop;
+  const setPerspectiveCamera = useCallback((camera: THREE.PerspectiveCamera | null) => {
+    setComposerCamera(camera);
+  }, []);
+  const cameraRig = useMemo(() => {
+    const focus = compact ? FOCUS_CAMERA.compact : FOCUS_CAMERA.desktop;
+    const focusTarget = paths.wellfiTool.position.clone().add(focus.targetOffset);
+    return {
+      widePosition: new THREE.Vector3(...cam.position),
+      wideTarget: cam.target.clone(),
+      focusPosition: focusTarget.clone().add(focus.offset),
+      focusTarget,
+      focusFov: focus.fov,
+    };
+  }, [cam.position, cam.target, compact, paths]);
 
   const casedPulse = useMemo(
     () =>
       createPulseMaterial({
-        base: { color: COLORS.casing, roughness: 0.35, metalness: 0.85 },
-        pulseColor: COLORS.emGlow,
-        flowCount: 10,
-      }),
-    [],
-  );
-  const lateralPulse = useMemo(
-    () =>
-      createPulseMaterial({
-        base: { color: COLORS.lateral, roughness: 0.9, metalness: 0 },
+        base: { color: COLORS.casing, roughness: 0.35, metalness: 0.85, transparent: true, opacity: 1 },
         pulseColor: COLORS.signalRed,
-        flowCount: 8,
+        flowCount: 10,
       }),
     [],
   );
@@ -101,86 +136,63 @@ export default function IslandScene({ tier, reducedMotion, compact }: IslandScen
   const rim = useRef<THREE.DirectionalLight>(null);
   const parallax = useRef<THREE.Group>(null);
 
-  // The one clock — priority -1 runs before every other useFrame consumer.
+  // The one clock: priority -1 runs before every other useFrame consumer.
   useFrame((state) => {
-    const t = reducedMotion ? REDUCED_MOTION_T : state.clock.elapsedTime % CYCLE_S;
+    const t = forcedTime ?? (reducedMotion ? REDUCED_MOTION_T : state.clock.elapsedTime % CYCLE_S);
     const s = cycleState(t);
     cycleRef.current = s;
 
     if (sun.current) sun.current.intensity = 0.12 + 2.5 * s.sun;
     if (hemi.current) hemi.current.intensity = 0.16 + 0.6 * s.sky;
-    // Cool rim brightens as the scene darkens — catches the tool/island silhouettes
-    // in the dark phase so the product reads against the void (per Codex review).
     if (rim.current) rim.current.intensity = 0.22 + 0.6 * (1 - s.sun);
 
-    // Red pulse runs from WellFi B (u≈0.75) back toward the junction (u=0).
-    if (s.pulseLateral >= 0) {
-      lateralPulse.setPulse(TOOL_B_PARAM * (1 - s.pulseLateral), pulseShape(s.pulseLateral), 0.11);
-    } else {
-      lateralPulse.setPulse(-1, 0);
-    }
-    // Cyan pulse climbs the cased section: shoe (u=1) up to the wellhead (u=0).
     if (s.pulseCased >= 0) {
-      casedPulse.setPulse(1 - s.pulseCased, pulseShape(s.pulseCased), 0.105);
+      casedPulse.setPulse(WELLFI_TOOL_PARAM * (1 - s.pulseCased), pulseShape(s.pulseCased), 0.105);
     } else {
       casedPulse.setPulse(-1, 0);
     }
 
-    // Lit-phase production-flow chevrons on every bore (freeze time under reduced motion).
-    // Wrap at 20 s: the dash shader is periodic in uTime*0.45, and 20*0.45 = 9.0 (an
-    // integer number of dash periods), so the wrap is seamless AND keeps uTime small —
-    // raw unbounded elapsedTime would lose fragment-shader fract() precision (dash jitter)
-    // after a long session.
-    const flowTime = reducedMotion ? REDUCED_MOTION_T : state.clock.elapsedTime % 20;
-    // Slightly dimmer than the relay pulses so the B→A→surface story stays the lead
-    // and the lit-phase chevrons read as supporting "production flow" (pulse hierarchy).
+    const flowTime = forcedTime ?? (reducedMotion ? REDUCED_MOTION_T : state.clock.elapsedTime % 20);
     const flowStrength = 1.15 * s.flow;
     casedPulse.setFlow(flowStrength, flowTime);
-    lateralPulse.setFlow(flowStrength, flowTime);
+    casedPulse.setCutaway(1 - 0.72 * s.focus, s.focus < 0.05);
     motherboreFlow.setFlow(flowStrength, flowTime);
     lateralFlow.setFlow(flowStrength, flowTime);
 
-    // Telemetry readout — the channel/value SNAP only at the instant each uplink
-    // reaches surface (pulse 1 → pressure, 2 → temperature, 3 → resistivity), so the
-    // numbers change exactly when the signal "hits", then the box holds, then fades
-    // at relight. This shows the tool delivering real downhole data, one reading per
-    // transmission.
-    if (!reducedMotion && t >= RELAY_START && t < RELAY_END + 0.5) {
-      const progress = (t - RELAY_START) / BREATH;
-      const breath = Math.floor(progress);
-      const within = progress - breath;
-      const arrived = Math.min(3, breath + (within >= ARRIVAL_F ? 1 : 0)); // 0..3
-      const channel = arrived - 1; // -1 until the first uplink lands
-      const firstArrival = RELAY_START + ARRIVAL_F * BREATH;
-      // Hold the last reading (resistivity → water cut, the most info-dense) well
-      // into the relight so it's actually readable, then fade.
-      const env =
-        smooth(firstArrival - 0.04, firstArrival + 0.28, t) * (1 - smooth(RELAY_END + 0.6, RELAY_END + 1.4, t));
-      readoutRef.current.intensity = channel >= 0 ? env : 0;
-      readoutRef.current.channel = Math.max(0, Math.min(2, channel));
-      readoutRef.current.value = CHANNEL_VALUES[readoutRef.current.channel];
+    const telemetryEnabled = !reducedMotion || forcedTime !== null;
+    if (telemetryEnabled) {
+      readoutRef.current.intensity =
+        smooth(3.9, 4.75, t) * (1 - smooth(RELAY_END + 0.75, RELAY_END + 1.45, t));
+      readoutRef.current.channel = -1;
+
+      if (t >= RELAY_START && t < RELAY_END + 0.5) {
+        const progress = (t - RELAY_START) / BREATH;
+        const breath = Math.floor(progress);
+        const within = progress - breath;
+        const arrived = Math.min(3, breath + (within >= ARRIVAL_F ? 1 : 0));
+        readoutRef.current.channel = Math.max(-1, Math.min(2, arrived - 1));
+      }
     } else {
       readoutRef.current.intensity = 0;
+      readoutRef.current.channel = -1;
     }
 
-    if (parallax.current && !reducedMotion) {
-      const idleY = Math.sin(state.clock.elapsedTime * 0.18) * (compact ? 0.018 : 0.026);
-      const idleX = Math.sin(state.clock.elapsedTime * 0.13 + 0.8) * (compact ? 0.006 : 0.01);
-      const targetY = state.pointer.x * 0.05;
-      const targetX = -state.pointer.y * 0.025;
+    if (parallax.current && !reducedMotion && forcedTime === null) {
+      const focusDamping = 1 - 0.72 * s.focus;
+      const idleY = Math.sin(state.clock.elapsedTime * 0.18) * (compact ? 0.018 : 0.026) * focusDamping;
+      const idleX = Math.sin(state.clock.elapsedTime * 0.13 + 0.8) * (compact ? 0.006 : 0.01) * focusDamping;
+      const targetY = state.pointer.x * 0.05 * focusDamping;
+      const targetX = -state.pointer.y * 0.025 * focusDamping;
       parallax.current.rotation.y += (targetY + idleY - parallax.current.rotation.y) * 0.04;
       parallax.current.rotation.x += (targetX + idleX - parallax.current.rotation.x) * 0.04;
     }
   }, -1);
 
-  const cam = compact ? CAMERA.compact : CAMERA.desktop;
-
   return (
     <>
       <color attach="background" args={[COLORS.void]} />
-      {/* key forces a remount when framing flips — drei's onUpdate (and thus
-          lookAt) only fires on mount/camera-change, not on prop updates. */}
       <PerspectiveCamera
+        ref={setPerspectiveCamera}
         key={compact ? 'compact' : 'desktop'}
         makeDefault
         fov={20}
@@ -189,27 +201,15 @@ export default function IslandScene({ tier, reducedMotion, compact }: IslandScen
         position={[...cam.position]}
         onUpdate={(c) => c.lookAt(cam.target)}
       />
+      <FocusCameraController rig={cameraRig} cycleRef={cycleRef} />
 
       <hemisphereLight ref={hemi} color={COLORS.skyFill} groundColor={COLORS.ground} intensity={0.7} />
       <directionalLight ref={sun} color={COLORS.sunWarm} position={[-7, 10, 5]} intensity={2.6} />
       <directionalLight ref={rim} color="#5e86c4" position={[8, 4, -7]} intensity={0.22} />
 
-      {/* Drag stays enabled even under reduced-motion (user-initiated motion
-          is fine per spec §7) — only the cycle and idle parallax freeze. */}
-      <PresentationControls
-        global={false}
-        cursor
-        snap
-        speed={1.2}
-        polar={[-0.08, 0.1]}
-        azimuth={[-0.3, 0.3]}
-      >
+      <PresentationControls global={false} cursor snap speed={1.2} polar={[-0.08, 0.1]} azimuth={[-0.3, 0.3]}>
         <group ref={parallax}>
           <Terrain />
-          {/* Grounds the forest/pad onto the grass with a soft baked contact shadow
-              (high-tier only; baked once — trees are static relative to the cap).
-              Sits just above grass; transparent where nothing casts, so it doesn't
-              veil the cut-away cavity below. */}
           {tier === 'high' && (
             <ContactShadows
               position={[0, 0.05, 0]}
@@ -226,24 +226,23 @@ export default function IslandScene({ tier, reducedMotion, compact }: IslandScen
           <WellSystem
             paths={paths}
             casedMaterial={casedPulse.material}
-            lateralFiveMaterial={lateralPulse.material}
             openHoleMaterial={motherboreFlow.material}
             lateralMaterial={lateralFlow.material}
           />
-          <WellFiTools toolA={paths.toolA} toolB={paths.toolB} cycleRef={cycleRef} />
+          <WellFiTools
+            tool={paths.wellfiTool}
+            readBoost={(s) => Math.max(s.collarWellFi, 0.72 * s.focus)}
+            cycleRef={cycleRef}
+          />
           <SignalRelay cycleRef={cycleRef} wellhead={paths.wellhead} />
           <LeasePad />
           <IslandLabels paths={paths} compact={compact} />
-          <TelemetryReadout
-            readoutRef={readoutRef}
-            anchor={compact ? READOUT_COMPACT_ANCHOR : paths.wellhead}
-            compact={compact}
-          />
+          <TelemetryReadout readoutRef={readoutRef} anchor={paths.wellfiTool.position} compact={compact} />
         </group>
       </PresentationControls>
 
-      {tier === 'high' && (
-        <EffectComposer>
+      {tier === 'high' && composerCamera && (
+        <EffectComposer camera={composerCamera}>
           <Bloom mipmapBlur intensity={1.05} luminanceThreshold={0.95} luminanceSmoothing={0.18} />
         </EffectComposer>
       )}

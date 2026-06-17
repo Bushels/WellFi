@@ -8,12 +8,11 @@ export const EMBER = 0.18; // collars never go fully cold
 export interface CycleState {
   sun: number;          // 0..1 key-light factor (1 = full daylight)
   sky: number;          // 0..1 ambient/fill factor
-  collarA: number;      // 0..1 cyan collar boost (WellFi A, casing shoe)
-  collarB: number;      // 0..1 red collar boost (WellFi B, deep lateral)
-  pulseLateral: number; // B → junction pulse progress, or -1
-  pulseCased: number;   // shoe → wellhead pulse progress, or -1
+  collarWellFi: number; // 0..1 red collar boost on the single cased-section WellFi
+  pulseCased: number;   // WellFi tool -> wellhead pulse progress, or -1
   receiver: number;     // surface ring progress, or -1
   flow: number;         // 0..1 — lit-phase production-flow chevron strength
+  focus: number;        // 0..1 camera/cutaway emphasis on the cased-section WellFi
 }
 
 export function smooth(a: number, b: number, t: number): number {
@@ -38,20 +37,18 @@ export function cycleState(t: number): CycleState {
   else if (t < 10.5) light = smooth(9, 10.5, t);
   else light = 1;
 
-  let collarA = EMBER;
-  let collarB = EMBER;
-  let pulseLateral = -1;
+  const focus = smooth(3.35, 5, t) * (1 - smooth(9, 10.5, t));
+
+  let collarWellFi = EMBER;
   let pulseCased = -1;
   let receiver = -1;
 
   if (t >= RELAY_START && t < RELAY_END) {
     const f = ((t - RELAY_START) / BREATH) % 1; // local breath time 0..1
 
-    collarB = Math.max(EMBER, smooth(0, 0.12, f) * (1 - smooth(0.5, 0.8, f)));
-    collarA = Math.max(EMBER, smooth(0.4, 0.5, f) * (1 - smooth(0.85, 1, f)));
+    collarWellFi = Math.max(EMBER, smooth(0, 0.12, f) * (1 - smooth(0.55, 0.85, f)));
 
-    if (f >= 0.08 && f < 0.45) pulseLateral = (f - 0.08) / 0.37;
-    if (f >= 0.45 && f < 0.8) pulseCased = (f - 0.45) / 0.35;
+    if (f >= 0.08 && f < 0.8) pulseCased = (f - 0.08) / 0.72;
     // Intentional ~0.08-breath overlap with pulseCased: the ring starts
     // expanding as the signal arrives at surface, before the pulse clears.
     if (f >= 0.72) receiver = (f - 0.72) / 0.28;
@@ -60,12 +57,11 @@ export function cycleState(t: number): CycleState {
   return {
     sun: light,
     sky: 0.25 + 0.75 * light,
-    collarA,
-    collarB,
-    pulseLateral,
+    collarWellFi,
     pulseCased,
     receiver,
     flow: light,
+    focus,
   };
 }
 

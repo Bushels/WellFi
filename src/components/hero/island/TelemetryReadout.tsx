@@ -6,46 +6,42 @@ import { Html } from '@react-three/drei';
 import type * as THREE from 'three';
 
 /**
- * Live telemetry the scene clock writes each frame. `channel` switches only when
- * an uplink reaches surface, so the readout snaps to a new measurement per pulse:
- *   0 = downhole pressure, 1 = temperature, 2 = fluid resistivity → water cut.
+ * Live telemetry the scene clock writes each frame. `channel` highlights the
+ * measurement being transmitted during each pulse while the panel stays anchored
+ * to the downhole WellFi section.
  */
 export interface TelemetryState {
   intensity: number; // 0..1 visibility/scale envelope
-  channel: number; // 0 | 1 | 2  (-1 = nothing arrived yet)
-  value: number; // numeric reading for the active channel
+  channel: number; // -1 = panel only, 0 pressure, 1 temperature, 2 vibration
 }
 
 interface Channel {
   label: string;
+  value: string;
   unit: string;
-  decimals: number;
-  // `approx` prefixes the value with "≈" — used for derived/calibration-dependent
-  // figures (water cut) so we never imply false precision to an engineer audience.
-  approx?: boolean;
 }
 
-// Pulse 3 shows WATER CUT directly (the defensible fluid calc resistivity yields —
-// per a completions-engineer review: oil/gas insulate, brine conducts, so resistivity
-// is a water-presence sensor → water cut; NOT API/density/flow). The raw Ω·m is left
-// off-screen by Kyle's call; "≈" flags that it's a derived, salinity-calibrated value.
+// Pump health readout uses velocity vibration in mm/s RMS. The accelerometer-native
+// raw view would be g RMS, but mm/s RMS is the field-friendlier rotating-equipment
+// severity metric for a marketing/SCADA-style bubble.
 const CHANNELS: Channel[] = [
-  { label: 'DOWNHOLE PRESSURE', unit: 'kPa', decimals: 0 },
-  { label: 'TEMPERATURE', unit: '°C', decimals: 0 },
-  { label: 'WATER CUT', unit: '%', decimals: 0, approx: true },
+  { label: 'PRESSURE', value: '158', unit: 'kPa' },
+  { label: 'TEMPERATURE', value: '26', unit: 'C' },
+  { label: 'PUMP VIBRATION', value: '4.2', unit: 'mm/s RMS' },
 ];
 
-// Inline style objects (not a CSS-in-JS lib) — same convention as IslandLabels.
+// Inline style objects (not a CSS-in-JS lib) - same convention as IslandLabels.
 const BOX: CSSProperties = {
   position: 'relative',
-  padding: '7px 13px 8px',
-  borderRadius: '9px',
+  minWidth: '204px',
+  padding: '9px 10px 10px',
+  borderRadius: '8px',
   background: 'rgba(2, 8, 14, 0.82)',
   border: '1px solid rgba(34, 211, 238, 0.55)',
   boxShadow: '0 0 28px rgba(34, 211, 238, 0.34), inset 0 0 14px rgba(34, 211, 238, 0.1)',
   backdropFilter: 'blur(2px)',
   fontFamily: 'var(--font-mono), monospace',
-  textAlign: 'center',
+  textAlign: 'left',
   whiteSpace: 'nowrap',
   pointerEvents: 'none',
   transformOrigin: 'center bottom',
@@ -53,16 +49,16 @@ const BOX: CSSProperties = {
   opacity: 0,
 };
 
-const LABEL: CSSProperties = {
+const HEADER: CSSProperties = {
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'center',
-  gap: '5px',
-  fontSize: '8.5px',
+  justifyContent: 'space-between',
+  gap: '8px',
+  fontSize: '8px',
   fontWeight: 600,
-  letterSpacing: '0.16em',
+  letterSpacing: '0.17em',
   color: 'rgba(155, 210, 225, 0.85)',
-  marginBottom: '3px',
+  marginBottom: '6px',
 };
 
 const DOT: CSSProperties = {
@@ -73,8 +69,27 @@ const DOT: CSSProperties = {
   boxShadow: '0 0 7px #22D3EE',
 };
 
-const READ: CSSProperties = {
-  fontSize: '18px',
+const ROW: CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: '1fr auto',
+  alignItems: 'baseline',
+  gap: '10px',
+  padding: '5px 6px',
+  borderRadius: '5px',
+  border: '1px solid transparent',
+  background: 'rgba(2, 8, 14, 0.32)',
+  transition: 'none',
+};
+
+const ROW_LABEL: CSSProperties = {
+  fontSize: '8.5px',
+  fontWeight: 600,
+  letterSpacing: '0.12em',
+  color: 'rgba(155, 210, 225, 0.78)',
+};
+
+const VALUE: CSSProperties = {
+  fontSize: '15px',
   fontWeight: 700,
   lineHeight: 1.05,
   letterSpacing: '0.01em',
@@ -82,7 +97,7 @@ const READ: CSSProperties = {
 };
 
 const UNIT: CSSProperties = {
-  fontSize: '11px',
+  fontSize: '8.5px',
   fontWeight: 500,
   marginLeft: '3px',
   color: 'rgba(155, 210, 225, 0.85)',
@@ -110,69 +125,86 @@ export default function TelemetryReadout({
   compact?: boolean;
 }) {
   const box = useRef<HTMLDivElement>(null);
-  const labelEl = useRef<HTMLSpanElement>(null);
-  const valueEl = useRef<HTMLSpanElement>(null);
-  const unitEl = useRef<HTMLSpanElement>(null);
+  const rowEls = useRef<Array<HTMLDivElement | null>>([]);
+  const dotEls = useRef<Array<HTMLSpanElement | null>>([]);
   const shownChannel = useRef(-2);
-  const shownValue = useRef('');
-  const flash = useRef(0); // 0..1 "arrival hit" pop, set on channel change, decays
+  const flash = useRef(0); // 0..1 arrival pop, set on channel change, decays
 
-  // Default-priority useFrame — runs after the scene clock (priority -1), so the
+  // Default-priority useFrame runs after the scene clock (priority -1), so the
   // ref is fresh this frame. Mutate the DOM directly; no per-frame React state.
   useFrame((_, delta) => {
-    const { intensity, channel, value } = readoutRef.current;
-    const ch = CHANNELS[channel];
-    if (!ch) return;
+    const { intensity, channel } = readoutRef.current;
+    const visible = Math.min(1, Math.max(0, intensity));
 
-    // Channel switched (only happens when a new uplink ARRIVES at surface) — swap the
-    // labels and fire an arrival "hit": a quick scale pop + border flash so the new
-    // reading lands with emphasis instead of just appearing.
     if (shownChannel.current !== channel) {
       shownChannel.current = channel;
-      flash.current = 1;
-      if (labelEl.current) labelEl.current.textContent = ch.label;
-      if (unitEl.current) unitEl.current.textContent = ch.unit;
+      flash.current = channel >= 0 ? 1 : 0;
     }
-    flash.current = Math.max(0, flash.current - delta / 0.45); // longer arrival hit so the snap reads at a glance
+    flash.current = Math.max(0, flash.current - delta / 0.45);
 
     if (box.current) {
-      box.current.style.opacity = intensity.toFixed(3);
+      box.current.style.opacity = visible.toFixed(3);
       const pop = 1 + 0.22 * flash.current;
-      box.current.style.transform = `scale(${((0.82 + 0.18 * intensity) * pop).toFixed(3)})`;
+      const compactScale = compact ? 0.52 : 1;
+      const compactShift = compact ? 'translateX(18px) ' : '';
+      box.current.style.transform = `${compactShift}scale(${(((0.86 + 0.14 * visible) * pop) * compactScale).toFixed(3)})`;
       box.current.style.boxShadow =
         flash.current > 0.01
           ? `0 0 ${(28 + 38 * flash.current).toFixed(0)}px rgba(34,211,238,${(0.34 + 0.58 * flash.current).toFixed(2)}), inset 0 0 14px rgba(34,211,238,0.1)`
           : '0 0 28px rgba(34, 211, 238, 0.34), inset 0 0 14px rgba(34, 211, 238, 0.1)';
     }
-    const num = ch.decimals ? value.toFixed(ch.decimals) : Math.round(value).toLocaleString('en-US');
-    const formatted = (ch.approx ? '≈ ' : '') + num; // "≈" flags a derived/calibrated figure
-    if (valueEl.current && shownValue.current !== formatted) {
-      shownValue.current = formatted;
-      valueEl.current.textContent = formatted;
-    }
+
+    rowEls.current.forEach((row, i) => {
+      if (!row) return;
+      const active = visible > 0.05 && i === channel;
+      row.style.opacity = visible > 0.05 ? '1' : '0.72';
+      row.style.background = active ? 'rgba(34, 211, 238, 0.16)' : 'rgba(2, 8, 14, 0.32)';
+      row.style.borderColor = active ? 'rgba(34, 211, 238, 0.58)' : 'transparent';
+    });
+
+    dotEls.current.forEach((dot, i) => {
+      if (!dot) return;
+      const active = visible > 0.05 && i === channel;
+      dot.style.background = active ? '#22D3EE' : 'rgba(155, 210, 225, 0.38)';
+      dot.style.boxShadow = active ? `0 0 ${(8 + 14 * flash.current).toFixed(0)}px #22D3EE` : 'none';
+    });
   });
 
   return (
     <Html
-      // Desktop: lift above the wellhead. Compact: the anchor is already a tuned
-      // in-frame point (wellhead projects off-screen on mobile), so use it directly
-      // and scale down a touch so it fits the narrow viewport.
-      position={[anchor.x, anchor.y + (compact ? 0 : 1.75), anchor.z]}
+      position={[anchor.x, anchor.y + (compact ? 0.55 : 0.74), anchor.z + (compact ? 0.04 : 0.12)]}
       center
-      distanceFactor={compact ? 9 : 13}
+      distanceFactor={compact ? 9.5 : 7.4}
       zIndexRange={[30, 0]}
     >
-      <div ref={box} style={BOX}>
-        <div style={LABEL}>
-          <span style={DOT} />
-          <span ref={labelEl}>DOWNHOLE PRESSURE</span>
+      <div ref={box} style={BOX} data-wellfi-export-overlay="telemetry">
+        <div style={HEADER}>
+          <span>INTERMEDIATE CASING</span>
+          <span style={{ color: '#EF4444' }}>WellFi</span>
         </div>
-        <div style={READ}>
-          <span ref={valueEl}>0</span>
-          <span ref={unitEl} style={UNIT}>
-            kPa
-          </span>
-        </div>
+        {CHANNELS.map((channel, i) => (
+          <div
+            key={channel.label}
+            ref={(el) => {
+              rowEls.current[i] = el;
+            }}
+            style={ROW}
+          >
+            <span style={ROW_LABEL}>
+              <span
+                ref={(el) => {
+                  dotEls.current[i] = el;
+                }}
+                style={{ ...DOT, display: 'inline-block', marginRight: '6px' }}
+              />
+              {channel.label}
+            </span>
+            <span style={VALUE}>
+              {channel.value}
+              <span style={UNIT}>{channel.unit}</span>
+            </span>
+          </div>
+        ))}
         <div style={POINTER} />
       </div>
     </Html>

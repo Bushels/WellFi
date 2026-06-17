@@ -19,7 +19,8 @@ This repo (`site/`, git `Bushels/WellFi`) is the **WellFi public marketing site*
 - `npx tsc --noEmit`, `npm run lint`, `npm test` (40 unit tests). The pure-math modules under `src/lib/island/` must stay green, and `cycle.ts` must keep its seam invariant `state(12) ≡ state(0)`.
 
 **Presentation export**
-- Use `npm run export:hero` after accepted hero-animation changes. It captures `/wellfi?motion=force` and writes the boardroom MP4, preview MP4, and poster PNG under `exports/`.
+- Use `npm run export:hero` after accepted hero-animation changes. It captures `/wellfi?motion=force` and writes the boardroom MP4, preview MP4, poster PNG, and GIF under `exports/`.
+- If a R3F `Html` overlay must appear in exported assets, mark its root with `data-wellfi-export-overlay`; the exporter preserves only marked overlays while hiding normal page UI. Verify with a contact sheet after export.
 - Do not create a new export agent or skill for this yet. The working pattern is: use the existing `animation-performance-reviewer` for R3F motion changes, validate with Playwright/browser evidence, then run the exporter.
 - Hindsight can be updated explicitly through its MCP `sync_retain` tool when a session produces durable project lessons. Do not assume it always updates automatically.
 

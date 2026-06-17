@@ -18,8 +18,7 @@ const chip = (accent: string): CSSProperties => ({
   pointerEvents: 'none',
 });
 
-const CHIP_A = { ...chip(COLORS.emGlow), transform: 'translateY(-26px)' };
-const CHIP_B = { ...chip(COLORS.signalRed), transform: 'translateY(-26px)' };
+const TOOL_CHIP = { ...chip(COLORS.signalRed), transform: 'translateY(-42px)' };
 
 export default function IslandLabels({
   paths,
@@ -29,20 +28,16 @@ export default function IslandLabels({
   compact?: boolean;
 }) {
   // On mobile (<768px) the copy column spans nearly the full width, so the chips
-  // collide with the headline/CTA and read as clutter. Drop them there — the relay
-  // color story (red B → cyan A → surface) still carries the scene. Desktop keeps the
-  // full engineering callouts. Safe to gate on JS `compact`: labels live inside the
+  // collide with the headline/CTA and read as clutter. Drop them there; desktop keeps
+  // the engineering callout. Safe to gate on JS `compact`: labels live inside the
   // client-only canvas, so there's no SSR/hydration markup to mismatch.
   if (compact) return null;
   return (
     <group>
-      {/* Labels are deliberately always-visible (no occlude) — the two tool
-          callouts, not depth-tested HUD. (Casing Shoe label removed per Kyle.) */}
-      <Html position={paths.toolA.position} center distanceFactor={14}>
-        <div style={CHIP_A}>WellFi A</div>
-      </Html>
-      <Html position={paths.toolB.position} center distanceFactor={14}>
-        <div style={CHIP_B}>WellFi B</div>
+      {/* Labels are deliberately always-visible (no occlude) — product callout,
+          not depth-tested HUD. */}
+      <Html position={paths.wellfiTool.position} center>
+        <div style={TOOL_CHIP}>WellFi</div>
       </Html>
     </group>
   );

@@ -12,6 +12,8 @@ export interface PulseHandle {
   setPulse(head: number, strength: number, width?: number): void;
   /** strength: 0..1 lit-phase flow intensity. time: elapsed scene time for animation. */
   setFlow(strength: number, time: number): void;
+  /** opacity/depthWrite are animated for cutaway focus without leaking material mutation into React components. */
+  setCutaway(opacity: number, depthWrite: boolean): void;
 }
 
 // Contract: the mesh using this material must be a TubeGeometry — three maps
@@ -69,6 +71,10 @@ export function createPulseMaterial(opts: {
     setFlow(strength, time) {
       uniforms.uFlowStrength.value = strength;
       uniforms.uTime.value = time;
+    },
+    setCutaway(opacity, depthWrite) {
+      material.opacity = opacity;
+      material.depthWrite = depthWrite;
     },
   };
 }

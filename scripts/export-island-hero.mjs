@@ -22,6 +22,7 @@ const rawWebmPath = path.join(outputDir, `${stem}.raw.webm`);
 const mp4Path = path.join(outputDir, `${stem}.mp4`);
 const posterPath = path.join(outputDir, `wellfi-island-hero-${width}x${height}-poster.png`);
 const previewPath = path.join(outputDir, `wellfi-island-hero-1280x720-${secondsLabel}s${speedLabel}-preview.mp4`);
+const gifPath = path.join(outputDir, `wellfi-island-hero-960x540-${secondsLabel}s${speedLabel}.gif`);
 
 mkdirSync(outputDir, { recursive: true });
 mkdirSync(rawVideoDir, { recursive: true });
@@ -55,7 +56,12 @@ try {
       }
 
       for (const element of document.body.querySelectorAll("*")) {
-        if (element === canvas || element.contains(canvas)) {
+        const keepsCanvas = element === canvas || element.contains(canvas);
+        const keepsExportOverlay =
+          element.closest("[data-wellfi-export-overlay]") ||
+          element.querySelector("[data-wellfi-export-overlay]");
+
+        if (keepsCanvas || keepsExportOverlay) {
           continue;
         }
         element.style.visibility = "hidden";
@@ -78,9 +84,18 @@ try {
         inset: "0",
         width: `${width}px`,
         height: `${height}px`,
-        zIndex: "2147483647",
+        zIndex: "1",
         visibility: "visible",
       });
+
+      for (const overlay of document.querySelectorAll("[data-wellfi-export-overlay]")) {
+        for (let element = overlay; element && element !== document.body; element = element.parentElement) {
+          Object.assign(element.style, {
+            visibility: "visible",
+            zIndex: "2147483647",
+          });
+        }
+      }
 
       return {
         canvasWidth: canvas.width,
@@ -90,7 +105,7 @@ try {
     { width, height },
   );
 
-  await page.locator("canvas").screenshot({ path: posterPath });
+  await page.screenshot({ path: posterPath, fullPage: false });
   await page.waitForTimeout(seconds * 1000);
 
   const recordedVideoPath = await page.video().path();
@@ -153,6 +168,27 @@ try {
       console.log(`Wrote ${previewPath}`);
     } else {
       console.warn("Preview MP4 conversion failed; main MP4 export is still available.");
+    }
+
+    const gif = spawnSync(
+      "ffmpeg",
+      [
+        "-y",
+        "-i",
+        mp4Path,
+        "-filter_complex",
+        "[0:v]fps=12,scale=960:-1:flags=lanczos,split[a][b];[a]palettegen=stats_mode=diff[p];[b][p]paletteuse=dither=bayer:bayer_scale=5",
+        "-loop",
+        "0",
+        gifPath,
+      ],
+      { stdio: "inherit" },
+    );
+
+    if (gif.status === 0 && existsSync(gifPath)) {
+      console.log(`Wrote ${gifPath}`);
+    } else {
+      console.warn("GIF conversion failed; main MP4 export is still available.");
     }
 
     if (process.env.WELLFI_KEEP_RAW !== "1" && existsSync(rawWebmPath)) {

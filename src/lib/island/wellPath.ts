@@ -27,8 +27,7 @@ export interface WellPaths {
   laterals: CatmullRomCurve3[];
   shoe: Vector3;
   wellhead: Vector3;
-  toolA: ToolAnchor;
-  toolB: ToolAnchor;
+  wellfiTool: ToolAnchor;
 }
 
 const Z_FACE = 5; // front section plane — the cased bore rides ON it (half-proud)
@@ -37,7 +36,7 @@ const v = (x: number, y: number, z: number) => new Vector3(x, y, z);
 const drape = (x: number, z: number, lift = 0.07) => v(x, floorY(x, z) + lift, z);
 
 export const KOP_PARAMS = [0.05, 0.08, 0.11, 0.14, 0.16] as const;
-export const TOOL_B_PARAM = 0.75;
+export const WELLFI_TOOL_PARAM = 0.55;
 
 // Lateral toes arc along the cavity floor edge, front-left → right-wall run.
 const LATERAL_TOES: [number, number][] = [
@@ -45,7 +44,7 @@ const LATERAL_TOES: [number, number][] = [
   [5.0, 3.7],   // L2
   [6.2, 2.8],   // L3
   [6.5, 1.6],   // L4
-  [6.5, -0.3],  // L5 — longest, hugs the right wall run; carries WellFi B
+  [6.5, -0.3],  // L5 — longest, hugs the right wall run
 ];
 
 function buildLateral(kop: Vector3, toe2d: [number, number]): CatmullRomCurve3 {
@@ -102,14 +101,10 @@ export function buildWellPaths(): WellPaths {
 
   const shoe = cased.getPointAt(1);
 
-  const toolA: ToolAnchor = {
-    position: openHole.getPointAt(0.03),
-    tangent: openHole.getTangentAt(0.03).normalize().clone(),
-  };
-  const toolB: ToolAnchor = {
-    position: laterals[4].getPointAt(TOOL_B_PARAM),
-    tangent: laterals[4].getTangentAt(TOOL_B_PARAM).normalize().clone(),
+  const wellfiTool: ToolAnchor = {
+    position: cased.getPointAt(WELLFI_TOOL_PARAM),
+    tangent: cased.getTangentAt(WELLFI_TOOL_PARAM).normalize().clone(),
   };
 
-  return { cased, openHole, laterals, shoe, wellhead, toolA, toolB };
+  return { cased, openHole, laterals, shoe, wellhead, wellfiTool };
 }

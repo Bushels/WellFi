@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildWellPaths, KOP_PARAMS, RADII, TOOL_B_PARAM } from './wellPath';
+import { buildWellPaths, KOP_PARAMS, RADII, WELLFI_TOOL_PARAM } from './wellPath';
 import { floorY, inCavity } from './layout';
 
 const paths = buildWellPaths();
@@ -60,19 +60,14 @@ describe('gate-v9 wide fan', () => {
 });
 
 describe('tool anchors', () => {
-  it('tool A sits just past the shoe on the open hole', () => {
-    const near = paths.openHole.getPointAt(0.03);
-    expect(paths.toolA.position.distanceTo(near)).toBeLessThan(0.15);
-  });
-
-  it('tool B lies on lateral 5 at the authored param', () => {
-    const expected = paths.laterals[4].getPointAt(TOOL_B_PARAM);
-    expect(paths.toolB.position.distanceTo(expected)).toBeLessThan(1e-6);
+  it('single WellFi sits inside the cased section at the authored lower-run param', () => {
+    const expected = paths.cased.getPointAt(WELLFI_TOOL_PARAM);
+    expect(paths.wellfiTool.position.distanceTo(expected)).toBeLessThan(1e-6);
+    expect(paths.wellfiTool.position.y).toBeLessThan(-3);
   });
 
   it('tangents are unit-length', () => {
-    expect(Math.abs(paths.toolA.tangent.length() - 1)).toBeLessThan(1e-6);
-    expect(Math.abs(paths.toolB.tangent.length() - 1)).toBeLessThan(1e-6);
+    expect(Math.abs(paths.wellfiTool.tangent.length() - 1)).toBeLessThan(1e-6);
   });
 });
 

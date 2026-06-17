@@ -38,6 +38,29 @@ function useForceMotionOverride(): boolean {
   return forceMotion;
 }
 
+function useHeroTimeOverride(): number | null {
+  const [heroTime, setHeroTime] = useState<number | null>(null);
+
+  useEffect(() => {
+    const update = () => {
+      const params = new URLSearchParams(window.location.search);
+      const raw = params.get('heroT');
+      if (raw === null) {
+        setHeroTime(null);
+        return;
+      }
+      const value = Number(raw);
+      setHeroTime(Number.isFinite(value) ? value : null);
+    };
+
+    update();
+    window.addEventListener('popstate', update);
+    return () => window.removeEventListener('popstate', update);
+  }, []);
+
+  return heroTime;
+}
+
 /**
  * IslandHero — the living diorama. Poster paints immediately (LCP + no-WebGL
  * fallback); the canvas cross-fades in when the renderer is ready.
@@ -45,6 +68,7 @@ function useForceMotionOverride(): boolean {
 export default function IslandHero() {
   const prefersReducedMotion = usePrefersReducedMotion();
   const forceMotion = useForceMotionOverride();
+  const heroTime = useHeroTimeOverride();
   const compact = useCompactViewport();
   const [canvasReady, setCanvasReady] = useState(false);
   const reducedMotion = forceMotion ? false : prefersReducedMotion;
@@ -74,6 +98,7 @@ export default function IslandHero() {
         <IslandCanvas
           reducedMotion={reducedMotion}
           compact={compact}
+          forcedTime={heroTime}
           onReady={() => setCanvasReady(true)}
         />
       </div>

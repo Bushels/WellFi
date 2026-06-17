@@ -22,25 +22,29 @@ describe('cycleState', () => {
     expect(cycleState(6).sun).toBe(0);
   });
 
-  it('pulses and receiver are inactive (-1) in the lit phase, collars at ember', () => {
-    const s = cycleState(1);
-    expect(s.pulseLateral).toBe(-1);
-    expect(s.pulseCased).toBe(-1);
-    expect(s.receiver).toBe(-1);
-    expect(s.collarA).toBeCloseTo(EMBER, 5);
-    expect(s.collarB).toBeCloseTo(EMBER, 5);
+  it('moves the camera focus in during darken and back out during relight', () => {
+    expect(cycleState(1).focus).toBe(0);
+    expect(cycleState(4.4).focus).toBeGreaterThan(0);
+    expect(cycleState(6).focus).toBe(1);
+    expect(cycleState(9.8).focus).toBeGreaterThan(0);
+    expect(cycleState(11).focus).toBe(0);
   });
 
-  it('relay sequence within a breath: lateral pulse first, then cased, then receiver', () => {
-    const early = cycleState(5 + 0.2 * BREATH);   // f=0.2 → lateral active
-    expect(early.pulseLateral).toBeGreaterThanOrEqual(0);
-    expect(early.pulseCased).toBe(-1);
+  it('pulses and receiver are inactive (-1) in the lit phase, collars at ember', () => {
+    const s = cycleState(1);
+    expect(s.pulseCased).toBe(-1);
+    expect(s.receiver).toBe(-1);
+    expect(s.collarWellFi).toBeCloseTo(EMBER, 5);
+  });
 
-    const mid = cycleState(5 + 0.6 * BREATH);     // f=0.6 → cased active
+  it('relay sequence within a breath: cased pulse first, then receiver', () => {
+    const early = cycleState(5 + 0.2 * BREATH);   // f=0.2 -> cased pulse active
+    expect(early.pulseCased).toBeGreaterThanOrEqual(0);
+
+    const mid = cycleState(5 + 0.6 * BREATH);     // f=0.6 -> still cased active
     expect(mid.pulseCased).toBeGreaterThanOrEqual(0);
-    expect(mid.pulseLateral).toBe(-1);
 
-    const late = cycleState(5 + 0.85 * BREATH);   // f=0.85 → receiver ring live
+    const late = cycleState(5 + 0.85 * BREATH);   // f=0.85 -> receiver ring live
     expect(late.receiver).toBeGreaterThanOrEqual(0);
     expect(late.pulseCased).toBe(-1);
     const overlap = cycleState(5 + 0.76 * BREATH); // ring + cased pulse coexist
@@ -49,16 +53,16 @@ describe('cycleState', () => {
   });
 
   it('pulse heads progress monotonically within their windows', () => {
-    const a = cycleState(5 + 0.15 * BREATH).pulseLateral;
-    const b = cycleState(5 + 0.35 * BREATH).pulseLateral;
+    const a = cycleState(5 + 0.15 * BREATH).pulseCased;
+    const b = cycleState(5 + 0.35 * BREATH).pulseCased;
     expect(b).toBeGreaterThan(a);
   });
 
-  it('collar B swells before collar A answers', () => {
+  it('single WellFi collar swells during each relay breath', () => {
     const f01 = cycleState(5 + 0.1 * BREATH);
-    expect(f01.collarB).toBeGreaterThan(f01.collarA);
+    expect(f01.collarWellFi).toBeGreaterThan(EMBER);
     const f06 = cycleState(5 + 0.6 * BREATH);
-    expect(f06.collarA).toBeGreaterThan(EMBER + 0.2);
+    expect(f06.collarWellFi).toBeGreaterThan(EMBER + 0.2);
   });
 
   it('flow follows the lit phase', () => {
@@ -72,12 +76,12 @@ describe('cycleState', () => {
     let maxCollar = 0;
     for (let t = 0; t < CYCLE_S; t += 0.05) {
       const s = cycleState(t);
-      maxCollar = Math.max(maxCollar, s.collarA, s.collarB);
-      for (const k of ['sun', 'sky', 'collarA', 'collarB', 'flow'] as const) {
+      maxCollar = Math.max(maxCollar, s.collarWellFi);
+      for (const k of ['sun', 'sky', 'collarWellFi', 'flow', 'focus'] as const) {
         expect(s[k]).toBeGreaterThanOrEqual(0);
         expect(s[k]).toBeLessThanOrEqual(1);
       }
-      for (const k of ['pulseLateral', 'pulseCased', 'receiver'] as const) {
+      for (const k of ['pulseCased', 'receiver'] as const) {
         expect(s[k]).toBeLessThanOrEqual(1);
         expect(s[k] === -1 || (s[k] >= 0 && s[k] <= 1)).toBe(true);
       }

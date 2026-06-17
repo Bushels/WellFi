@@ -75,27 +75,28 @@ The wave-sweep startup hero was retired 2026-06-10 (Kyle-approved).
 ### Approved behavior
 
 - Poster paints first (LCP); the R3F canvas cross-fades in when ready
-- 12 s seamless lighting cycle: day → dark → 3 relay pulses → relight (`src/lib/island/cycle.ts`)
-- Relay grammar: WellFi B (red #EF4444) fires deep in the lateral → WellFi A (cyan) answers at the casing shoe → surface ring
+- 12 s seamless lighting cycle: day → darken + dolly into the WellFi cutaway → 3 relay pulses → relight + pan back out (`src/lib/island/cycle.ts`)
+- Relay grammar: one WellFi (red #EF4444) sits inside the intermediate casing on the lower cased run, below the pump/tag-bar zone -> surface ring
 - Lit phase: cyan production-flow chevrons along the bores; strata use a world-Y procedural bedding shader (`Terrain.tsx`)
-- Telemetry readout (`TelemetryReadout.tsx`) pops above the wellhead during the dark phase and snaps to a new channel on each pulse arrival: pressure (kPa) → temperature (°C) → water cut (%, derived from fluid resistivity; "≈" flags it's salinity-calibrated). Values: `IslandScene.tsx` `CHANNEL_VALUES`.
-- Mobile (<768px): in-scene labels hidden (they collide with the copy column); the relay color story carries it
+- Telemetry readout (`TelemetryReadout.tsx`) is anchored to the downhole WellFi during the focused cutaway and highlights three rows as the relay pulses run: pressure `158 kPa`, temperature `26 C`, and pump vibration `4.2 mm/s RMS`.
+- Mobile (<768px): in-scene label hidden (it collides with the copy column); the relay glow carries it
 - Drag = PresentationControls with spring-back; pointer parallax when idle; page scroll is never captured
 - `prefers-reduced-motion`: frozen lit state, no pulses
 
 ### Presentation export
 
 - Start local dev at `http://127.0.0.1:3001/wellfi` before exporting.
-- `npm run export:hero` captures the live WebGL canvas from `/wellfi?motion=force`.
+- `npm run export:hero` captures the live R3F hero from `/wellfi?motion=force`, preserving any marked HTML overlays with `data-wellfi-export-overlay`.
+- For exact-frame QA screenshots, append `heroT=<seconds>`; `heroT=6.2` freezes the dark WellFi cutaway.
 - Default export is a 24 s capture encoded at 2x speed into `exports/wellfi-island-hero-1920x1080-12s-fast.mp4`.
-- The command also writes `exports/wellfi-island-hero-1280x720-12s-fast-preview.mp4` and `exports/wellfi-island-hero-1920x1080-poster.png`.
+- The command also writes `exports/wellfi-island-hero-1280x720-12s-fast-preview.mp4`, `exports/wellfi-island-hero-960x540-12s-fast.gif`, and `exports/wellfi-island-hero-1920x1080-poster.png`.
 - Use H.264 MP4, 16:9, 30 fps, `yuv420p`, `+faststart` for boardroom/PowerPoint compatibility.
 - Do not rely on canvas `captureStream()` in headless Chrome for this hero; it under-emitted frames in testing. Browser video capture plus FFmpeg produced the verified 720-frame, 24 s source and the final 360-frame, 12 s fast export.
 
 ### Non-Negotiables
 
 - Do not let the canvas block first paint (poster-first stays)
-- Red #EF4444 belongs to WellFi B only; transmission stays cyan
+- Red #EF4444 belongs to the single signal-sending WellFi; lit-phase production-flow chevrons stay cyan
 - Pure-math modules under src/lib/island/ (layout, cycle, wellPath, quality) keep their unit tests green (npm test)
 - The cycle must stay seamless (state at t=12 ≡ t=0)
 - No scroll hijacking in the hero

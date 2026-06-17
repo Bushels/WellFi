@@ -5,19 +5,15 @@ import * as THREE from 'three';
 import { COLORS } from '@/lib/island/layout';
 import { RADII, type WellPaths } from '@/lib/island/wellPath';
 
-// L5 (index 4) carries WellFi B's red pulse — see LATERAL_TOES in wellPath.ts.
-const PULSE_LATERAL_INDEX = 4;
-
 interface WellSystemProps {
   paths: WellPaths;
   // Pulse-carrying materials, owned by IslandScene (created via createPulseMaterial).
   casedMaterial: THREE.Material;
-  lateralFiveMaterial: THREE.Material;
   openHoleMaterial: THREE.Material;
   lateralMaterial: THREE.Material;
 }
 
-export default function WellSystem({ paths, casedMaterial, lateralFiveMaterial, openHoleMaterial, lateralMaterial }: WellSystemProps) {
+export default function WellSystem({ paths, casedMaterial, openHoleMaterial, lateralMaterial }: WellSystemProps) {
   const geoms = useMemo(() => {
     const cased = new THREE.TubeGeometry(paths.cased, 72, RADII.cased, 12, false);
     const shell = new THREE.TubeGeometry(paths.cased, 72, RADII.cased * 1.55, 12, false);
@@ -68,20 +64,16 @@ export default function WellSystem({ paths, casedMaterial, lateralFiveMaterial, 
         </mesh>
       ))}
 
-      {/* Cased section — carries the cyan uplink pulse */}
+      {/* Cased section — carries the red uplink pulse from the single WellFi */}
       <mesh geometry={geoms.cased} material={casedMaterial} />
 
       {/* Open-hole pilot */}
       <mesh geometry={geoms.openHole} material={openHoleMaterial} />
 
-      {/* Laterals — L5 (index 4) carries the red pulse from WellFi B */}
-      {geoms.laterals.map((g, i) =>
-        i === PULSE_LATERAL_INDEX ? (
-          <mesh key={`lat-${i}`} geometry={g} material={lateralFiveMaterial} />
-        ) : (
-          <mesh key={`lat-${i}`} geometry={g} material={lateralMaterial} />
-        ),
-      )}
+      {/* Laterals */}
+      {geoms.laterals.map((g, i) => (
+        <mesh key={`lat-${i}`} geometry={g} material={lateralMaterial} />
+      ))}
 
       {/* Casing shoe — the OD step engineers look for */}
       <mesh position={[paths.shoe.x, paths.shoe.y, paths.shoe.z]} quaternion={shoeQuaternion}>

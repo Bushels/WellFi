@@ -8,10 +8,11 @@ import IslandScene from './IslandScene';
 interface IslandCanvasProps {
   reducedMotion: boolean;
   compact: boolean;
+  forcedTime: number | null;
   onReady: () => void;
 }
 
-export default function IslandCanvas({ reducedMotion, compact, onReady }: IslandCanvasProps) {
+export default function IslandCanvas({ reducedMotion, compact, forcedTime, onReady }: IslandCanvasProps) {
   const container = useRef<HTMLDivElement>(null);
   // null until client-mounted — the post-mount gate is load-bearing: it keeps
   // the Canvas subtree out of the static-export prerender entirely.
@@ -73,7 +74,7 @@ export default function IslandCanvas({ reducedMotion, compact, onReady }: Island
         gl={{ antialias: true, powerPreference: 'high-performance' }}
         onCreated={onReady}
       >
-        <IslandScene tier={tier} reducedMotion={reducedMotion} compact={compact} />
+        <IslandScene tier={tier} reducedMotion={reducedMotion} compact={compact} forcedTime={forcedTime} />
       </Canvas>
     </div>
   );
