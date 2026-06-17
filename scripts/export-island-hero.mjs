@@ -23,6 +23,7 @@ const mp4Path = path.join(outputDir, `${stem}.mp4`);
 const posterPath = path.join(outputDir, `wellfi-island-hero-${width}x${height}-poster.png`);
 const previewPath = path.join(outputDir, `wellfi-island-hero-1280x720-${secondsLabel}s${speedLabel}-preview.mp4`);
 const gifPath = path.join(outputDir, `wellfi-island-hero-960x540-${secondsLabel}s${speedLabel}.gif`);
+const posterTime = Number(process.env.WELLFI_POSTER_T ?? 1.5);
 
 mkdirSync(outputDir, { recursive: true });
 mkdirSync(rawVideoDir, { recursive: true });
@@ -31,6 +32,28 @@ const browser = await chromium.launch({
   headless: true,
   args: ["--autoplay-policy=no-user-gesture-required"],
 });
+
+async function setHeroTime(page, time) {
+  await page.evaluate(async (nextTime) => {
+    const nextUrl = new URL(window.location.href);
+    nextUrl.searchParams.set("motion", "force");
+    nextUrl.searchParams.set("heroT", nextTime.toFixed(4));
+    window.history.pushState(null, "", nextUrl);
+    window.dispatchEvent(new PopStateEvent("popstate"));
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+  }, time);
+}
+
+async function clearHeroTime(page) {
+  await page.evaluate(async () => {
+    const nextUrl = new URL(window.location.href);
+    nextUrl.searchParams.set("motion", "force");
+    nextUrl.searchParams.delete("heroT");
+    window.history.pushState(null, "", nextUrl);
+    window.dispatchEvent(new PopStateEvent("popstate"));
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+  });
+}
 
 try {
   const context = await browser.newContext({
@@ -105,7 +128,9 @@ try {
     { width, height },
   );
 
+  await setHeroTime(page, posterTime);
   await page.screenshot({ path: posterPath, fullPage: false });
+  await clearHeroTime(page);
   await page.waitForTimeout(seconds * 1000);
 
   const recordedVideoPath = await page.video().path();

@@ -60,10 +60,11 @@ describe('gate-v9 wide fan', () => {
 });
 
 describe('tool anchors', () => {
-  it('single WellFi sits inside the cased section at the authored lower-run param', () => {
-    const expected = paths.cased.getPointAt(WELLFI_TOOL_PARAM);
+  it('single WellFi sits just past the casing shoe on the open-hole pilot', () => {
+    const expected = paths.openHole.getPointAt(WELLFI_TOOL_PARAM);
     expect(paths.wellfiTool.position.distanceTo(expected)).toBeLessThan(1e-6);
-    expect(paths.wellfiTool.position.y).toBeLessThan(-3);
+    expect(WELLFI_TOOL_PARAM).toBeLessThan(KOP_PARAMS[0]);
+    expect(paths.wellfiTool.position.distanceTo(paths.shoe)).toBeLessThan(0.5);
   });
 
   it('tangents are unit-length', () => {

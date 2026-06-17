@@ -1,18 +1,16 @@
 'use client';
 
-import { useRef, type CSSProperties, type MutableRefObject } from 'react';
-import { useFrame } from '@react-three/fiber';
-import { Html } from '@react-three/drei';
-import type * as THREE from 'three';
+import { useEffect, useRef, type CSSProperties, type MutableRefObject } from 'react';
 
 /**
  * Live telemetry the scene clock writes each frame. `channel` highlights the
- * measurement being transmitted during each pulse while the panel stays anchored
- * to the downhole WellFi section.
+ * measurement being transmitted during each pulse while the panel stays in the
+ * surface receiver zone above the surface casing area. This remains screen-
+ * anchored so it is stable in the exported MP4/GIF overlays.
  */
 export interface TelemetryState {
   intensity: number; // 0..1 visibility/scale envelope
-  channel: number; // -1 = panel only, 0 pressure, 1 temperature, 2 vibration
+  channel: number; // -1 = panel only, 0 pressure, 1 temperature, 2 water cut
 }
 
 interface Channel {
@@ -21,13 +19,10 @@ interface Channel {
   unit: string;
 }
 
-// Pump health readout uses velocity vibration in mm/s RMS. The accelerometer-native
-// raw view would be g RMS, but mm/s RMS is the field-friendlier rotating-equipment
-// severity metric for a marketing/SCADA-style bubble.
 const CHANNELS: Channel[] = [
-  { label: 'PRESSURE', value: '158', unit: 'kPa' },
-  { label: 'TEMPERATURE', value: '26', unit: 'C' },
-  { label: 'PUMP VIBRATION', value: '4.2', unit: 'mm/s RMS' },
+  { label: 'PRESSURE', value: '226', unit: 'kPa' },
+  { label: 'TEMPERATURE', value: '20', unit: 'C' },
+  { label: 'WATER CUT', value: '6', unit: '%' },
 ];
 
 // Inline style objects (not a CSS-in-JS lib) - same convention as IslandLabels.
@@ -44,7 +39,7 @@ const BOX: CSSProperties = {
   textAlign: 'left',
   whiteSpace: 'nowrap',
   pointerEvents: 'none',
-  transformOrigin: 'center bottom',
+  transformOrigin: 'right top',
   willChange: 'opacity, transform',
   opacity: 0,
 };
@@ -117,11 +112,9 @@ const POINTER: CSSProperties = {
 
 export default function TelemetryReadout({
   readoutRef,
-  anchor,
   compact = false,
 }: {
   readoutRef: MutableRefObject<TelemetryState>;
-  anchor: THREE.Vector3;
   compact?: boolean;
 }) {
   const box = useRef<HTMLDivElement>(null);
@@ -130,56 +123,69 @@ export default function TelemetryReadout({
   const shownChannel = useRef(-2);
   const flash = useRef(0); // 0..1 arrival pop, set on channel change, decays
 
-  // Default-priority useFrame runs after the scene clock (priority -1), so the
-  // ref is fresh this frame. Mutate the DOM directly; no per-frame React state.
-  useFrame((_, delta) => {
-    const { intensity, channel } = readoutRef.current;
-    const visible = Math.min(1, Math.max(0, intensity));
+  useEffect(() => {
+    let frame = 0;
+    let last = performance.now();
 
-    if (shownChannel.current !== channel) {
-      shownChannel.current = channel;
-      flash.current = channel >= 0 ? 1 : 0;
-    }
-    flash.current = Math.max(0, flash.current - delta / 0.45);
+    const render = (now: number) => {
+      const delta = Math.min(0.1, (now - last) / 1000);
+      last = now;
+      const { intensity, channel } = readoutRef.current;
+      const visible = Math.min(1, Math.max(0, intensity));
 
-    if (box.current) {
-      box.current.style.opacity = visible.toFixed(3);
-      const pop = 1 + 0.22 * flash.current;
-      const compactScale = compact ? 0.52 : 1;
-      const compactShift = compact ? 'translateX(18px) ' : '';
-      box.current.style.transform = `${compactShift}scale(${(((0.86 + 0.14 * visible) * pop) * compactScale).toFixed(3)})`;
-      box.current.style.boxShadow =
-        flash.current > 0.01
-          ? `0 0 ${(28 + 38 * flash.current).toFixed(0)}px rgba(34,211,238,${(0.34 + 0.58 * flash.current).toFixed(2)}), inset 0 0 14px rgba(34,211,238,0.1)`
-          : '0 0 28px rgba(34, 211, 238, 0.34), inset 0 0 14px rgba(34, 211, 238, 0.1)';
-    }
+      if (shownChannel.current !== channel) {
+        shownChannel.current = channel;
+        flash.current = channel >= 0 ? 1 : 0;
+      }
+      flash.current = Math.max(0, flash.current - delta / 0.45);
 
-    rowEls.current.forEach((row, i) => {
-      if (!row) return;
-      const active = visible > 0.05 && i === channel;
-      row.style.opacity = visible > 0.05 ? '1' : '0.72';
-      row.style.background = active ? 'rgba(34, 211, 238, 0.16)' : 'rgba(2, 8, 14, 0.32)';
-      row.style.borderColor = active ? 'rgba(34, 211, 238, 0.58)' : 'transparent';
-    });
+      if (box.current) {
+        box.current.style.opacity = visible.toFixed(3);
+        const pop = 1 + 0.22 * flash.current;
+        const compactScale = compact ? 0.78 : 1;
+        box.current.style.transform = `scale(${(((0.86 + 0.14 * visible) * pop) * compactScale).toFixed(3)})`;
+        box.current.style.boxShadow =
+          flash.current > 0.01
+            ? `0 0 ${(28 + 38 * flash.current).toFixed(0)}px rgba(34,211,238,${(0.34 + 0.58 * flash.current).toFixed(2)}), inset 0 0 14px rgba(34,211,238,0.1)`
+            : '0 0 28px rgba(34, 211, 238, 0.34), inset 0 0 14px rgba(34, 211, 238, 0.1)';
+      }
 
-    dotEls.current.forEach((dot, i) => {
-      if (!dot) return;
-      const active = visible > 0.05 && i === channel;
-      dot.style.background = active ? '#22D3EE' : 'rgba(155, 210, 225, 0.38)';
-      dot.style.boxShadow = active ? `0 0 ${(8 + 14 * flash.current).toFixed(0)}px #22D3EE` : 'none';
-    });
-  });
+      rowEls.current.forEach((row, i) => {
+        if (!row) return;
+        const active = visible > 0.05 && i === channel;
+        row.style.opacity = visible > 0.05 ? '1' : '0.72';
+        row.style.background = active ? 'rgba(34, 211, 238, 0.16)' : 'rgba(2, 8, 14, 0.32)';
+        row.style.borderColor = active ? 'rgba(34, 211, 238, 0.58)' : 'transparent';
+      });
+
+      dotEls.current.forEach((dot, i) => {
+        if (!dot) return;
+        const active = visible > 0.05 && i === channel;
+        dot.style.background = active ? '#22D3EE' : 'rgba(155, 210, 225, 0.38)';
+        dot.style.boxShadow = active ? `0 0 ${(8 + 14 * flash.current).toFixed(0)}px #22D3EE` : 'none';
+      });
+
+      frame = requestAnimationFrame(render);
+    };
+
+    frame = requestAnimationFrame(render);
+    return () => cancelAnimationFrame(frame);
+  }, [compact, readoutRef]);
+
+  const slot: CSSProperties = {
+    position: 'absolute',
+    top: compact ? '118px' : 'clamp(136px, 21vh, 228px)',
+    left: compact ? '24px' : 'clamp(500px, 31vw, 640px)',
+    pointerEvents: 'none',
+    zIndex: 20,
+  };
 
   return (
-    <Html
-      position={[anchor.x, anchor.y + (compact ? 0.55 : 0.74), anchor.z + (compact ? 0.04 : 0.12)]}
-      center
-      distanceFactor={compact ? 9.5 : 7.4}
-      zIndexRange={[30, 0]}
-    >
+    <div aria-hidden="true" style={slot}>
       <div ref={box} style={BOX} data-wellfi-export-overlay="telemetry">
+        <div style={POINTER} />
         <div style={HEADER}>
-          <span>INTERMEDIATE CASING</span>
+          <span>SURFACE RECEIVER</span>
           <span style={{ color: '#EF4444' }}>WellFi</span>
         </div>
         {CHANNELS.map((channel, i) => (
@@ -205,8 +211,7 @@ export default function TelemetryReadout({
             </span>
           </div>
         ))}
-        <div style={POINTER} />
       </div>
-    </Html>
+    </div>
   );
 }

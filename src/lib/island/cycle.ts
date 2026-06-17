@@ -12,7 +12,7 @@ export interface CycleState {
   pulseCased: number;   // WellFi tool -> wellhead pulse progress, or -1
   receiver: number;     // surface ring progress, or -1
   flow: number;         // 0..1 — lit-phase production-flow chevron strength
-  focus: number;        // 0..1 camera/cutaway emphasis on the cased-section WellFi
+  focus: number;        // 0..1 cutaway/glow emphasis on the single WellFi; camera stays wide
 }
 
 export function smooth(a: number, b: number, t: number): number {

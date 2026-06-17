@@ -75,10 +75,10 @@ The wave-sweep startup hero was retired 2026-06-10 (Kyle-approved).
 ### Approved behavior
 
 - Poster paints first (LCP); the R3F canvas cross-fades in when ready
-- 12 s seamless lighting cycle: day → darken + dolly into the WellFi cutaway → 3 relay pulses → relight + pan back out (`src/lib/island/cycle.ts`)
-- Relay grammar: one WellFi (red #EF4444) sits inside the intermediate casing on the lower cased run, below the pump/tag-bar zone -> surface ring
+- 12 s seamless lighting cycle: day → darken while holding the wide island/surface-casing view → 3 relay pulses → relight wide (`src/lib/island/cycle.ts`)
+- Relay grammar: one WellFi (red #EF4444) sits just past the casing shoe, out of the intermediate casing on the open-hole pilot -> surface ring
 - Lit phase: cyan production-flow chevrons along the bores; strata use a world-Y procedural bedding shader (`Terrain.tsx`)
-- Telemetry readout (`TelemetryReadout.tsx`) is anchored to the downhole WellFi during the focused cutaway and highlights three rows as the relay pulses run: pressure `158 kPa`, temperature `26 C`, and pump vibration `4.2 mm/s RMS`.
+- Telemetry readout (`TelemetryReadout.tsx`) is a surface receiver overlay above the surface casing area and highlights three rows as the relay pulses run: pressure `226 kPa`, temperature `20 C`, and water cut `6%`.
 - Mobile (<768px): in-scene label hidden (it collides with the copy column); the relay glow carries it
 - Drag = PresentationControls with spring-back; pointer parallax when idle; page scroll is never captured
 - `prefers-reduced-motion`: frozen lit state, no pulses
@@ -86,8 +86,9 @@ The wave-sweep startup hero was retired 2026-06-10 (Kyle-approved).
 ### Presentation export
 
 - Start local dev at `http://127.0.0.1:3001/wellfi` before exporting.
+- Use `http://127.0.0.1:3001/wellfi/animation?motion=force` when showing only the live animation/readout in a browser.
 - `npm run export:hero` captures the live R3F hero from `/wellfi?motion=force`, preserving any marked HTML overlays with `data-wellfi-export-overlay`.
-- For exact-frame QA screenshots, append `heroT=<seconds>`; `heroT=6.2` freezes the dark WellFi cutaway.
+- For exact-frame QA screenshots, append `heroT=<seconds>`; `heroT=6.2` freezes the dark relay/readout beat.
 - Default export is a 24 s capture encoded at 2x speed into `exports/wellfi-island-hero-1920x1080-12s-fast.mp4`.
 - The command also writes `exports/wellfi-island-hero-1280x720-12s-fast-preview.mp4`, `exports/wellfi-island-hero-960x540-12s-fast.gif`, and `exports/wellfi-island-hero-1920x1080-poster.png`.
 - Use H.264 MP4, 16:9, 30 fps, `yuv420p`, `+faststart` for boardroom/PowerPoint compatibility.

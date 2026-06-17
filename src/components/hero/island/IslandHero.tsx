@@ -1,16 +1,15 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import usePrefersReducedMotion from '@/lib/usePrefersReducedMotion';
 import WellFiLogo from '@/components/ui/WellFiLogo';
 import IslandCanvas from './IslandCanvas';
+import TelemetryReadout, { type TelemetryState } from './TelemetryReadout';
 
 const PROOF_CHIPS = ['130+ Installed Globally', 'Modbus Ready', 'Seamless Install'];
 
 function useCompactViewport(): boolean {
-  const [compact, setCompact] = useState(() =>
-    typeof window !== 'undefined' ? window.matchMedia('(max-width: 768px)').matches : false,
-  );
+  const [compact, setCompact] = useState(false);
   useEffect(() => {
     const media = window.matchMedia('(max-width: 768px)');
     const update = () => setCompact(media.matches);
@@ -65,11 +64,12 @@ function useHeroTimeOverride(): number | null {
  * IslandHero — the living diorama. Poster paints immediately (LCP + no-WebGL
  * fallback); the canvas cross-fades in when the renderer is ready.
  */
-export default function IslandHero() {
+export default function IslandHero({ animationOnly = false }: { animationOnly?: boolean }) {
   const prefersReducedMotion = usePrefersReducedMotion();
   const forceMotion = useForceMotionOverride();
   const heroTime = useHeroTimeOverride();
   const compact = useCompactViewport();
+  const readoutRef = useRef<TelemetryState>({ intensity: 0, channel: -1 });
   const [canvasReady, setCanvasReady] = useState(false);
   const reducedMotion = forceMotion ? false : prefersReducedMotion;
 
@@ -99,18 +99,25 @@ export default function IslandHero() {
           reducedMotion={reducedMotion}
           compact={compact}
           forcedTime={heroTime}
+          readoutRef={readoutRef}
           onReady={() => setCanvasReady(true)}
         />
       </div>
+
+      <TelemetryReadout readoutRef={readoutRef} compact={compact} />
 
       {/* Bottom fade into the next section */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-x-0 bottom-0 h-[16%] bg-[linear-gradient(180deg,rgba(0,0,0,0)_0%,rgba(2,7,14,0.92)_100%)]"
+        style={{ display: animationOnly ? 'none' : undefined }}
       />
 
       {/* Overlay UI */}
-      <div className="pointer-events-none relative z-10 mx-auto flex min-h-[100svh] w-full max-w-[96rem] flex-col px-6 pt-10 sm:px-10 sm:pt-14 lg:px-12 lg:pt-16">
+      <div
+        className="pointer-events-none relative z-10 mx-auto flex min-h-[100svh] w-full max-w-[96rem] flex-col px-6 pt-10 sm:px-10 sm:pt-14 lg:px-12 lg:pt-16"
+        style={{ display: animationOnly ? 'none' : undefined }}
+      >
         <div className="pointer-events-auto">
           <WellFiLogo
             interactiveSignal

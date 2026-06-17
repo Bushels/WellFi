@@ -16,7 +16,7 @@ import {
   smooth,
   type CycleState,
 } from '@/lib/island/cycle';
-import { buildWellPaths, WELLFI_TOOL_PARAM } from '@/lib/island/wellPath';
+import { buildWellPaths, WELLFI_UPLINK_CASING_PARAM } from '@/lib/island/wellPath';
 import { createPulseMaterial } from '@/lib/island/pulseMaterial';
 import type { GpuTier } from '@/lib/island/quality';
 import Terrain from './Terrain';
@@ -26,82 +26,32 @@ import WellFiTools from './WellFiTools';
 import SignalRelay from './SignalRelay';
 import LeasePad from './LeasePad';
 import IslandLabels from './IslandLabels';
-import TelemetryReadout, { type TelemetryState } from './TelemetryReadout';
+import type { TelemetryState } from './TelemetryReadout';
 
 interface IslandSceneProps {
   tier: GpuTier;
   reducedMotion: boolean;
   compact: boolean; // mobile framing
   forcedTime: number | null;
+  readoutRef: MutableRefObject<TelemetryState>;
 }
 
 const CAMERA = {
   desktop: { position: [25.1, 19.9, 28.3] as const, target: new THREE.Vector3(-1.8, -1.5, 2.2) },
-  compact: { position: [15.5, 11.5, 17.5] as const, target: new THREE.Vector3(0.5, -1.4, 0.5) },
-};
-
-const FOCUS_CAMERA = {
-  desktop: { offset: new THREE.Vector3(7.6, 4.4, 6.35), targetOffset: new THREE.Vector3(0.08, 0.2, -0.02), fov: 18 },
-  compact: { offset: new THREE.Vector3(5.8, 3.55, 5.2), targetOffset: new THREE.Vector3(0.18, -0.3, -0.08), fov: 22 },
+  compact: { position: [26.5, 21.2, 29.8] as const, target: new THREE.Vector3(-1.8, -1.5, 2.2) },
 };
 
 const pulseShape = (p: number) => 3.8 * Math.sin(Math.PI * Math.min(1, Math.max(0, p)));
 const ARRIVAL_F = 0.74; // within-breath fraction where the pulse reaches the active readout row
 
-interface CameraRig {
-  widePosition: THREE.Vector3;
-  wideTarget: THREE.Vector3;
-  focusPosition: THREE.Vector3;
-  focusTarget: THREE.Vector3;
-  focusFov: number;
-}
-
-function FocusCameraController({
-  rig,
-  cycleRef,
-}: {
-  rig: CameraRig;
-  cycleRef: MutableRefObject<CycleState>;
-}) {
-  const cameraPosition = useRef(new THREE.Vector3());
-  const cameraTarget = useRef(new THREE.Vector3());
-
-  useFrame((state) => {
-    const focus = cycleRef.current.focus;
-    cameraPosition.current.copy(rig.widePosition).lerp(rig.focusPosition, focus);
-    cameraTarget.current.copy(rig.wideTarget).lerp(rig.focusTarget, focus);
-    state.camera.position.copy(cameraPosition.current);
-    state.camera.lookAt(cameraTarget.current);
-    state.camera.updateMatrixWorld();
-    if (state.camera instanceof THREE.PerspectiveCamera) {
-      state.camera.fov = THREE.MathUtils.lerp(20, rig.focusFov, focus);
-      state.camera.updateProjectionMatrix();
-    }
-  }, 1);
-
-  return null;
-}
-
-export default function IslandScene({ tier, reducedMotion, compact, forcedTime }: IslandSceneProps) {
+export default function IslandScene({ tier, reducedMotion, compact, forcedTime, readoutRef }: IslandSceneProps) {
   const paths = useMemo(() => buildWellPaths(), []);
   const cycleRef = useRef<CycleState>(cycleState(REDUCED_MOTION_T));
-  const readoutRef = useRef<TelemetryState>({ intensity: 0, channel: -1 });
   const [composerCamera, setComposerCamera] = useState<THREE.PerspectiveCamera | null>(null);
   const cam = compact ? CAMERA.compact : CAMERA.desktop;
   const setPerspectiveCamera = useCallback((camera: THREE.PerspectiveCamera | null) => {
     setComposerCamera(camera);
   }, []);
-  const cameraRig = useMemo(() => {
-    const focus = compact ? FOCUS_CAMERA.compact : FOCUS_CAMERA.desktop;
-    const focusTarget = paths.wellfiTool.position.clone().add(focus.targetOffset);
-    return {
-      widePosition: new THREE.Vector3(...cam.position),
-      wideTarget: cam.target.clone(),
-      focusPosition: focusTarget.clone().add(focus.offset),
-      focusTarget,
-      focusFov: focus.fov,
-    };
-  }, [cam.position, cam.target, compact, paths]);
 
   const casedPulse = useMemo(
     () =>
@@ -147,7 +97,7 @@ export default function IslandScene({ tier, reducedMotion, compact, forcedTime }
     if (rim.current) rim.current.intensity = 0.22 + 0.6 * (1 - s.sun);
 
     if (s.pulseCased >= 0) {
-      casedPulse.setPulse(WELLFI_TOOL_PARAM * (1 - s.pulseCased), pulseShape(s.pulseCased), 0.105);
+      casedPulse.setPulse(WELLFI_UPLINK_CASING_PARAM * (1 - s.pulseCased), pulseShape(s.pulseCased), 0.105);
     } else {
       casedPulse.setPulse(-1, 0);
     }
@@ -195,13 +145,12 @@ export default function IslandScene({ tier, reducedMotion, compact, forcedTime }
         ref={setPerspectiveCamera}
         key={compact ? 'compact' : 'desktop'}
         makeDefault
-        fov={20}
+        fov={compact ? 30 : 20}
         near={0.5}
         far={120}
         position={[...cam.position]}
         onUpdate={(c) => c.lookAt(cam.target)}
       />
-      <FocusCameraController rig={cameraRig} cycleRef={cycleRef} />
 
       <hemisphereLight ref={hemi} color={COLORS.skyFill} groundColor={COLORS.ground} intensity={0.7} />
       <directionalLight ref={sun} color={COLORS.sunWarm} position={[-7, 10, 5]} intensity={2.6} />
@@ -237,7 +186,6 @@ export default function IslandScene({ tier, reducedMotion, compact, forcedTime }
           <SignalRelay cycleRef={cycleRef} wellhead={paths.wellhead} />
           <LeasePad />
           <IslandLabels paths={paths} compact={compact} />
-          <TelemetryReadout readoutRef={readoutRef} anchor={paths.wellfiTool.position} compact={compact} />
         </group>
       </PresentationControls>
 

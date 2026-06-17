@@ -36,7 +36,8 @@ const v = (x: number, y: number, z: number) => new Vector3(x, y, z);
 const drape = (x: number, z: number, lift = 0.07) => v(x, floorY(x, z) + lift, z);
 
 export const KOP_PARAMS = [0.05, 0.08, 0.11, 0.14, 0.16] as const;
-export const WELLFI_TOOL_PARAM = 0.55;
+export const WELLFI_TOOL_PARAM = 0.03;
+export const WELLFI_UPLINK_CASING_PARAM = 1;
 
 // Lateral toes arc along the cavity floor edge, front-left → right-wall run.
 const LATERAL_TOES: [number, number][] = [
@@ -102,8 +103,8 @@ export function buildWellPaths(): WellPaths {
   const shoe = cased.getPointAt(1);
 
   const wellfiTool: ToolAnchor = {
-    position: cased.getPointAt(WELLFI_TOOL_PARAM),
-    tangent: cased.getTangentAt(WELLFI_TOOL_PARAM).normalize().clone(),
+    position: openHole.getPointAt(WELLFI_TOOL_PARAM),
+    tangent: openHole.getTangentAt(WELLFI_TOOL_PARAM).normalize().clone(),
   };
 
   return { cased, openHole, laterals, shoe, wellhead, wellfiTool };

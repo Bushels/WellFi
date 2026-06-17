@@ -37,7 +37,9 @@ export default function IslandLabels({
       {/* Labels are deliberately always-visible (no occlude) — product callout,
           not depth-tested HUD. */}
       <Html position={paths.wellfiTool.position} center>
-        <div style={TOOL_CHIP}>WellFi</div>
+        <div style={TOOL_CHIP} data-wellfi-export-overlay="wellfi-label">
+          WellFi
+        </div>
       </Html>
     </group>
   );
