@@ -21,14 +21,33 @@ function useCompactViewport(): boolean {
   return compact;
 }
 
+function useForceMotionOverride(): boolean {
+  const [forceMotion, setForceMotion] = useState(false);
+
+  useEffect(() => {
+    const update = () => {
+      const params = new URLSearchParams(window.location.search);
+      setForceMotion(params.get('motion') === 'force');
+    };
+
+    update();
+    window.addEventListener('popstate', update);
+    return () => window.removeEventListener('popstate', update);
+  }, []);
+
+  return forceMotion;
+}
+
 /**
  * IslandHero — the living diorama. Poster paints immediately (LCP + no-WebGL
  * fallback); the canvas cross-fades in when the renderer is ready.
  */
 export default function IslandHero() {
   const prefersReducedMotion = usePrefersReducedMotion();
+  const forceMotion = useForceMotionOverride();
   const compact = useCompactViewport();
   const [canvasReady, setCanvasReady] = useState(false);
+  const reducedMotion = forceMotion ? false : prefersReducedMotion;
 
   return (
     <section
@@ -53,7 +72,7 @@ export default function IslandHero() {
         style={{ opacity: canvasReady ? 1 : 0 }}
       >
         <IslandCanvas
-          reducedMotion={prefersReducedMotion}
+          reducedMotion={reducedMotion}
           compact={compact}
           onReady={() => setCanvasReady(true)}
         />

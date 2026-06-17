@@ -25,55 +25,68 @@ export default function Home() {
   const mainRef = useRef<HTMLElement>(null);
 
   useGSAP(() => {
+    const main = mainRef.current;
+    if (!main) return;
+
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (prefersReduced) return;
 
+    const sectionDividers = main.querySelectorAll('.section-divider');
+    const anchor = main.querySelector('#anchor');
+    const proof = main.querySelector('#proof');
+
     // Section divider — grows from center on scroll approach
-    gsap.fromTo('.section-divider',
-      { opacity: 0, maxWidth: '0%' },
-      {
-        opacity: 1,
-        maxWidth: '80%',
-        duration: 0.8,
-        ease: 'power2.out',
-        scrollTrigger: {
-          trigger: '.section-divider',
-          start: 'top 90%',
+    sectionDividers.forEach((divider) => {
+      gsap.fromTo(divider,
+        { opacity: 0, maxWidth: '0%' },
+        {
+          opacity: 1,
+          maxWidth: '80%',
+          duration: 0.8,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: divider,
+            start: 'top 90%',
+          },
         },
-      },
-    );
+      );
+    });
 
     // Background gradient shift — scroll-linked color temperature
-    gsap.fromTo('main',
-      { '--bg-red-intensity': 0.04, '--bg-amber-intensity': 0.02 },
-      {
-        '--bg-red-intensity': 0.12,
-        '--bg-amber-intensity': 0.03,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: '#anchor',
-          start: 'top center',
-          end: 'bottom center',
-          scrub: true,
+    if (anchor) {
+      gsap.fromTo(main,
+        { '--bg-red-intensity': 0.04, '--bg-amber-intensity': 0.02 },
+        {
+          '--bg-red-intensity': 0.12,
+          '--bg-amber-intensity': 0.03,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: anchor,
+            start: 'top center',
+            end: 'bottom center',
+            scrub: true,
+          },
         },
-      },
-    );
+      );
+    }
 
     // Warmer shift near proof section
-    gsap.fromTo('main',
-      { '--bg-red-intensity': 0.12, '--bg-amber-intensity': 0.03 },
-      {
-        '--bg-red-intensity': 0.06,
-        '--bg-amber-intensity': 0.08,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: '#proof',
-          start: 'top center',
-          end: 'bottom center',
-          scrub: true,
+    if (proof) {
+      gsap.fromTo(main,
+        { '--bg-red-intensity': 0.12, '--bg-amber-intensity': 0.03 },
+        {
+          '--bg-red-intensity': 0.06,
+          '--bg-amber-intensity': 0.08,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: proof,
+            start: 'top center',
+            end: 'bottom center',
+            scrub: true,
+          },
         },
-      },
-    );
+      );
+    }
   }, { scope: mainRef });
 
   return (

@@ -52,9 +52,9 @@ export function createPulseMaterial(opts: {
           totalEmissiveRadiance += uPulseColor * (uStrength * exp(-d * d));
         }
         if (uFlowStrength > 0.0) {
-          float saw = fract(vUv.x * uFlowCount + uTime * 0.45);
-          float dash = smoothstep(0.0, 0.22, saw) * (1.0 - smoothstep(0.4, 0.62, saw));
-          totalEmissiveRadiance += uFlowColor * (uFlowStrength * dash * 0.55);
+          float saw = fract(vUv.x * uFlowCount + uTime * 0.82);
+          float dash = smoothstep(0.0, 0.2, saw) * (1.0 - smoothstep(0.46, 0.72, saw));
+          totalEmissiveRadiance += uFlowColor * (uFlowStrength * dash * 0.95);
         }`,
       );
   };

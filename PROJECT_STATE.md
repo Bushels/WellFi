@@ -1,53 +1,57 @@
 # Project State
 
-Last verified commit: `4f820bf feat: consolidate proof section — image spine layout with 6 proof points and CTA`
+Last verified: 2026-06-16 local QA on `codex/wellfi-hero-calculator`
 
-Current branch: `codex/wellfi-hero-calculator`
+Current task status: ready to merge to `main`.
 
-Active task: hero calculator lead-gen flow + proof section refinement
+## Completed This Session
 
-## Uncommitted Work
+- Restored and verified local dev at `http://127.0.0.1:3001/wellfi`.
+- Made the island hero animation more legible:
+  - stronger relay pulse shape and wider pulse bands
+  - brighter production-flow chevrons
+  - stronger surface-ring and telemetry-readout hits
+  - subtle idle camera drift
+  - higher high-tier bloom
+- Added `?motion=force` so export/QA can run animation even when the host machine has reduced motion enabled.
+- Fixed GSAP selector scoping warnings on the homepage scroll effects.
+- Fixed the SAGD image path for the `/wellfi` base path.
+- Added a repeatable presentation export command:
+  - `npm run export:hero`
+  - primary output: `exports/wellfi-island-hero-1920x1080-12s-fast.mp4`
+  - preview output: `exports/wellfi-island-hero-1280x720-12s-fast-preview.mp4`
+  - poster output: `exports/wellfi-island-hero-1920x1080-poster.png`
 
-### Agent specs
+## Verified
 
-Modified:
-- `.claude/agents/content-accuracy-verifier.md`
-- `.claude/agents/reference-fidelity-reviewer.md`
+- `npx tsc --noEmit`
+- `npm run lint` (passes with the existing `WellFiLogo.tsx` raw `<img>` warning)
+- `npm test` (40 tests passing)
+- `npm run build`
+- Playwright browser checks:
+  - `/wellfi` returns 200
+  - canvas renders
+  - no failed requests
+  - no Next.js error overlay
+  - normal motion animates
+  - reduced motion freezes
+  - `?motion=force` animates under reduced-motion settings
 
-### Skill content
+## Next Branch Suggestion
 
-Modified:
-- `.claude/skills/wellfi-product/SKILL.md`
+Start from `main` and branch for animation-only iteration. Keep the scope narrow:
 
-### Source code
+```powershell
+git checkout main
+git pull
+git checkout -b codex/wellfi-hero-animation-iteration
+npm run dev -- --hostname 127.0.0.1 --port 3001
+```
 
-Modified:
-- `next.config.ts`
-- `src/app/globals.css`
-- `src/app/page.tsx`
-- `src/components/calculator/CalculatorTeaserSection.tsx`
-- `src/components/hero/HeroSection.tsx`
-- `src/components/proof/ProofSection.tsx`
-- `src/lib/content.ts`
-- `src/lib/design-tokens.ts`
+Use `npm run export:hero` after each accepted visual pass to regenerate the boardroom MP4.
 
-### Project docs and config
+## Watch Items
 
-Modified:
-- `.gitignore`
-- `CLAUDE.md`
-- `docs/hero-startup-animation.md`
-- `progress.txt`
-
-### Untracked new files
-
-- `src/lib/animate-counter.ts`
-- `src/lib/animate-text-scramble.ts`
-
-## Known Blockers
-
-- Hero animation creative direction is still iterating; see `docs/hero-startup-animation.md` for the approved sequence — do not deviate.
-
-## Next Action
-
-[Kyle to fill in]
+- Mobile composition is still crowded by the forest/strata; treat that as the next visual pass, not a bug fix in this closeout.
+- The first wheel event over the exact bottom-center canvas area was inconsistent in one Playwright probe, but subsequent wheel events and other canvas positions scrolled. Re-test if the next branch changes `PresentationControls` or canvas event handling.
+- The calculator route remains parked at `src/app/_calculator`; do not un-park without Kyle approval.

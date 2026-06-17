@@ -42,7 +42,7 @@ const BOX: CSSProperties = {
   borderRadius: '9px',
   background: 'rgba(2, 8, 14, 0.82)',
   border: '1px solid rgba(34, 211, 238, 0.55)',
-  boxShadow: '0 0 22px rgba(34, 211, 238, 0.28), inset 0 0 12px rgba(34, 211, 238, 0.06)',
+  boxShadow: '0 0 28px rgba(34, 211, 238, 0.34), inset 0 0 14px rgba(34, 211, 238, 0.1)',
   backdropFilter: 'blur(2px)',
   fontFamily: 'var(--font-mono), monospace',
   textAlign: 'center',
@@ -133,16 +133,16 @@ export default function TelemetryReadout({
       if (labelEl.current) labelEl.current.textContent = ch.label;
       if (unitEl.current) unitEl.current.textContent = ch.unit;
     }
-    flash.current = Math.max(0, flash.current - delta / 0.32); // ~0.32s decay
+    flash.current = Math.max(0, flash.current - delta / 0.45); // longer arrival hit so the snap reads at a glance
 
     if (box.current) {
       box.current.style.opacity = intensity.toFixed(3);
-      const pop = 1 + 0.16 * flash.current;
+      const pop = 1 + 0.22 * flash.current;
       box.current.style.transform = `scale(${((0.82 + 0.18 * intensity) * pop).toFixed(3)})`;
       box.current.style.boxShadow =
         flash.current > 0.01
-          ? `0 0 ${(22 + 26 * flash.current).toFixed(0)}px rgba(34,211,238,${(0.28 + 0.5 * flash.current).toFixed(2)}), inset 0 0 12px rgba(34,211,238,0.06)`
-          : '0 0 22px rgba(34, 211, 238, 0.28), inset 0 0 12px rgba(34, 211, 238, 0.06)';
+          ? `0 0 ${(28 + 38 * flash.current).toFixed(0)}px rgba(34,211,238,${(0.34 + 0.58 * flash.current).toFixed(2)}), inset 0 0 14px rgba(34,211,238,0.1)`
+          : '0 0 28px rgba(34, 211, 238, 0.34), inset 0 0 14px rgba(34, 211, 238, 0.1)';
     }
     const num = ch.decimals ? value.toFixed(ch.decimals) : Math.round(value).toLocaleString('en-US');
     const formatted = (ch.approx ? '≈ ' : '') + num; // "≈" flags a derived/calibrated figure

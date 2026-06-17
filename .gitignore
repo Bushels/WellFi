@@ -39,6 +39,10 @@ start-*.log
 .playwright-cli/
 output/playwright/
 
+# local presentation export intermediates
+/exports/.raw-video/
+/exports/*.raw.webm
+
 # env files (can opt-in for committing if needed)
 .env*
 

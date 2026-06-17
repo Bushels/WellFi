@@ -1,66 +1,102 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# WellFi Marketing Site
 
-## Getting Started
+Public marketing site for WellFi, built with Next.js 16 static export and a React Three Fiber island hero.
 
-First, run the development server:
+Production surface:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- Canonical public URL: `https://mpsgroup.energy/wellfi`
+- Local dev URL: `http://127.0.0.1:<port>/wellfi`
+- Vercel project: `wellfi-marketing`
+
+The app uses `basePath: "/wellfi"`. Do not validate this site at the bare local root; use `/wellfi`.
+
+## Local Dev
+
+```powershell
+npm install
+npm run dev -- --hostname 127.0.0.1 --port 3001
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```text
+http://127.0.0.1:3001/wellfi
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+If port `3001` is occupied, use another port but keep the `/wellfi` path.
 
-## Stitch SDK
+## Quality Gates
 
-This project now includes [`@google/stitch-sdk`](https://github.com/google-labs-code/stitch-sdk).
+Run these before committing or deploying:
 
-This site now supports browser-side Google OAuth for Stitch inside the landing page, and it still includes the server-side CLI for API-key workflows.
+```powershell
+npx tsc --noEmit
+npm run lint
+npm test
+npm run build
+```
 
-Browser auth setup:
+Current known lint warning: `src/components/ui/WellFiLogo.tsx` uses a raw `<img>` and triggers the Next.js image optimization warning.
 
-1. Add `NEXT_PUBLIC_GOOGLE_CLIENT_ID` to `.env.local`.
-2. Add `NEXT_PUBLIC_GOOGLE_CLOUD_PROJECT` to `.env.local`.
-3. In Google Cloud Console, make sure your OAuth web client allows this site's origin.
-4. Open the `Stitch` section on the homepage and authenticate with Google.
+## Hero Animation
 
-Server CLI setup:
+Authoritative files:
 
-1. Add `STITCH_API_KEY` to `.env.local`.
-2. List your projects with `npm run stitch:projects`.
-3. Create a project with `npm run stitch:create -- --title "WellFi Concepts"`.
-4. Generate a screen with `npm run stitch:generate -- --project <project-id> --prompt "A modern heavy oil dashboard" --device DESKTOP`.
+- Animation envelope: `src/lib/island/cycle.ts`
+- Scene root: `src/components/hero/island/IslandScene.tsx`
+- Canvas wrapper: `src/components/hero/island/IslandCanvas.tsx`
+- Animation notes: `docs/hero-startup-animation.md`
 
-Available Stitch commands:
+The island hero is a poster-first WebGL scene. Reduced-motion users get a frozen lit state. For export/QA where animation must run even if the machine has reduced motion enabled, use:
 
-- `npm run stitch:projects`
-- `npm run stitch:create -- --title "My Project"`
-- `npm run stitch:screens -- --project <project-id>`
-- `npm run stitch:generate -- --project <project-id> --prompt "..." --device DESKTOP`
-- `npm run stitch:inspect -- --project <project-id> --screen <screen-id>`
+```text
+http://127.0.0.1:3001/wellfi?motion=force
+```
 
-Important: [`next.config.ts`](./next.config.ts) still uses `output: "export"`, so any secret-based Stitch integration must stay in scripts or another backend. The in-page Stitch Lab works because it uses Google OAuth in the browser instead of exposing an API key.
+## Presentation Export
 
-## Learn More
+The boardroom-safe export is an H.264 MP4 generated from the live WebGL canvas.
 
-To learn more about Next.js, take a look at the following resources:
+Start the dev server first:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```powershell
+npm run dev -- --hostname 127.0.0.1 --port 3001
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Then export:
 
-## Deploy on Vercel
+```powershell
+npm run export:hero
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Default outputs:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `exports/wellfi-island-hero-1920x1080-12s-fast.mp4` - primary PowerPoint asset
+- `exports/wellfi-island-hero-1280x720-12s-fast-preview.mp4` - quick preview
+- `exports/wellfi-island-hero-1920x1080-poster.png` - still-image fallback
+
+Default capture settings:
+
+- captures `24s` from `/wellfi?motion=force`
+- encodes at `2x` speed to a `12s` presentation loop
+- writes H.264, `yuv420p`, `30 fps`, `+faststart`
+
+Override with environment variables:
+
+```powershell
+$env:WELLFI_CAPTURE_WIDTH='3840'
+$env:WELLFI_CAPTURE_HEIGHT='2160'
+$env:WELLFI_CAPTURE_SECONDS='24'
+$env:WELLFI_EXPORT_SPEED='2'
+npm run export:hero
+```
+
+## Deployment
+
+Deploy from this directory:
+
+```powershell
+vercel --prod
+```
+
+The calculator is parked at `src/app/_calculator`; do not un-park it without Kyle approval.

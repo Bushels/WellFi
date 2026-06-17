@@ -44,7 +44,7 @@ const CAMERA = {
 // shows (tuned to the clear upper zone above the copy column). See TelemetryReadout.
 const READOUT_COMPACT_ANCHOR = new THREE.Vector3(2.4, 2.2, 1.2);
 
-const pulseShape = (p: number) => 2.6 * Math.sin(Math.PI * Math.min(1, Math.max(0, p)));
+const pulseShape = (p: number) => 3.8 * Math.sin(Math.PI * Math.min(1, Math.max(0, p)));
 
 // Telemetry channels carried up by the 3 relay pulses — the readout SNAPS to the
 // next channel only when each uplink reaches surface. Values are tunable.
@@ -115,13 +115,13 @@ export default function IslandScene({ tier, reducedMotion, compact }: IslandScen
 
     // Red pulse runs from WellFi B (u≈0.75) back toward the junction (u=0).
     if (s.pulseLateral >= 0) {
-      lateralPulse.setPulse(TOOL_B_PARAM * (1 - s.pulseLateral), pulseShape(s.pulseLateral));
+      lateralPulse.setPulse(TOOL_B_PARAM * (1 - s.pulseLateral), pulseShape(s.pulseLateral), 0.11);
     } else {
       lateralPulse.setPulse(-1, 0);
     }
     // Cyan pulse climbs the cased section: shoe (u=1) up to the wellhead (u=0).
     if (s.pulseCased >= 0) {
-      casedPulse.setPulse(1 - s.pulseCased, pulseShape(s.pulseCased));
+      casedPulse.setPulse(1 - s.pulseCased, pulseShape(s.pulseCased), 0.105);
     } else {
       casedPulse.setPulse(-1, 0);
     }
@@ -134,7 +134,7 @@ export default function IslandScene({ tier, reducedMotion, compact }: IslandScen
     const flowTime = reducedMotion ? REDUCED_MOTION_T : state.clock.elapsedTime % 20;
     // Slightly dimmer than the relay pulses so the B→A→surface story stays the lead
     // and the lit-phase chevrons read as supporting "production flow" (pulse hierarchy).
-    const flowStrength = 0.7 * s.flow;
+    const flowStrength = 1.15 * s.flow;
     casedPulse.setFlow(flowStrength, flowTime);
     lateralPulse.setFlow(flowStrength, flowTime);
     motherboreFlow.setFlow(flowStrength, flowTime);
@@ -164,10 +164,12 @@ export default function IslandScene({ tier, reducedMotion, compact }: IslandScen
     }
 
     if (parallax.current && !reducedMotion) {
+      const idleY = Math.sin(state.clock.elapsedTime * 0.18) * (compact ? 0.018 : 0.026);
+      const idleX = Math.sin(state.clock.elapsedTime * 0.13 + 0.8) * (compact ? 0.006 : 0.01);
       const targetY = state.pointer.x * 0.05;
       const targetX = -state.pointer.y * 0.025;
-      parallax.current.rotation.y += (targetY - parallax.current.rotation.y) * 0.04;
-      parallax.current.rotation.x += (targetX - parallax.current.rotation.x) * 0.04;
+      parallax.current.rotation.y += (targetY + idleY - parallax.current.rotation.y) * 0.04;
+      parallax.current.rotation.x += (targetX + idleX - parallax.current.rotation.x) * 0.04;
     }
   }, -1);
 
@@ -242,7 +244,7 @@ export default function IslandScene({ tier, reducedMotion, compact }: IslandScen
 
       {tier === 'high' && (
         <EffectComposer>
-          <Bloom mipmapBlur intensity={0.85} luminanceThreshold={1.05} luminanceSmoothing={0.2} />
+          <Bloom mipmapBlur intensity={1.05} luminanceThreshold={0.95} luminanceSmoothing={0.18} />
         </EffectComposer>
       )}
     </>

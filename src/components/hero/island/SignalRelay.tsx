@@ -24,9 +24,9 @@ export default function SignalRelay({ cycleRef, wellhead }: SignalRelayProps) {
     if (!active) return;
     // Punchier "arrival hit": snaps in fast (first 8%), peaks bright, then expands and
     // fades. The early brightness over-drives past 1.0 so Bloom flares on the hit.
-    ring.current.scale.setScalar(0.45 + 2.7 * p);
-    mat.current.opacity = (1 - p) * Math.min(1, p / 0.08);
-    mat.current.color.copy(base).multiplyScalar(1 + 1.8 * (1 - Math.min(1, p / 0.18)));
+    ring.current.scale.setScalar(0.55 + 3.6 * p);
+    mat.current.opacity = Math.min(1, 1.18 * (1 - p) * Math.min(1, p / 0.05));
+    mat.current.color.copy(base).multiplyScalar(1 + 2.7 * (1 - Math.min(1, p / 0.16)));
   });
 
   return (
@@ -37,7 +37,7 @@ export default function SignalRelay({ cycleRef, wellhead }: SignalRelayProps) {
       position={[wellhead.x, wellhead.y + 0.06, wellhead.z]}
       rotation={[-Math.PI / 2, 0, 0]}
     >
-      <ringGeometry args={[0.16, 0.21, 48]} />
+      <ringGeometry args={[0.17, 0.25, 64]} />
       <meshBasicMaterial
         ref={mat}
         color={COLORS.emGlow}

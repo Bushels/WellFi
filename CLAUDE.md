@@ -6,6 +6,7 @@
 npm run dev          # Start dev server
 npm run build        # Production build (static export)
 npm run lint         # ESLint check
+npm run export:hero  # Export boardroom-safe MP4 + preview from the live R3F hero
 gemini --help        # Gemini CLI for second-opinion troubleshooting
 ```
 
@@ -81,6 +82,15 @@ The wave-sweep startup hero was retired 2026-06-10 (Kyle-approved).
 - Mobile (<768px): in-scene labels hidden (they collide with the copy column); the relay color story carries it
 - Drag = PresentationControls with spring-back; pointer parallax when idle; page scroll is never captured
 - `prefers-reduced-motion`: frozen lit state, no pulses
+
+### Presentation export
+
+- Start local dev at `http://127.0.0.1:3001/wellfi` before exporting.
+- `npm run export:hero` captures the live WebGL canvas from `/wellfi?motion=force`.
+- Default export is a 24 s capture encoded at 2x speed into `exports/wellfi-island-hero-1920x1080-12s-fast.mp4`.
+- The command also writes `exports/wellfi-island-hero-1280x720-12s-fast-preview.mp4` and `exports/wellfi-island-hero-1920x1080-poster.png`.
+- Use H.264 MP4, 16:9, 30 fps, `yuv420p`, `+faststart` for boardroom/PowerPoint compatibility.
+- Do not rely on canvas `captureStream()` in headless Chrome for this hero; it under-emitted frames in testing. Browser video capture plus FFmpeg produced the verified 720-frame, 24 s source and the final 360-frame, 12 s fast export.
 
 ### Non-Negotiables
 

@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
+    "export:hero": "npx --yes --package=playwright node scripts/export-island-hero.mjs",
     "stitch": "node scripts/stitch-cli.mjs",
     "stitch:projects": "node scripts/stitch-cli.mjs projects",
     "stitch:create": "node scripts/stitch-cli.mjs create",

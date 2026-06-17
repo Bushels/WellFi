@@ -135,7 +135,7 @@ export default function SagdInteractiveHero() {
           <div className="relative w-full max-w-[580px] aspect-[4/3] rounded-lg overflow-hidden group select-none">
             {/* The Generated Hero Image */}
             <Image
-              src="/images/wellfi-sagd-island-hero.png"
+              src="/wellfi/images/wellfi-sagd-island-hero.png"
               alt="WellFi Alberta SAGD 3D Isometric Island Hero"
               fill
               className="object-contain duration-700 ease-in-out transition-transform group-hover:scale-[1.02]"

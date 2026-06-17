@@ -41,6 +41,28 @@ export default function IslandCanvas({ reducedMotion, compact, onReady }: Island
     return () => clearTimeout(id);
   }, [tier]);
 
+  useEffect(() => {
+    if (tier === null) return;
+
+    const handleCanvasWheel = (event: WheelEvent) => {
+      const el = container.current;
+      const target = event.target;
+      if (!el || !(target instanceof Node) || !el.contains(target)) return;
+      if (event.ctrlKey) return;
+      event.preventDefault();
+
+      const multiplier = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? window.innerHeight : 1;
+      window.scrollBy({
+        left: event.deltaX * multiplier,
+        top: event.deltaY * multiplier,
+        behavior: 'auto',
+      });
+    };
+
+    document.addEventListener('wheel', handleCanvasWheel, { capture: true, passive: false });
+    return () => document.removeEventListener('wheel', handleCanvasWheel, { capture: true });
+  }, [tier]);
+
   if (tier === null) return <div ref={container} className="absolute inset-0" />;
 
   return (
