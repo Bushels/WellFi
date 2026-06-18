@@ -1,11 +1,25 @@
 import Image from 'next/image';
-import type { TelemetryContent } from '@/lib/content';
+import type { TelemetryContent, TelemetryPlacementMode } from '@/lib/content';
 
 interface TelemetryCutawayStageProps {
   telemetry: TelemetryContent;
+  activeModeId?: TelemetryPlacementMode['id'];
 }
 
-export default function TelemetryCutawayStage({ telemetry }: TelemetryCutawayStageProps) {
+export default function TelemetryCutawayStage({
+  telemetry,
+  activeModeId,
+}: TelemetryCutawayStageProps) {
+  const belowPumpMode = telemetry.placementModes.find((mode) => mode.id === 'below-pump');
+  const pressureCallout = belowPumpMode?.callouts.find(
+    (callout) => callout.id === 'intake-pressure',
+  ) ?? {
+    label: 'Pump-intake pressure',
+    value: 'Pressure',
+    description: 'Measured below the pump.',
+  };
+  const resolvedActiveModeId = activeModeId ?? telemetry.placementModes[0]?.id;
+
   return (
     <div className="telemetry-stage relative overflow-hidden rounded-md border border-white/10 bg-[#020408] shadow-[0_30px_120px_rgba(0,0,0,0.55)]">
       <div className="grid min-h-[min(78vh,46rem)] lg:grid-cols-[minmax(0,1fr)_22rem]">
@@ -16,7 +30,6 @@ export default function TelemetryCutawayStage({ telemetry }: TelemetryCutawaySta
             fill
             sizes="(min-width: 1024px) 66vw, 100vw"
             className="object-cover object-center opacity-75"
-            priority={false}
           />
 
           <div
@@ -56,19 +69,19 @@ export default function TelemetryCutawayStage({ telemetry }: TelemetryCutawaySta
             />
           </svg>
 
-          <div className="telemetry-callout telemetry-callout-pressure absolute right-[6%] top-[24%] max-w-[15rem] rounded-md border border-em-glow/35 bg-[#030710]/90 p-4 shadow-[0_18px_70px_rgba(0,0,0,0.45)]">
+          <div className="telemetry-callout telemetry-callout-pressure relative z-10 mx-4 mt-4 max-w-none rounded-md border border-em-glow/35 bg-[#030710]/90 p-4 shadow-[0_18px_70px_rgba(0,0,0,0.45)] lg:absolute lg:right-[6%] lg:top-[24%] lg:mx-0 lg:mt-0 lg:max-w-[15rem]">
             <p className="tech-text text-[0.68rem] uppercase tracking-[0.2em] text-em-glow">
-              Pressure
+              {pressureCallout.value}
             </p>
             <h3 className="mt-2 font-heading text-base font-semibold text-text-primary">
-              Pump-intake pressure
+              {pressureCallout.label}
             </h3>
             <p className="mt-2 text-xs leading-relaxed text-text-secondary">
-              Measured below the pump where drawdown and lift decisions are made.
+              {pressureCallout.description}
             </p>
           </div>
 
-          <div className="telemetry-callout telemetry-callout-hydrostatic absolute left-[6%] top-[40%] max-w-[16rem] rounded-md border border-cyan-200/25 bg-[#03111a]/90 p-4 shadow-[0_18px_70px_rgba(0,0,0,0.45)]">
+          <div className="telemetry-callout telemetry-callout-hydrostatic relative z-10 mx-4 mt-3 max-w-none rounded-md border border-cyan-200/25 bg-[#03111a]/90 p-4 shadow-[0_18px_70px_rgba(0,0,0,0.45)] lg:absolute lg:left-[6%] lg:top-[40%] lg:mx-0 lg:mt-0 lg:max-w-[16rem]">
             <p className="tech-text text-[0.68rem] uppercase tracking-[0.2em] text-cyan-200">
               {telemetry.hydrostaticHead.title}
             </p>
@@ -85,38 +98,47 @@ export default function TelemetryCutawayStage({ telemetry }: TelemetryCutawaySta
 
         <div className="relative border-t border-white/10 bg-[#050b12]/94 p-5 lg:border-l lg:border-t-0 lg:p-6">
           <div className="telemetry-mode-list grid gap-3">
-            {telemetry.placementModes.map((mode, index) => (
-              <article
-                key={mode.id}
-                data-placement-mode={mode.id}
-                className="telemetry-mode rounded-md border border-white/10 bg-white/[0.035] p-4"
-                style={{ opacity: index === 0 ? 1 : 0.45 }}
-              >
-                <p className="tech-text text-[0.65rem] uppercase tracking-[0.2em] text-em-glow">
-                  {mode.eyebrow}
-                </p>
-                <h3 className="mt-2 font-heading text-lg font-semibold text-text-primary">
-                  {mode.title}
-                </h3>
-                <p className="mt-2 text-sm leading-relaxed text-text-secondary">
-                  {mode.description}
-                </p>
-                <ul className="mt-4 grid gap-2">
-                  {mode.callouts.map((callout) => (
-                    <li
-                      key={callout.id}
-                      className="flex items-start gap-3 text-xs leading-relaxed text-text-secondary"
-                    >
-                      <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-em-glow" />
-                      <span>
-                        <span className="font-medium text-text-primary">{callout.label}:</span>{' '}
-                        {callout.description}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </article>
-            ))}
+            {telemetry.placementModes.map((mode) => {
+              const isActive = mode.id === resolvedActiveModeId;
+
+              return (
+                <article
+                  key={mode.id}
+                  data-active={isActive ? 'true' : 'false'}
+                  data-placement-mode={mode.id}
+                  aria-current={isActive ? 'step' : undefined}
+                  className={`telemetry-mode rounded-md border p-4 transition-colors ${
+                    isActive
+                      ? 'border-em-glow/45 bg-white/[0.06] shadow-[0_0_30px_rgba(248,113,113,0.08)]'
+                      : 'border-white/10 bg-white/[0.035] opacity-80'
+                  }`}
+                >
+                  <p className="tech-text text-[0.65rem] uppercase tracking-[0.2em] text-em-glow">
+                    {mode.eyebrow}
+                  </p>
+                  <h3 className="mt-2 font-heading text-lg font-semibold text-text-primary">
+                    {mode.title}
+                  </h3>
+                  <p className="mt-2 text-sm leading-relaxed text-text-secondary">
+                    {mode.description}
+                  </p>
+                  <ul className="mt-4 grid gap-2">
+                    {mode.callouts.map((callout) => (
+                      <li
+                        key={callout.id}
+                        className="flex items-start gap-3 text-xs leading-relaxed text-text-secondary"
+                      >
+                        <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-em-glow" />
+                        <span>
+                          <span className="font-medium text-text-primary">{callout.label}:</span>{' '}
+                          {callout.description}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </article>
+              );
+            })}
           </div>
         </div>
       </div>
