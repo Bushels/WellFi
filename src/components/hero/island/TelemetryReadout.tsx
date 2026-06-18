@@ -8,7 +8,7 @@ import type * as THREE from 'three';
 /**
  * Live telemetry the scene clock writes each frame. `channel` highlights the
  * measurement being transmitted during each pulse while the panel stays anchored
- * to the downhole WellFi section.
+ * to the upper intermediate casing in the wide shot.
  */
 export interface TelemetryState {
   intensity: number; // 0..1 visibility/scale envelope
@@ -146,7 +146,7 @@ export default function TelemetryReadout({
       box.current.style.opacity = visible.toFixed(3);
       const pop = 1 + 0.22 * flash.current;
       const compactScale = compact ? 0.52 : 1;
-      const compactShift = compact ? 'translateX(18px) ' : '';
+      const compactShift = compact ? 'translateX(42px) ' : '';
       box.current.style.transform = `${compactShift}scale(${(((0.86 + 0.14 * visible) * pop) * compactScale).toFixed(3)})`;
       box.current.style.boxShadow =
         flash.current > 0.01
@@ -172,14 +172,14 @@ export default function TelemetryReadout({
 
   return (
     <Html
-      position={[anchor.x, anchor.y + (compact ? 0.55 : 0.74), anchor.z + (compact ? 0.04 : 0.12)]}
+      position={[anchor.x, anchor.y + (compact ? 0.68 : 0.9), anchor.z + (compact ? 0.04 : 0.12)]}
       center
-      distanceFactor={compact ? 9.5 : 7.4}
+      distanceFactor={compact ? 34 : 18}
       zIndexRange={[30, 0]}
     >
       <div ref={box} style={BOX} data-wellfi-export-overlay="telemetry">
         <div style={HEADER}>
-          <span>INTERMEDIATE CASING</span>
+          <span>TOP OF CASING</span>
           <span style={{ color: '#EF4444' }}>WellFi</span>
         </div>
         {CHANNELS.map((channel, i) => (

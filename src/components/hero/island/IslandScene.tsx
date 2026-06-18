@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useRef, useState, type MutableRefObject } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { ContactShadows, PerspectiveCamera, PresentationControls } from '@react-three/drei';
 import { Bloom, EffectComposer } from '@react-three/postprocessing';
@@ -45,53 +45,13 @@ const CAMERA = {
   compact: { position: [26.5, 21.2, 29.8] as const, target: new THREE.Vector3(-1.8, -1.5, 2.2) },
 };
 
-const FOCUS_CAMERA = {
-  desktop: { offset: new THREE.Vector3(7.6, 4.4, 6.35), targetOffset: new THREE.Vector3(0.08, 0.2, -0.02), fov: 18 },
-  compact: { offset: new THREE.Vector3(5.8, 3.55, 5.2), targetOffset: new THREE.Vector3(0.18, -0.3, -0.08), fov: 22 },
-};
-
 const pulseShape = (p: number) => 3.8 * Math.sin(Math.PI * Math.min(1, Math.max(0, p)));
 const ARRIVAL_F = 0.74; // within-breath fraction where the pulse reaches the active readout row
-
-interface CameraRig {
-  widePosition: THREE.Vector3;
-  wideTarget: THREE.Vector3;
-  wideFov: number;
-  focusPosition: THREE.Vector3;
-  focusTarget: THREE.Vector3;
-  focusFov: number;
-}
-
-function FocusCameraController({
-  rig,
-  cycleRef,
-}: {
-  rig: CameraRig;
-  cycleRef: MutableRefObject<CycleState>;
-}) {
-  const cameraPosition = useRef(new THREE.Vector3());
-  const cameraTarget = useRef(new THREE.Vector3());
-
-  useFrame((state) => {
-    const focus = cycleRef.current.focus;
-    cameraPosition.current.copy(rig.widePosition).lerp(rig.focusPosition, focus);
-    cameraTarget.current.copy(rig.wideTarget).lerp(rig.focusTarget, focus);
-    state.camera.position.copy(cameraPosition.current);
-    state.camera.lookAt(cameraTarget.current);
-    state.camera.updateMatrixWorld();
-    if (state.camera instanceof THREE.PerspectiveCamera) {
-      state.camera.fov = THREE.MathUtils.lerp(rig.wideFov, rig.focusFov, focus);
-      state.camera.updateProjectionMatrix();
-    }
-  }, 1);
-
-  return null;
-}
 
 export default function IslandScene({ tier, reducedMotion, compact, forcedTime }: IslandSceneProps) {
   const paths = useMemo(() => buildWellPaths(), []);
   const wellFiTools = useMemo(() => getWellFiToolsForView(paths, DEFAULT_WELLFI_VIEW), [paths]);
-  const activeWellFi = wellFiTools[0];
+  const telemetryAnchor = useMemo(() => paths.cased.getPointAt(compact ? 0.18 : 0.14), [compact, paths]);
   const casedPulseStart = WELLFI_UPLINK_CASING_PARAMS[DEFAULT_WELLFI_VIEW];
   const cycleRef = useRef<CycleState>(cycleState(REDUCED_MOTION_T));
   const readoutRef = useRef<TelemetryState>({ intensity: 0, channel: -1 });
@@ -100,18 +60,6 @@ export default function IslandScene({ tier, reducedMotion, compact, forcedTime }
   const setPerspectiveCamera = useCallback((camera: THREE.PerspectiveCamera | null) => {
     setComposerCamera(camera);
   }, []);
-  const cameraRig = useMemo(() => {
-    const focus = compact ? FOCUS_CAMERA.compact : FOCUS_CAMERA.desktop;
-    const focusTarget = activeWellFi.position.clone().add(focus.targetOffset);
-    return {
-      widePosition: new THREE.Vector3(...cam.position),
-      wideTarget: cam.target.clone(),
-      wideFov: compact ? 30 : 20,
-      focusPosition: focusTarget.clone().add(focus.offset),
-      focusTarget,
-      focusFov: focus.fov,
-    };
-  }, [activeWellFi, cam.position, cam.target, compact]);
 
   const casedPulse = useMemo(
     () =>
@@ -211,7 +159,6 @@ export default function IslandScene({ tier, reducedMotion, compact, forcedTime }
         position={[...cam.position]}
         onUpdate={(c) => c.lookAt(cam.target)}
       />
-      <FocusCameraController rig={cameraRig} cycleRef={cycleRef} />
 
       <hemisphereLight ref={hemi} color={COLORS.skyFill} groundColor={COLORS.ground} intensity={0.7} />
       <directionalLight ref={sun} color={COLORS.sunWarm} position={[-7, 10, 5]} intensity={2.6} />
@@ -251,7 +198,7 @@ export default function IslandScene({ tier, reducedMotion, compact, forcedTime }
           <SignalRelay cycleRef={cycleRef} wellhead={paths.wellhead} />
           <LeasePad />
           <IslandLabels tools={wellFiTools} cycleRef={cycleRef} compact={compact} />
-          <TelemetryReadout readoutRef={readoutRef} anchor={activeWellFi.position} compact={compact} />
+          <TelemetryReadout readoutRef={readoutRef} anchor={telemetryAnchor} compact={compact} />
         </group>
       </PresentationControls>
 

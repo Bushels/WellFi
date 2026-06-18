@@ -8,8 +8,8 @@ This file is a current-state handoff, not a historical archive. Remove stale her
 
 - Hero is the R3F island diorama, not the retired wave-sweep startup sequence.
 - One signal-sending WellFi is shown inside the intermediate casing on the lower cased run.
-- The cycle is a 12 s seamless loop: lit hold -> darken/dolly into cutaway -> three relay pulses -> relight/pan back out.
-- The cutaway moment includes a downhole telemetry bubble:
+- The cycle is a 12 s seamless loop: lit hold -> darken while staying wide -> three relay pulses -> relight while staying wide.
+- The dark relay moment includes a top-of-casing telemetry bubble:
   - Pressure `158 kPa`
   - Temperature `26 C`
   - Pump vibration `4.2 mm/s RMS`
@@ -18,15 +18,16 @@ This file is a current-state handoff, not a historical archive. Remove stale her
 
 ### Branch Decision
 
-- Do not merge this rendition yet.
-- Park this version and compare it against the next/third rendering before selecting the preferred public hero.
+- This rendition is merged to `master` for live review.
+- Compare it against any remaining alternate renders before selecting the final public hero.
 
 ### Regression Triggers To Avoid
 
 - Returning to two WellFi tools.
 - Moving the active WellFi out of the intermediate casing.
 - Dropping the telemetry bubble from the export path.
-- Letting the cutaway bubble clip mobile viewports.
+- Reintroducing a camera dolly/zoom-in for this wide-view version.
+- Letting the telemetry bubble clip mobile viewports.
 - Reintroducing scroll capture or canvas-only exports that hide HTML overlays.
 
 ## Current Calculator State

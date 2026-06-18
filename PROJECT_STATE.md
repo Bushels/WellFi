@@ -1,13 +1,13 @@
 # Project State
 
-Last verified: 2026-06-17 local QA on parked telemetry-cutaway rendition.
+Last verified: 2026-06-18 local QA on wide top-of-casing telemetry rendition.
 
-Current task status: parked for comparison. Do not merge yet.
+Current task status: merged to `master` for live review.
 
 ## Parked Rendition
 
 - Single WellFi is located inside the intermediate casing on the lower cased run, below the pump/tag-bar zone.
-- The hero darkens, dollies into that cased-section WellFi, shows the telemetry bubble, then relights and pans back out.
+- The hero darkens while staying zoomed out on the wide wellbore view, shows the telemetry bubble at the top of the intermediate casing, then relights while remaining wide.
 - Telemetry bubble values:
   - Pressure: `158 kPa`
   - Temperature: `26 C`
@@ -30,7 +30,7 @@ Current task status: parked for comparison. Do not merge yet.
 
 - `npx tsc --noEmit`
 - `npm run lint` (passes with the existing `WellFiLogo.tsx` raw `<img>` warning)
-- `npm test` (40 tests passing)
+- `npm test` (43 tests passing)
 - `npm run build`
 - Browser/visual evidence:
   - desktop fixed frame: `output/playwright/wellfi-cutaway-bubble-desktop.png`
@@ -39,8 +39,8 @@ Current task status: parked for comparison. Do not merge yet.
 
 ## Resume Notes
 
-- This rendition is intentionally not merged. Compare it against the next/third rendering before choosing the public hero direction.
+- This rendition is merged to `master` for live review. Compare it against any remaining alternate renders before choosing the final public hero direction.
 - Local QA URL: `http://127.0.0.1:3001/wellfi`
-- Exact cutaway frame: `http://127.0.0.1:3001/wellfi?motion=force&heroT=6.2`
+- Exact wide telemetry frame: `http://127.0.0.1:3001/wellfi/animation?motion=force&heroT=6.1`
 - Re-export accepted motion with `npm run export:hero`.
 - The calculator route remains parked at `src/app/_calculator`; do not un-park without Kyle approval.
