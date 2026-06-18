@@ -8,7 +8,7 @@ import type * as THREE from 'three';
 /**
  * Live telemetry the scene clock writes each frame. `channel` highlights the
  * measurement being transmitted during each pulse while the panel stays anchored
- * to the upper intermediate casing in the wide shot.
+ * above the surface casing in the wide shot.
  */
 export interface TelemetryState {
   intensity: number; // 0..1 visibility/scale envelope
@@ -179,7 +179,7 @@ export default function TelemetryReadout({
     >
       <div ref={box} style={BOX} data-wellfi-export-overlay="telemetry">
         <div style={HEADER}>
-          <span>TOP OF CASING</span>
+          <span>SURFACE READOUT</span>
           <span style={{ color: '#EF4444' }}>WellFi</span>
         </div>
         {CHANNELS.map((channel, i) => (

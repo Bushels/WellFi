@@ -51,7 +51,7 @@ const ARRIVAL_F = 0.74; // within-breath fraction where the pulse reaches the ac
 export default function IslandScene({ tier, reducedMotion, compact, forcedTime }: IslandSceneProps) {
   const paths = useMemo(() => buildWellPaths(), []);
   const wellFiTools = useMemo(() => getWellFiToolsForView(paths, DEFAULT_WELLFI_VIEW), [paths]);
-  const telemetryAnchor = useMemo(() => paths.cased.getPointAt(compact ? 0.18 : 0.14), [compact, paths]);
+  const telemetryAnchor = useMemo(() => paths.wellhead.clone(), [paths]);
   const casedPulseStart = WELLFI_UPLINK_CASING_PARAMS[DEFAULT_WELLFI_VIEW];
   const cycleRef = useRef<CycleState>(cycleState(REDUCED_MOTION_T));
   const readoutRef = useRef<TelemetryState>({ intensity: 0, channel: -1 });
