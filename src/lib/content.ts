@@ -56,6 +56,52 @@ export interface WorkflowContent {
   chips: string[];
 }
 
+export interface TelemetryMetric {
+  icon: string;
+  label: string;
+  shortLabel: string;
+  description: string;
+}
+
+export interface TelemetryCallout {
+  id: string;
+  label: string;
+  value: string;
+  description: string;
+  x: number;
+  y: number;
+}
+
+export interface TelemetryPlacementMode {
+  id: 'below-pump' | 'behind-casing' | 'dual-wellfi';
+  label: string;
+  eyebrow: string;
+  title: string;
+  description: string;
+  callouts: TelemetryCallout[];
+}
+
+export interface TelemetryApplicationCard {
+  icon: string;
+  title: string;
+  description: string;
+}
+
+export interface TelemetryContent {
+  eyebrow: string;
+  title: string;
+  description: string;
+  metricSummary: string;
+  metrics: TelemetryMetric[];
+  hydrostaticHead: {
+    title: string;
+    description: string;
+    label: string;
+  };
+  placementModes: TelemetryPlacementMode[];
+  applications: TelemetryApplicationCard[];
+}
+
 export interface ProofPoint {
   icon: string; // lucide-react icon name
   value: string;
@@ -212,9 +258,9 @@ export const hero: HeroContent = {
 // ---------------------------------------------------------------------------
 
 export const navLinks: NavLink[] = [
-  { label: 'Closer',   href: '#anchor' },
-  { label: 'SAGD',     href: '#sagd-interactive' },
-  { label: 'Telemetry', href: '#proof' },
+  { label: 'Telemetry', href: '#telemetry' },
+  { label: 'SAGD',      href: '#sagd-interactive' },
+  { label: 'Proof',     href: '#proof' },
 ];
 
 // ---------------------------------------------------------------------------
@@ -316,6 +362,194 @@ export const workflow: WorkflowContent = {
   asideBody:
     'This is an upgrade to an existing producer, not a new drill, a cable install, or a full control-system rebuild. The simplicity is a large part of the value.',
   chips: ['No new cable run', 'MODBUS RS-485', 'Canadian rollout via MPS Group'],
+};
+
+// ---------------------------------------------------------------------------
+// Telemetry Scrollytelling
+// ---------------------------------------------------------------------------
+
+export const telemetry: TelemetryContent = {
+  eyebrow: 'Below-pump telemetry',
+  title: 'Wireless Data Where Lift Decisions Are Made',
+  description:
+    'Place WellFi below pump, behind casing, or across dual-tool intervals to monitor downhole conditions without running cable.',
+  metricSummary: 'Pressure. Temperature. Vibration. Water cut. Flow insight.',
+  metrics: [
+    {
+      icon: 'Gauge',
+      label: 'Pressure',
+      shortLabel: 'Pressure',
+      description: 'Track pump-intake and reservoir response pressure where the lift decision is made.',
+    },
+    {
+      icon: 'Thermometer',
+      label: 'Temperature',
+      shortLabel: 'Temp',
+      description: 'Watch temperature trends that show changing downhole conditions and operating state.',
+    },
+    {
+      icon: 'Activity',
+      label: 'Vibration',
+      shortLabel: 'Vibration',
+      description: 'Use vibration changes as an early signal of pump stress, interference, or abnormal operation.',
+    },
+    {
+      icon: 'Droplets',
+      label: 'Water Cut',
+      shortLabel: 'Water Cut',
+      description: 'Track changing produced-fluid conditions from the tool location or dual-tool layouts.',
+    },
+    {
+      icon: 'TrendingUp',
+      label: 'Flow Insight',
+      shortLabel: 'Flow',
+      description: 'Use paired pressure, temperature, and fluid-condition changes to interpret interval behavior.',
+    },
+  ],
+  hydrostaticHead: {
+    title: 'Hydrostatic Head',
+    label: 'Fluid column around pump',
+    description:
+      'The pressure reading is interpreted against the fluid column around the pump intake, helping engineers see drawdown instead of guessing from surface behavior alone.',
+  },
+  placementModes: [
+    {
+      id: 'below-pump',
+      label: 'Below Pump',
+      eyebrow: 'Primary application',
+      title: 'Measure below the pump before changing the pump.',
+      description:
+        'Below-pump WellFi gives engineers pressure, temperature, vibration, water-cut, and flow insight at the point where lift decisions are made.',
+      callouts: [
+        {
+          id: 'intake-pressure',
+          label: 'Pump-intake pressure',
+          value: 'P intake',
+          description: 'Pressure below the pump, read against the local fluid column.',
+          x: 54,
+          y: 38,
+        },
+        {
+          id: 'pump-vibration',
+          label: 'Vibration',
+          value: 'mm/s RMS',
+          description: 'Pump vibration trend for stress, pump-off, or interference signals.',
+          x: 42,
+          y: 50,
+        },
+        {
+          id: 'fluid-change',
+          label: 'Water cut',
+          value: 'Fluid trend',
+          description: 'Changing produced-fluid condition close to the lift point.',
+          x: 60,
+          y: 61,
+        },
+      ],
+    },
+    {
+      id: 'behind-casing',
+      label: 'Behind Casing',
+      eyebrow: 'Expansion application',
+      title: 'Move the same telemetry logic outside the intermediate.',
+      description:
+        'Behind-casing or intermediate placement supports reservoir-pressure trends and condition changes where a wired gauge is difficult to justify.',
+      callouts: [
+        {
+          id: 'behind-casing-pressure',
+          label: 'Behind-casing pressure',
+          value: 'Trend',
+          description: 'Reservoir response trend outside the main lift string.',
+          x: 34,
+          y: 45,
+        },
+        {
+          id: 'surface-handoff',
+          label: 'Wireless handoff',
+          value: 'No cable',
+          description: 'Data reaches surface without running a downhole cable.',
+          x: 66,
+          y: 30,
+        },
+      ],
+    },
+    {
+      id: 'dual-wellfi',
+      label: 'Dual WellFi',
+      eyebrow: 'Advanced layout',
+      title: 'Use paired tools to read interval behavior.',
+      description:
+        'Dual WellFi layouts support differential-pressure, water-cut, and flow insight across an interval without turning the page into a hard flow-rate claim.',
+      callouts: [
+        {
+          id: 'upper-tool',
+          label: 'Upper WellFi',
+          value: 'P1',
+          description: 'Upper interval reference point.',
+          x: 45,
+          y: 34,
+        },
+        {
+          id: 'lower-tool',
+          label: 'Lower WellFi',
+          value: 'P2',
+          description: 'Lower interval reference point for differential behavior.',
+          x: 58,
+          y: 68,
+        },
+        {
+          id: 'interval-insight',
+          label: 'Interval response',
+          value: 'P1 - P2',
+          description: 'Pressure and fluid-condition change across the interval.',
+          x: 68,
+          y: 52,
+        },
+      ],
+    },
+  ],
+  applications: [
+    {
+      icon: 'Settings2',
+      title: 'Pump Optimization',
+      description: 'Below-pump pressure, temperature, and vibration for pump intake and head monitoring.',
+    },
+    {
+      icon: 'Gauge',
+      title: 'Drawdown Management',
+      description: 'Increase drawdown with better confidence instead of guessing where the pump is operating.',
+    },
+    {
+      icon: 'LineChart',
+      title: 'Pressure Build-Up Testing',
+      description: 'Shut in the well and watch pressure recovery without running cable.',
+    },
+    {
+      icon: 'Radar',
+      title: 'Reservoir Pressure Monitoring',
+      description: 'Track bottomhole or behind-casing pressure trends over time.',
+    },
+    {
+      icon: 'Droplets',
+      title: 'Water Cut Tracking',
+      description: 'Track changing produced-fluid conditions from behind casing or dual-tool layouts.',
+    },
+    {
+      icon: 'TrendingUp',
+      title: 'Flow Insight',
+      description: 'Use paired pressure, temperature, water-cut, and interval changes to interpret flow behavior.',
+    },
+    {
+      icon: 'ShieldAlert',
+      title: 'Pump Protection',
+      description: 'Detect pressure-change events, pump-off trends, gas interference, or abnormal vibration earlier.',
+    },
+    {
+      icon: 'Cable',
+      title: 'Cableless Gauge Backup',
+      description: 'Add wireless backup or retrofit telemetry where wired gauges are expensive, risky, or already failed.',
+    },
+  ],
 };
 
 // ---------------------------------------------------------------------------
