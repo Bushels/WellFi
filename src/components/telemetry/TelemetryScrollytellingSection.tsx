@@ -99,7 +99,7 @@ export default function TelemetryScrollytellingSection() {
             return;
           }
 
-          gsap.set(stageShell, { autoAlpha: 0, y: 28, x: 0, scale: 0.985 });
+          gsap.set(stageShell, { autoAlpha: 1, y: 0, x: 0, scale: 1 });
           gsap.set([...pressureEls, ...hydrostaticEls], { autoAlpha: 0 });
           gsap.set(applications, { autoAlpha: 0, y: 22 });
 
@@ -116,7 +116,6 @@ export default function TelemetryScrollytellingSection() {
           });
 
           tl.addLabel('belowPump')
-            .to(stageShell, { autoAlpha: 1, y: 0, scale: 1, duration: 0.7 }, 'belowPump')
             .addLabel('callouts')
             .to(pressureEls, { autoAlpha: 1, duration: 0.45 }, '+=0.25')
             .addLabel('hydrostaticHead')
@@ -172,7 +171,7 @@ export default function TelemetryScrollytellingSection() {
       ref={sectionRef}
       id="telemetry"
       aria-labelledby="telemetry-title"
-      className="relative isolate overflow-hidden bg-[#020408] px-4 py-[clamp(5rem,12vh,9rem)] sm:px-6 lg:px-8"
+      className="relative isolate scroll-mt-16 overflow-hidden bg-[#020408] px-4 py-[clamp(5rem,12vh,9rem)] sm:px-6 lg:px-8"
     >
       <div
         aria-hidden="true"

@@ -115,9 +115,14 @@ export default function TelemetryCutawayStage({
                       : 'border-white/10 bg-white/[0.035] opacity-80'
                   }`}
                 >
-                  <p className="tech-text text-[0.65rem] uppercase tracking-[0.2em] text-em-glow">
-                    {mode.eyebrow}
-                  </p>
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                    <p className="tech-text text-[0.65rem] uppercase tracking-[0.2em] text-em-glow">
+                      {mode.label}
+                    </p>
+                    <p className="tech-text text-[0.6rem] uppercase tracking-[0.18em] text-text-muted">
+                      {mode.eyebrow}
+                    </p>
+                  </div>
                   <h3 className="mt-2 font-heading text-lg font-semibold text-text-primary">
                     {mode.title}
                   </h3>
