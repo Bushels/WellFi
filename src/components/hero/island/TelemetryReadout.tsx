@@ -174,7 +174,7 @@ export default function TelemetryReadout({
 
   const slot: CSSProperties = {
     position: 'absolute',
-    top: compact ? '118px' : 'clamp(136px, 21vh, 228px)',
+    top: compact ? '190px' : 'clamp(136px, 21vh, 228px)',
     left: compact ? '24px' : 'clamp(500px, 31vw, 640px)',
     pointerEvents: 'none',
     zIndex: 20,

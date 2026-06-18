@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type MutableRefObject } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { detectTier, type GpuTier } from '@/lib/island/quality';
+import type { WellFiViewId } from '@/lib/island/wellPath';
 import IslandScene from './IslandScene';
 import type { TelemetryState } from './TelemetryReadout';
 
@@ -10,11 +11,12 @@ interface IslandCanvasProps {
   reducedMotion: boolean;
   compact: boolean;
   forcedTime: number | null;
+  view: WellFiViewId;
   readoutRef: MutableRefObject<TelemetryState>;
   onReady: () => void;
 }
 
-export default function IslandCanvas({ reducedMotion, compact, forcedTime, readoutRef, onReady }: IslandCanvasProps) {
+export default function IslandCanvas({ reducedMotion, compact, forcedTime, view, readoutRef, onReady }: IslandCanvasProps) {
   const container = useRef<HTMLDivElement>(null);
   // null until client-mounted — the post-mount gate is load-bearing: it keeps
   // the Canvas subtree out of the static-export prerender entirely.
@@ -81,6 +83,7 @@ export default function IslandCanvas({ reducedMotion, compact, forcedTime, reado
           reducedMotion={reducedMotion}
           compact={compact}
           forcedTime={forcedTime}
+          view={view}
           readoutRef={readoutRef}
         />
       </Canvas>

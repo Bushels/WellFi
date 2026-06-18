@@ -20,6 +20,20 @@ export interface ToolAnchor {
   tangent: Vector3;
 }
 
+export const WELLFI_VIEW_IDS = ['below-pump', 'outside-intermediate', 'dual-wellfi'] as const;
+export type WellFiViewId = (typeof WELLFI_VIEW_IDS)[number];
+export const DEFAULT_WELLFI_VIEW: WellFiViewId = 'outside-intermediate';
+
+export function isWellFiViewId(value: string | null): value is WellFiViewId {
+  return WELLFI_VIEW_IDS.includes(value as WellFiViewId);
+}
+
+export interface WellFiToolPlacement extends ToolAnchor {
+  id: string;
+  label: string;
+  tone: 'primary' | 'secondary';
+}
+
 // Returned vectors/curves are live objects — treat them as read-only.
 export interface WellPaths {
   cased: CatmullRomCurve3;
@@ -27,7 +41,11 @@ export interface WellPaths {
   laterals: CatmullRomCurve3[];
   shoe: Vector3;
   wellhead: Vector3;
-  wellfiTool: ToolAnchor;
+  wellfiTools: {
+    belowPump: ToolAnchor;
+    outsideIntermediate: ToolAnchor;
+    lateralToe: ToolAnchor;
+  };
 }
 
 const Z_FACE = 5; // front section plane — the cased bore rides ON it (half-proud)
@@ -36,8 +54,14 @@ const v = (x: number, y: number, z: number) => new Vector3(x, y, z);
 const drape = (x: number, z: number, lift = 0.07) => v(x, floorY(x, z) + lift, z);
 
 export const KOP_PARAMS = [0.05, 0.08, 0.11, 0.14, 0.16] as const;
-export const WELLFI_TOOL_PARAM = 0.03;
-export const WELLFI_UPLINK_CASING_PARAM = 1;
+export const WELLFI_BELOW_PUMP_CASING_PARAM = 0.34;
+export const WELLFI_OUTSIDE_INTERMEDIATE_PARAM = 0.03;
+export const WELLFI_LATERAL_PARAM = 0.75;
+export const WELLFI_UPLINK_CASING_PARAMS: Record<WellFiViewId, number> = {
+  'below-pump': WELLFI_BELOW_PUMP_CASING_PARAM,
+  'outside-intermediate': 1,
+  'dual-wellfi': 1,
+};
 
 // Lateral toes arc along the cavity floor edge, front-left → right-wall run.
 const LATERAL_TOES: [number, number][] = [
@@ -60,6 +84,13 @@ function buildLateral(kop: Vector3, toe2d: [number, number]): CatmullRomCurve3 {
   );
   // tension 0.5 = centripetal CatmullRom: loop/cusp-free through tight control spacing
   return new CatmullRomCurve3([kop.clone(), m1, m2, toe], false, 'catmullrom', 0.5);
+}
+
+function toolAnchor(curve: CatmullRomCurve3, param: number): ToolAnchor {
+  return {
+    position: curve.getPointAt(param),
+    tangent: curve.getTangentAt(param).normalize().clone(),
+  };
 }
 
 // Allocates fresh curves/vectors each call — call once and memoize (useMemo) in React.
@@ -102,10 +133,26 @@ export function buildWellPaths(): WellPaths {
 
   const shoe = cased.getPointAt(1);
 
-  const wellfiTool: ToolAnchor = {
-    position: openHole.getPointAt(WELLFI_TOOL_PARAM),
-    tangent: openHole.getTangentAt(WELLFI_TOOL_PARAM).normalize().clone(),
+  const wellfiTools = {
+    belowPump: toolAnchor(cased, WELLFI_BELOW_PUMP_CASING_PARAM),
+    outsideIntermediate: toolAnchor(openHole, WELLFI_OUTSIDE_INTERMEDIATE_PARAM),
+    lateralToe: toolAnchor(laterals[4], WELLFI_LATERAL_PARAM),
   };
 
-  return { cased, openHole, laterals, shoe, wellhead, wellfiTool };
+  return { cased, openHole, laterals, shoe, wellhead, wellfiTools };
+}
+
+export function getWellFiToolsForView(paths: WellPaths, view: WellFiViewId): WellFiToolPlacement[] {
+  if (view === 'below-pump') {
+    return [{ ...paths.wellfiTools.belowPump, id: 'below-pump', label: 'WellFi', tone: 'primary' }];
+  }
+
+  if (view === 'dual-wellfi') {
+    return [
+      { ...paths.wellfiTools.outsideIntermediate, id: 'outside-intermediate', label: 'WellFi A', tone: 'primary' },
+      { ...paths.wellfiTools.lateralToe, id: 'lateral-toe', label: 'WellFi B', tone: 'secondary' },
+    ];
+  }
+
+  return [{ ...paths.wellfiTools.outsideIntermediate, id: 'outside-intermediate', label: 'WellFi', tone: 'primary' }];
 }

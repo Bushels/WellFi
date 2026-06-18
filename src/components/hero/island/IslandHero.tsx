@@ -1,12 +1,45 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { CircleDot, Layers, Radio, type LucideIcon } from 'lucide-react';
 import usePrefersReducedMotion from '@/lib/usePrefersReducedMotion';
+import {
+  DEFAULT_WELLFI_VIEW,
+  isWellFiViewId,
+  type WellFiViewId,
+} from '@/lib/island/wellPath';
 import WellFiLogo from '@/components/ui/WellFiLogo';
 import IslandCanvas from './IslandCanvas';
 import TelemetryReadout, { type TelemetryState } from './TelemetryReadout';
 
 const PROOF_CHIPS = ['130+ Installed Globally', 'Modbus Ready', 'Seamless Install'];
+const HERO_VIEW_QUERY = 'heroView';
+
+const HERO_VIEW_OPTIONS: {
+  id: WellFiViewId;
+  label: string;
+  ariaLabel: string;
+  Icon: LucideIcon;
+}[] = [
+  {
+    id: 'below-pump',
+    label: 'Below pump',
+    ariaLabel: 'Show WellFi installed below the pump',
+    Icon: CircleDot,
+  },
+  {
+    id: 'outside-intermediate',
+    label: 'Outside shoe',
+    ariaLabel: 'Show WellFi outside the intermediate casing shoe',
+    Icon: Radio,
+  },
+  {
+    id: 'dual-wellfi',
+    label: 'Dual WellFi',
+    ariaLabel: 'Show dual WellFi tools in the wellbore',
+    Icon: Layers,
+  },
+];
 
 function useCompactViewport(): boolean {
   const [compact, setCompact] = useState(false);
@@ -60,6 +93,83 @@ function useHeroTimeOverride(): number | null {
   return heroTime;
 }
 
+function useHeroView(): [WellFiViewId, (nextView: WellFiViewId) => void] {
+  const [view, setView] = useState<WellFiViewId>(DEFAULT_WELLFI_VIEW);
+
+  useEffect(() => {
+    const update = () => {
+      const params = new URLSearchParams(window.location.search);
+      const nextView = params.get(HERO_VIEW_QUERY);
+      setView(isWellFiViewId(nextView) ? nextView : DEFAULT_WELLFI_VIEW);
+    };
+
+    update();
+    window.addEventListener('popstate', update);
+    return () => window.removeEventListener('popstate', update);
+  }, []);
+
+  const selectView = useCallback((nextView: WellFiViewId) => {
+    setView(nextView);
+
+    const url = new URL(window.location.href);
+    if (nextView === DEFAULT_WELLFI_VIEW) {
+      url.searchParams.delete(HERO_VIEW_QUERY);
+    } else {
+      url.searchParams.set(HERO_VIEW_QUERY, nextView);
+    }
+    window.history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`);
+  }, []);
+
+  return [view, selectView];
+}
+
+function HeroViewSwitcher({
+  view,
+  onViewChange,
+}: {
+  view: WellFiViewId;
+  onViewChange: (nextView: WellFiViewId) => void;
+}) {
+  return (
+    <div
+      className="w-full max-w-[22rem] rounded-lg border border-[#1F2937] bg-[rgba(2,8,14,0.68)] p-2 shadow-[0_18px_48px_rgba(0,0,0,0.28)] backdrop-blur-sm sm:w-auto"
+      aria-label="Hero WellFi placement"
+    >
+      <div
+        className="mb-2 px-1 text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[#7FA1B3]"
+        style={{ fontFamily: 'var(--font-mono), monospace' }}
+      >
+        Placement
+      </div>
+      <div className="grid grid-cols-3 gap-1">
+        {HERO_VIEW_OPTIONS.map(({ id, label, ariaLabel, Icon }) => {
+          const active = id === view;
+          return (
+            <button
+              key={id}
+              type="button"
+              data-hero-view-button={id}
+              aria-label={ariaLabel}
+              aria-pressed={active}
+              onClick={() => onViewChange(id)}
+              className={[
+                'flex min-h-12 min-w-0 items-center justify-center gap-1.5 rounded-md border px-2 py-2 text-[0.68rem] font-semibold uppercase leading-tight transition-colors',
+                active
+                  ? 'border-[#22D3EE]/70 bg-[#06B6D4] text-[#04141a] shadow-[0_0_20px_rgba(34,211,238,0.18)]'
+                  : 'border-[#1F2937] bg-[rgba(2,4,8,0.54)] text-[#9bb5c7] hover:border-[#22D3EE]/45 hover:text-[#d3e2ec]',
+              ].join(' ')}
+              style={{ fontFamily: 'var(--font-mono), monospace' }}
+            >
+              <Icon className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+              <span className="min-w-0 text-center">{label}</span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 /**
  * IslandHero — the living diorama. Poster paints immediately (LCP + no-WebGL
  * fallback); the canvas cross-fades in when the renderer is ready.
@@ -68,6 +178,7 @@ export default function IslandHero({ animationOnly = false }: { animationOnly?: 
   const prefersReducedMotion = usePrefersReducedMotion();
   const forceMotion = useForceMotionOverride();
   const heroTime = useHeroTimeOverride();
+  const [view, setHeroView] = useHeroView();
   const compact = useCompactViewport();
   const readoutRef = useRef<TelemetryState>({ intensity: 0, channel: -1 });
   const [canvasReady, setCanvasReady] = useState(false);
@@ -99,6 +210,7 @@ export default function IslandHero({ animationOnly = false }: { animationOnly?: 
           reducedMotion={reducedMotion}
           compact={compact}
           forcedTime={heroTime}
+          view={view}
           readoutRef={readoutRef}
           onReady={() => setCanvasReady(true)}
         />
@@ -118,13 +230,19 @@ export default function IslandHero({ animationOnly = false }: { animationOnly?: 
         className="pointer-events-none relative z-10 mx-auto flex min-h-[100svh] w-full max-w-[96rem] flex-col px-6 pt-10 sm:px-10 sm:pt-14 lg:px-12 lg:pt-16"
         style={{ display: animationOnly ? 'none' : undefined }}
       >
-        <div className="pointer-events-auto">
-          <WellFiLogo
-            interactiveSignal
-            wordmarkColor="#d3e2ec"
-            signalColor="#ef4444"
-            className="w-[10rem] sm:w-[12rem] lg:w-[14rem]"
-          />
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="pointer-events-auto">
+            <WellFiLogo
+              interactiveSignal
+              wordmarkColor="#d3e2ec"
+              signalColor="#ef4444"
+              className="w-[10rem] sm:w-[12rem] lg:w-[14rem]"
+            />
+          </div>
+
+          <div className="pointer-events-auto">
+            <HeroViewSwitcher view={view} onViewChange={setHeroView} />
+          </div>
         </div>
 
         <div className="flex-1" />

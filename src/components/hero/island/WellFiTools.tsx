@@ -6,7 +6,7 @@ import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 import { COLORS } from '@/lib/island/layout';
 import { EMBER, type CycleState } from '@/lib/island/cycle';
-import type { ToolAnchor } from '@/lib/island/wellPath';
+import type { WellFiToolPlacement } from '@/lib/island/wellPath';
 
 const MODEL_PATH = '/wellfi/models/wellfi-gauge.glb';
 useGLTF.setDecoderPath('/wellfi/draco/');
@@ -67,14 +67,14 @@ function CapsuleStandIn() {
 }
 
 interface ToolProps {
-  anchor: ToolAnchor;
+  placement: WellFiToolPlacement;
   glowColor: string;
   /** reads the live collar boost off the cycle state */
-  readBoost: (s: CycleState) => number;
+  readBoost: (s: CycleState, placement: WellFiToolPlacement) => number;
   cycleRef: MutableRefObject<CycleState>;
 }
 
-function Tool({ anchor, glowColor, readBoost, cycleRef }: ToolProps) {
+function Tool({ placement, glowColor, readBoost, cycleRef }: ToolProps) {
   const sleeve = useRef<THREE.MeshBasicMaterial>(null);
   const witness = useRef<THREE.MeshBasicMaterial>(null);
   const inspectionSleeve = useRef<THREE.MeshBasicMaterial>(null);
@@ -83,12 +83,12 @@ function Tool({ anchor, glowColor, readBoost, cycleRef }: ToolProps) {
   const light = useRef<THREE.PointLight>(null);
   const base = useMemo(() => new THREE.Color(glowColor), [glowColor]);
   const quaternion = useMemo(
-    () => new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(1, 0, 0), anchor.tangent),
-    [anchor],
+    () => new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(1, 0, 0), placement.tangent),
+    [placement],
   );
 
   useFrame(() => {
-    const k = Math.max(EMBER, readBoost(cycleRef.current));
+    const k = Math.max(EMBER, readBoost(cycleRef.current, placement));
     const focus = cycleRef.current.focus;
     if (sleeve.current) sleeve.current.color.copy(base).multiplyScalar(0.4 + 2.4 * k);
     if (witness.current) witness.current.opacity = Math.min(0.75, 0.08 + 0.82 * k);
@@ -100,7 +100,7 @@ function Tool({ anchor, glowColor, readBoost, cycleRef }: ToolProps) {
   });
 
   return (
-    <group position={[anchor.position.x, anchor.position.y, anchor.position.z]} quaternion={quaternion}>
+    <group position={[placement.position.x, placement.position.y, placement.position.z]} quaternion={quaternion}>
       <mesh renderOrder={21} rotation={[0, 0, Math.PI / 2]}>
         <cylinderGeometry args={[0.17, 0.17, TOOL_LENGTH * 1.25, 24, 1, true]} />
         <meshBasicMaterial
@@ -165,15 +165,23 @@ function Tool({ anchor, glowColor, readBoost, cycleRef }: ToolProps) {
 }
 
 interface WellFiToolsProps {
-  tool: ToolAnchor;
-  readBoost: (s: CycleState) => number;
+  tools: WellFiToolPlacement[];
+  readBoost: (s: CycleState, placement: WellFiToolPlacement) => number;
   cycleRef: MutableRefObject<CycleState>;
 }
 
-export default function WellFiTools({ tool, readBoost, cycleRef }: WellFiToolsProps) {
+export default function WellFiTools({ tools, readBoost, cycleRef }: WellFiToolsProps) {
   return (
     <group>
-      <Tool anchor={tool} glowColor={COLORS.signalRed} readBoost={readBoost} cycleRef={cycleRef} />
+      {tools.map((tool) => (
+        <Tool
+          key={tool.id}
+          placement={tool}
+          glowColor={tool.tone === 'secondary' ? COLORS.emGlow : COLORS.signalRed}
+          readBoost={readBoost}
+          cycleRef={cycleRef}
+        />
+      ))}
     </group>
   );
 }

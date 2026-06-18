@@ -16,7 +16,12 @@ import {
   smooth,
   type CycleState,
 } from '@/lib/island/cycle';
-import { buildWellPaths, WELLFI_UPLINK_CASING_PARAM } from '@/lib/island/wellPath';
+import {
+  WELLFI_UPLINK_CASING_PARAMS,
+  buildWellPaths,
+  getWellFiToolsForView,
+  type WellFiViewId,
+} from '@/lib/island/wellPath';
 import { createPulseMaterial } from '@/lib/island/pulseMaterial';
 import type { GpuTier } from '@/lib/island/quality';
 import Terrain from './Terrain';
@@ -33,6 +38,7 @@ interface IslandSceneProps {
   reducedMotion: boolean;
   compact: boolean; // mobile framing
   forcedTime: number | null;
+  view: WellFiViewId;
   readoutRef: MutableRefObject<TelemetryState>;
 }
 
@@ -44,8 +50,10 @@ const CAMERA = {
 const pulseShape = (p: number) => 3.8 * Math.sin(Math.PI * Math.min(1, Math.max(0, p)));
 const ARRIVAL_F = 0.74; // within-breath fraction where the pulse reaches the active readout row
 
-export default function IslandScene({ tier, reducedMotion, compact, forcedTime, readoutRef }: IslandSceneProps) {
+export default function IslandScene({ tier, reducedMotion, compact, forcedTime, view, readoutRef }: IslandSceneProps) {
   const paths = useMemo(() => buildWellPaths(), []);
+  const wellFiTools = useMemo(() => getWellFiToolsForView(paths, view), [paths, view]);
+  const casedPulseStart = WELLFI_UPLINK_CASING_PARAMS[view];
   const cycleRef = useRef<CycleState>(cycleState(REDUCED_MOTION_T));
   const [composerCamera, setComposerCamera] = useState<THREE.PerspectiveCamera | null>(null);
   const cam = compact ? CAMERA.compact : CAMERA.desktop;
@@ -97,7 +105,7 @@ export default function IslandScene({ tier, reducedMotion, compact, forcedTime, 
     if (rim.current) rim.current.intensity = 0.22 + 0.6 * (1 - s.sun);
 
     if (s.pulseCased >= 0) {
-      casedPulse.setPulse(WELLFI_UPLINK_CASING_PARAM * (1 - s.pulseCased), pulseShape(s.pulseCased), 0.105);
+      casedPulse.setPulse(casedPulseStart * (1 - s.pulseCased), pulseShape(s.pulseCased), 0.105);
     } else {
       casedPulse.setPulse(-1, 0);
     }
@@ -179,13 +187,17 @@ export default function IslandScene({ tier, reducedMotion, compact, forcedTime, 
             lateralMaterial={lateralFlow.material}
           />
           <WellFiTools
-            tool={paths.wellfiTool}
-            readBoost={(s) => Math.max(s.collarWellFi, 0.72 * s.focus)}
+            tools={wellFiTools}
+            readBoost={(s, tool) =>
+              tool.tone === 'secondary'
+                ? Math.max(0.62 * s.collarWellFi, 0.44 * s.focus)
+                : Math.max(s.collarWellFi, 0.72 * s.focus)
+            }
             cycleRef={cycleRef}
           />
           <SignalRelay cycleRef={cycleRef} wellhead={paths.wellhead} />
           <LeasePad />
-          <IslandLabels paths={paths} compact={compact} />
+          <IslandLabels tools={wellFiTools} compact={compact} />
         </group>
       </PresentationControls>
 

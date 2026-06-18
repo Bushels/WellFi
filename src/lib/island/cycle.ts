@@ -8,11 +8,11 @@ export const EMBER = 0.18; // collars never go fully cold
 export interface CycleState {
   sun: number;          // 0..1 key-light factor (1 = full daylight)
   sky: number;          // 0..1 ambient/fill factor
-  collarWellFi: number; // 0..1 red collar boost on the single cased-section WellFi
+  collarWellFi: number; // 0..1 collar boost on the active WellFi placement
   pulseCased: number;   // WellFi tool -> wellhead pulse progress, or -1
   receiver: number;     // surface ring progress, or -1
   flow: number;         // 0..1 — lit-phase production-flow chevron strength
-  focus: number;        // 0..1 cutaway/glow emphasis on the single WellFi; camera stays wide
+  focus: number;        // 0..1 cutaway/glow emphasis on the active placement; camera stays wide
 }
 
 export function smooth(a: number, b: number, t: number): number {

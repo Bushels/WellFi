@@ -3,7 +3,7 @@
 import type { CSSProperties } from 'react';
 import { Html } from '@react-three/drei';
 import { COLORS } from '@/lib/island/layout';
-import type { WellPaths } from '@/lib/island/wellPath';
+import type { WellFiToolPlacement } from '@/lib/island/wellPath';
 
 const chip = (accent: string): CSSProperties => ({
   fontFamily: 'var(--font-mono), monospace',
@@ -21,10 +21,10 @@ const chip = (accent: string): CSSProperties => ({
 const TOOL_CHIP = { ...chip(COLORS.signalRed), transform: 'translateY(-42px)' };
 
 export default function IslandLabels({
-  paths,
+  tools,
   compact = false,
 }: {
-  paths: WellPaths;
+  tools: WellFiToolPlacement[];
   compact?: boolean;
 }) {
   // On mobile (<768px) the copy column spans nearly the full width, so the chips
@@ -36,11 +36,13 @@ export default function IslandLabels({
     <group>
       {/* Labels are deliberately always-visible (no occlude) — product callout,
           not depth-tested HUD. */}
-      <Html position={paths.wellfiTool.position} center>
-        <div style={TOOL_CHIP} data-wellfi-export-overlay="wellfi-label">
-          WellFi
-        </div>
-      </Html>
+      {tools.map((tool) => (
+        <Html key={tool.id} position={tool.position} center>
+          <div style={TOOL_CHIP} data-wellfi-export-overlay="wellfi-label">
+            {tool.label}
+          </div>
+        </Html>
+      ))}
     </group>
   );
 }

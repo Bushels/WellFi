@@ -1,5 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import { buildWellPaths, KOP_PARAMS, RADII, WELLFI_TOOL_PARAM } from './wellPath';
+import {
+  DEFAULT_WELLFI_VIEW,
+  WELLFI_BELOW_PUMP_CASING_PARAM,
+  WELLFI_LATERAL_PARAM,
+  WELLFI_OUTSIDE_INTERMEDIATE_PARAM,
+  buildWellPaths,
+  getWellFiToolsForView,
+  isWellFiViewId,
+  KOP_PARAMS,
+  RADII,
+} from './wellPath';
 import { floorY, inCavity } from './layout';
 
 const paths = buildWellPaths();
@@ -60,15 +70,38 @@ describe('gate-v9 wide fan', () => {
 });
 
 describe('tool anchors', () => {
+  it('below-pump WellFi sits on the cased string below surface equipment', () => {
+    const expected = paths.cased.getPointAt(WELLFI_BELOW_PUMP_CASING_PARAM);
+    expect(paths.wellfiTools.belowPump.position.distanceTo(expected)).toBeLessThan(1e-6);
+    expect(WELLFI_BELOW_PUMP_CASING_PARAM).toBeGreaterThan(0.15);
+    expect(WELLFI_BELOW_PUMP_CASING_PARAM).toBeLessThan(0.65);
+  });
+
   it('single WellFi sits just past the casing shoe on the open-hole pilot', () => {
-    const expected = paths.openHole.getPointAt(WELLFI_TOOL_PARAM);
-    expect(paths.wellfiTool.position.distanceTo(expected)).toBeLessThan(1e-6);
-    expect(WELLFI_TOOL_PARAM).toBeLessThan(KOP_PARAMS[0]);
-    expect(paths.wellfiTool.position.distanceTo(paths.shoe)).toBeLessThan(0.5);
+    const expected = paths.openHole.getPointAt(WELLFI_OUTSIDE_INTERMEDIATE_PARAM);
+    expect(paths.wellfiTools.outsideIntermediate.position.distanceTo(expected)).toBeLessThan(1e-6);
+    expect(WELLFI_OUTSIDE_INTERMEDIATE_PARAM).toBeLessThan(KOP_PARAMS[0]);
+    expect(paths.wellfiTools.outsideIntermediate.position.distanceTo(paths.shoe)).toBeLessThan(0.5);
+  });
+
+  it('dual WellFi second tool lies on lateral 5 at the authored param', () => {
+    const expected = paths.laterals[4].getPointAt(WELLFI_LATERAL_PARAM);
+    expect(paths.wellfiTools.lateralToe.position.distanceTo(expected)).toBeLessThan(1e-6);
+  });
+
+  it('returns the expected visible tool set for each hero view', () => {
+    expect(DEFAULT_WELLFI_VIEW).toBe('outside-intermediate');
+    expect(getWellFiToolsForView(paths, 'below-pump')).toHaveLength(1);
+    expect(getWellFiToolsForView(paths, 'outside-intermediate')).toHaveLength(1);
+    expect(getWellFiToolsForView(paths, 'dual-wellfi')).toHaveLength(2);
+    expect(isWellFiViewId('dual-wellfi')).toBe(true);
+    expect(isWellFiViewId('bad-view')).toBe(false);
   });
 
   it('tangents are unit-length', () => {
-    expect(Math.abs(paths.wellfiTool.tangent.length() - 1)).toBeLessThan(1e-6);
+    expect(Math.abs(paths.wellfiTools.belowPump.tangent.length() - 1)).toBeLessThan(1e-6);
+    expect(Math.abs(paths.wellfiTools.outsideIntermediate.tangent.length() - 1)).toBeLessThan(1e-6);
+    expect(Math.abs(paths.wellfiTools.lateralToe.tangent.length() - 1)).toBeLessThan(1e-6);
   });
 });
 
