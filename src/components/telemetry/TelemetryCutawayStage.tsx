@@ -13,12 +13,14 @@ export default function TelemetryCutawayStage({
   const belowPumpMode = telemetry.placementModes.find((mode) => mode.id === 'below-pump');
   const pressureCallout = belowPumpMode?.callouts.find(
     (callout) => callout.id === 'intake-pressure',
-  ) ?? {
-    label: 'Pump-intake pressure',
-    value: 'Pressure',
-    description: 'Measured below the pump.',
-  };
+  );
   const resolvedActiveModeId = activeModeId ?? telemetry.placementModes[0]?.id;
+
+  if (!pressureCallout) {
+    throw new Error(
+      'TelemetryCutawayStage requires below-pump intake-pressure callout content.',
+    );
+  }
 
   return (
     <div className="telemetry-stage relative overflow-hidden rounded-md border border-white/10 bg-[#020408] shadow-[0_30px_120px_rgba(0,0,0,0.55)]">

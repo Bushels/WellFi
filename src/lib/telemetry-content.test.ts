@@ -33,6 +33,16 @@ describe('telemetry content', () => {
     ]);
   });
 
+  it('provides the below-pump pressure callout used by the cutaway stage', () => {
+    const belowPump = telemetry.placementModes.find((mode) => mode.id === 'below-pump');
+    const pressure = belowPump?.callouts.find((callout) => callout.id === 'intake-pressure');
+
+    expect(pressure).toMatchObject({
+      label: 'Pump-intake pressure',
+      value: 'P intake',
+    });
+  });
+
   it('keeps the application cards focused on production engineering decisions', () => {
     expect(telemetry.applications.map((card) => card.title)).toEqual([
       'Pump Optimization',
