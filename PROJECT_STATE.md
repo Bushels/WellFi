@@ -1,13 +1,13 @@
 # Project State
 
-Last verified: 2026-06-18 local QA on wide surface-readout telemetry rendition.
+Last verified: 2026-06-18 local QA on approved animation-only WellFi hero rendition.
 
-Current task status: merged to `master` for live review.
+Current task status: approved for now, merged to `master`, and parked so the next session can move to the next page section.
 
 ## Parked Rendition
 
 - Single WellFi is located inside the intermediate casing on the lower cased run, below the pump/tag-bar zone.
-- The hero darkens while staying zoomed out on the wide wellbore view, shows the telemetry bubble above the top of the intermediate casing at surface, then relights while remaining wide.
+- The hero darkens while staying zoomed out on the wide wellbore view, shows the telemetry bubble above the wellhead/top of the intermediate casing at surface, then relights while remaining wide.
 - Telemetry bubble values:
   - Pressure: `158 kPa`
   - Temperature: `26 C`
@@ -39,8 +39,9 @@ Current task status: merged to `master` for live review.
 
 ## Resume Notes
 
-- This rendition is merged to `master` for live review. Compare it against any remaining alternate renders before choosing the final public hero direction.
+- This rendition is the approved parked hero state as of 2026-06-18. Compare it against any remaining alternate renders before choosing the final public hero direction.
 - Local QA URL: `http://127.0.0.1:3001/wellfi`
+- Animation-only QA URL: `http://127.0.0.1:3001/wellfi/animation?motion=force`
 - Exact wide telemetry frame: `http://127.0.0.1:3001/wellfi/animation?motion=force&heroT=6.1`
 - Re-export accepted motion with `npm run export:hero`.
 - The calculator route remains parked at `src/app/_calculator`; do not un-park without Kyle approval.

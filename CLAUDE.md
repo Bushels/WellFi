@@ -76,9 +76,9 @@ The wave-sweep startup hero was retired 2026-06-10 (Kyle-approved).
 
 - Poster paints first (LCP); the R3F canvas cross-fades in when ready
 - 12 s seamless lighting cycle: day → darken while holding the wide island/surface-casing view → 3 relay pulses → relight wide (`src/lib/island/cycle.ts`)
-- Relay grammar: one WellFi (red #EF4444) sits lower on the intermediate casing -> surface readout above the top of the casing -> surface ring
+- Relay grammar: one WellFi (red #EF4444) sits lower on the intermediate casing -> surface readout above the wellhead/top of casing -> surface ring
 - Lit phase: cyan production-flow chevrons along the bores; strata use a world-Y procedural bedding shader (`Terrain.tsx`)
-- Telemetry readout (`TelemetryReadout.tsx`) is a surface HTML bubble above the top of the intermediate casing in the wide view while the single WellFi remains lower on the intermediate casing. It highlights pressure `158 kPa`, temperature `26 C`, and pump vibration `4.2 mm/s RMS`.
+- Telemetry readout (`TelemetryReadout.tsx`) is a surface HTML bubble above the wellhead/top of the intermediate casing in the wide view while the single WellFi remains lower on the intermediate casing. It highlights pressure `158 kPa`, temperature `26 C`, and pump vibration `4.2 mm/s RMS`.
 - Mobile (<768px): in-scene label hidden (it collides with the copy column); the relay glow carries it
 - Drag = PresentationControls with spring-back; pointer parallax when idle; page scroll is never captured
 - `prefers-reduced-motion`: frozen lit state, no pulses

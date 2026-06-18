@@ -16,7 +16,7 @@ lit hold (0-3 s)
   -> three relay breaths in the dark (5-9 s)
        single WellFi red pulse from the casing shoe to surface
        -> surface ring
-       surface readout above the top of the casing highlights pressure, temperature, pump vibration
+       surface readout above the wellhead/top of casing highlights pressure, temperature, pump vibration
   -> relight while staying wide (9-10.5 s)
   -> lit hold to the seam (12 s == 0 s)
 ```
