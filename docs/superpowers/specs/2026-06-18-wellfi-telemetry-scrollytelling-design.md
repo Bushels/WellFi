@@ -49,6 +49,9 @@ Pinned cutaway frame: below-pump placement
 Scroll callouts: pressure, temperature, vibration, water cut, flow insight
   |
   v
+Hydrostatic head cue: fluid column around pump / measured pressure context
+  |
+  v
 Placement states: below pump, behind casing, dual WellFi
   |
   v
@@ -79,6 +82,7 @@ Do not use live R3F for V1 unless the static render path cannot communicate the 
 - Dark formation background, restrained cyan/red signal accents, and crisp industrial annotation.
 - No oversized marketing cards inside the pinned scene.
 - Callouts should feel like drawing annotations or SCADA-linked tags, not cartoon popups.
+- The pressure beat should show hydrostatic head visually as the fluid column around the pump/tubing. Use this to explain that WellFi is measuring pressure where lift decisions are made, including the column context that drives intake pressure and drawdown interpretation.
 - Keep the cutaway legible on desktop and mobile; if mobile cannot support a pinned full scrollytelling frame cleanly, collapse into stacked static panels with the same sequence.
 
 ### Icon Row
@@ -128,6 +132,7 @@ export interface ApplicationCard {
 Initial content:
 
 - Metrics: pressure, temperature, vibration, water cut, flow insight.
+- Pressure callout: include hydrostatic head/fluid-column context around the pump, not only a gauge icon.
 - Placement modes: Below Pump, Behind Casing, Dual WellFi.
 - Applications: Pump Optimization, Drawdown Management, Pressure Build-Up Testing, Reservoir Pressure Monitoring, Water Cut Tracking, Flow Insight, Pump Protection, Cableless Gauge Backup.
 
@@ -171,6 +176,7 @@ Desktop/tablet behavior:
   - `metrics`
   - `belowPump`
   - `callouts`
+  - `hydrostaticHead`
   - `behindCasing`
   - `dualWellfi`
   - `formation`
@@ -206,6 +212,7 @@ Mini-lesson for implementation: state is the live data controlling what the inte
 Allowed public claims:
 
 - Measures pressure, temperature, vibration, water cut, and flow insight.
+- Visualizes hydrostatic head as pressure context around the pump/fluid column.
 - Can support below-pump, behind-casing/intermediate, and dual-tool layouts.
 - Supports pump optimization, drawdown management, pressure build-up testing, reservoir pressure monitoring, water cut tracking, pump protection, and cableless gauge backup.
 - No downhole cable run.
@@ -242,4 +249,3 @@ These should be decided during implementation, not reopened as strategy:
 - Whether V1 uses one composite render with overlay shifts or three render variants for the placement modes.
 - Whether the formation descent is a layered still parallax or a short rendered transition plate.
 - Whether the old `OneEightTrillionAnchor` stays immediately after the hero or moves below the new telemetry section. Default is to place telemetry directly below the hero because it answers the engineer's first question faster.
-
