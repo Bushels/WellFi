@@ -47,7 +47,6 @@ export default function TelemetryScrollytellingSection() {
             reduceMotion: boolean;
           };
 
-          const metrics = section.querySelectorAll('.telemetry-metric');
           const stageShell = stage.querySelector('.telemetry-stage');
           if (!stageShell) return;
 
@@ -68,7 +67,6 @@ export default function TelemetryScrollytellingSection() {
             hydrostaticCallout,
           ].filter((element): element is Element => Boolean(element));
           const revealEls = [
-            ...Array.from(metrics),
             stageShell,
             ...Array.from(modes),
             pressureCallout,
@@ -92,7 +90,6 @@ export default function TelemetryScrollytellingSection() {
             return;
           }
 
-          gsap.set(metrics, { autoAlpha: 0, y: 18 });
           gsap.set(stageShell, { autoAlpha: 0, y: 28, x: 0, scale: 0.985 });
           gsap.set([...pressureEls, ...hydrostaticEls], { autoAlpha: 0 });
           gsap.set(applications, { autoAlpha: 0, y: 22 });
@@ -110,9 +107,8 @@ export default function TelemetryScrollytellingSection() {
           });
 
           tl.addLabel('metrics')
-            .to(metrics, { autoAlpha: 1, y: 0, duration: 0.5, stagger: 0.08 })
-            .addLabel('belowPump')
-            .to(stageShell, { autoAlpha: 1, y: 0, scale: 1, duration: 0.7 }, '<0.15')
+            .addLabel('belowPump', '+=0.35')
+            .to(stageShell, { autoAlpha: 1, y: 0, scale: 1, duration: 0.7 }, 'belowPump')
             .addLabel('callouts')
             .to(pressureEls, { autoAlpha: 1, duration: 0.45 }, '+=0.25')
             .addLabel('hydrostaticHead')
