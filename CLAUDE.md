@@ -78,7 +78,7 @@ The wave-sweep startup hero was retired 2026-06-10 (Kyle-approved).
 - 12 s seamless lighting cycle: day → darken while holding the wide island/surface-casing view → 3 relay pulses → relight wide (`src/lib/island/cycle.ts`)
 - Relay grammar: one WellFi (red #EF4444) sits just past the casing shoe, out of the intermediate casing on the open-hole pilot -> surface ring
 - Lit phase: cyan production-flow chevrons along the bores; strata use a world-Y procedural bedding shader (`Terrain.tsx`)
-- Telemetry readout (`TelemetryReadout.tsx`) is a surface receiver overlay above the surface casing area and highlights three rows as the relay pulses run: pressure `226 kPa`, temperature `20 C`, and water cut `6%`.
+- Telemetry readout (`TelemetryReadout.tsx`) is a downhole HTML bubble anchored to the below-pump WellFi inside the intermediate casing. It highlights pressure `158 kPa`, temperature `26 C`, and pump vibration `4.2 mm/s RMS`.
 - Mobile (<768px): in-scene label hidden (it collides with the copy column); the relay glow carries it
 - Drag = PresentationControls with spring-back; pointer parallax when idle; page scroll is never captured
 - `prefers-reduced-motion`: frozen lit state, no pulses

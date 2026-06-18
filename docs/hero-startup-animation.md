@@ -16,7 +16,7 @@ lit hold (0-3 s)
   -> three relay breaths in the dark (5-9 s)
        single WellFi red pulse from the casing shoe to surface
        -> surface ring
-       surface receiver overlay highlights pressure, temperature, water cut
+       downhole bubble highlights pressure, temperature, pump vibration
   -> relight while staying wide (9-10.5 s)
   -> lit hold to the seam (12 s == 0 s)
 ```
@@ -31,6 +31,6 @@ lit hold (0-3 s)
 - Default presentation export captures 24 s and encodes it at 2x speed into a 12 s H.264 MP4. This reads better in a boardroom than the original 24 s two-cycle export.
 - The verified deck asset is `exports/wellfi-island-hero-1920x1080-12s-fast.mp4`; the quick preview is `exports/wellfi-island-hero-1280x720-12s-fast-preview.mp4`.
 - The exporter also writes `exports/wellfi-island-hero-960x540-12s-fast.gif` by default. Use `WELLFI_CAPTURE_SECONDS=12` and `WELLFI_EXPORT_SPEED=1` for the normal-speed 12 s MP4/GIF pair.
-- HTML overlays are hidden unless their root has `data-wellfi-export-overlay`; the surface receiver telemetry bubble uses that marker so it appears in MP4/GIF exports.
+- HTML overlays are hidden unless their root has `data-wellfi-export-overlay`; the downhole telemetry bubble uses that marker so it appears in MP4/GIF exports.
 - Do not use headless canvas `captureStream()` as the primary export path. It produced a 10-frame MP4 during testing. Playwright browser video capture plus FFmpeg was reliable.
 - Animation visibility was improved by increasing relay pulse width/strength, brightening the surface ring/readout, strengthening production-flow chevrons, adding subtle idle camera drift, and increasing bloom on high-tier devices.

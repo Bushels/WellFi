@@ -1,10 +1,9 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import usePrefersReducedMotion from '@/lib/usePrefersReducedMotion';
 import WellFiLogo from '@/components/ui/WellFiLogo';
 import IslandCanvas from './IslandCanvas';
-import TelemetryReadout, { type TelemetryState } from './TelemetryReadout';
 
 const PROOF_CHIPS = ['130+ Installed Globally', 'Modbus Ready', 'Seamless Install'];
 
@@ -69,7 +68,6 @@ export default function IslandHero({ animationOnly = false }: { animationOnly?: 
   const forceMotion = useForceMotionOverride();
   const heroTime = useHeroTimeOverride();
   const compact = useCompactViewport();
-  const readoutRef = useRef<TelemetryState>({ intensity: 0, channel: -1 });
   const [canvasReady, setCanvasReady] = useState(false);
   const reducedMotion = forceMotion ? false : prefersReducedMotion;
 
@@ -99,12 +97,9 @@ export default function IslandHero({ animationOnly = false }: { animationOnly?: 
           reducedMotion={reducedMotion}
           compact={compact}
           forcedTime={heroTime}
-          readoutRef={readoutRef}
           onReady={() => setCanvasReady(true)}
         />
       </div>
-
-      <TelemetryReadout readoutRef={readoutRef} compact={compact} />
 
       {/* Bottom fade into the next section */}
       <div

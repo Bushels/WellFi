@@ -1,8 +1,10 @@
 'use client';
 
-import type { CSSProperties } from 'react';
+import { useRef, type CSSProperties, type MutableRefObject } from 'react';
+import { useFrame } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import { COLORS } from '@/lib/island/layout';
+import type { CycleState } from '@/lib/island/cycle';
 import type { WellFiToolPlacement } from '@/lib/island/wellPath';
 
 const chip = (accent: string): CSSProperties => ({
@@ -20,11 +22,36 @@ const chip = (accent: string): CSSProperties => ({
 
 const TOOL_CHIP = { ...chip(COLORS.signalRed), transform: 'translateY(-42px)' };
 
+function ToolLabel({
+  tool,
+  cycleRef,
+}: {
+  tool: WellFiToolPlacement;
+  cycleRef: MutableRefObject<CycleState>;
+}) {
+  const chipRef = useRef<HTMLDivElement>(null);
+
+  useFrame(() => {
+    if (!chipRef.current) return;
+    chipRef.current.style.opacity = Math.max(0, 1 - cycleRef.current.focus * 1.8).toFixed(3);
+  });
+
+  return (
+    <Html position={tool.position} center>
+      <div ref={chipRef} style={TOOL_CHIP} data-wellfi-export-overlay="wellfi-label">
+        {tool.label}
+      </div>
+    </Html>
+  );
+}
+
 export default function IslandLabels({
   tools,
+  cycleRef,
   compact = false,
 }: {
   tools: WellFiToolPlacement[];
+  cycleRef: MutableRefObject<CycleState>;
   compact?: boolean;
 }) {
   // On mobile (<768px) the copy column spans nearly the full width, so the chips
@@ -37,11 +64,7 @@ export default function IslandLabels({
       {/* Labels are deliberately always-visible (no occlude) — product callout,
           not depth-tested HUD. */}
       {tools.map((tool) => (
-        <Html key={tool.id} position={tool.position} center>
-          <div style={TOOL_CHIP} data-wellfi-export-overlay="wellfi-label">
-            {tool.label}
-          </div>
-        </Html>
+        <ToolLabel key={tool.id} tool={tool} cycleRef={cycleRef} />
       ))}
     </group>
   );
