@@ -16,6 +16,7 @@ describe('telemetry content', () => {
     const allText = JSON.stringify(telemetry).toLowerCase();
     expect(allText).toContain('flow insight');
     expect(allText).not.toContain('flow rate');
+    expect(allText).not.toContain('flow-rate');
   });
 
   it('includes hydrostatic head as pressure context for the below-pump story', () => {
@@ -46,6 +47,10 @@ describe('telemetry content', () => {
   });
 
   it('points the primary telemetry nav link at the new section', () => {
-    expect(navLinks).toContainEqual({ label: 'Telemetry', href: '#telemetry' });
+    expect(navLinks).toEqual([
+      { label: 'Telemetry', href: '#telemetry' },
+      { label: 'SAGD', href: '#sagd-interactive' },
+      { label: 'Proof', href: '#proof' },
+    ]);
   });
 });

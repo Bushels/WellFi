@@ -68,8 +68,8 @@ export interface TelemetryCallout {
   label: string;
   value: string;
   description: string;
-  x: number;
-  y: number;
+  xPercent: number;
+  yPercent: number;
 }
 
 export interface TelemetryPlacementMode {
@@ -426,24 +426,24 @@ export const telemetry: TelemetryContent = {
           label: 'Pump-intake pressure',
           value: 'P intake',
           description: 'Pressure below the pump, read against the local fluid column.',
-          x: 54,
-          y: 38,
+          xPercent: 54,
+          yPercent: 38,
         },
         {
           id: 'pump-vibration',
           label: 'Vibration',
           value: 'mm/s RMS',
           description: 'Pump vibration trend for stress, pump-off, or interference signals.',
-          x: 42,
-          y: 50,
+          xPercent: 42,
+          yPercent: 50,
         },
         {
           id: 'fluid-change',
           label: 'Water cut',
           value: 'Fluid trend',
           description: 'Changing produced-fluid condition close to the lift point.',
-          x: 60,
-          y: 61,
+          xPercent: 60,
+          yPercent: 61,
         },
       ],
     },
@@ -460,16 +460,16 @@ export const telemetry: TelemetryContent = {
           label: 'Behind-casing pressure',
           value: 'Trend',
           description: 'Reservoir response trend outside the main lift string.',
-          x: 34,
-          y: 45,
+          xPercent: 34,
+          yPercent: 45,
         },
         {
           id: 'surface-handoff',
           label: 'Wireless handoff',
           value: 'No cable',
           description: 'Data reaches surface without running a downhole cable.',
-          x: 66,
-          y: 30,
+          xPercent: 66,
+          yPercent: 30,
         },
       ],
     },
@@ -479,31 +479,31 @@ export const telemetry: TelemetryContent = {
       eyebrow: 'Advanced layout',
       title: 'Use paired tools to read interval behavior.',
       description:
-        'Dual WellFi layouts support differential-pressure, water-cut, and flow insight across an interval without turning the page into a hard flow-rate claim.',
+        'Dual WellFi layouts compare pressure, temperature, and fluid-condition changes across an interval to show directional interval behavior.',
       callouts: [
         {
           id: 'upper-tool',
           label: 'Upper WellFi',
           value: 'P1',
           description: 'Upper interval reference point.',
-          x: 45,
-          y: 34,
+          xPercent: 45,
+          yPercent: 34,
         },
         {
           id: 'lower-tool',
           label: 'Lower WellFi',
           value: 'P2',
           description: 'Lower interval reference point for differential behavior.',
-          x: 58,
-          y: 68,
+          xPercent: 58,
+          yPercent: 68,
         },
         {
           id: 'interval-insight',
           label: 'Interval response',
           value: 'P1 - P2',
           description: 'Pressure and fluid-condition change across the interval.',
-          x: 68,
-          y: 52,
+          xPercent: 68,
+          yPercent: 52,
         },
       ],
     },
