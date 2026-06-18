@@ -1,13 +1,13 @@
 # Project State
 
-Last verified: 2026-06-18 local QA on wide top-of-casing telemetry rendition.
+Last verified: 2026-06-18 local QA on wide surface-readout telemetry rendition.
 
 Current task status: merged to `master` for live review.
 
 ## Parked Rendition
 
 - Single WellFi is located inside the intermediate casing on the lower cased run, below the pump/tag-bar zone.
-- The hero darkens while staying zoomed out on the wide wellbore view, shows the telemetry bubble at the top of the intermediate casing, then relights while remaining wide.
+- The hero darkens while staying zoomed out on the wide wellbore view, shows the telemetry bubble above the top of the intermediate casing at surface, then relights while remaining wide.
 - Telemetry bubble values:
   - Pressure: `158 kPa`
   - Temperature: `26 C`

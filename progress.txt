@@ -9,7 +9,7 @@ This file is a current-state handoff, not a historical archive. Remove stale her
 - Hero is the R3F island diorama, not the retired wave-sweep startup sequence.
 - One signal-sending WellFi is shown inside the intermediate casing on the lower cased run.
 - The cycle is a 12 s seamless loop: lit hold -> darken while staying wide -> three relay pulses -> relight while staying wide.
-- The dark relay moment includes a top-of-casing telemetry bubble:
+- The dark relay moment includes a surface telemetry bubble above the top of the intermediate casing:
   - Pressure `158 kPa`
   - Temperature `26 C`
   - Pump vibration `4.2 mm/s RMS`
