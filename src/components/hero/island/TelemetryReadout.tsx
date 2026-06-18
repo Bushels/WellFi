@@ -146,8 +146,8 @@ export default function TelemetryReadout({
       box.current.style.opacity = visible.toFixed(3);
       const pop = 1 + 0.22 * flash.current;
       const compactScale = compact ? 0.52 : 1;
-      const compactShift = compact ? 'translateX(42px) ' : '';
-      box.current.style.transform = `${compactShift}scale(${(((0.86 + 0.14 * visible) * pop) * compactScale).toFixed(3)})`;
+      const screenShift = compact ? 'translate(42px, -8px)' : 'translate(88px, -106px)';
+      box.current.style.transform = `${screenShift} scale(${(((0.86 + 0.14 * visible) * pop) * compactScale).toFixed(3)})`;
       box.current.style.boxShadow =
         flash.current > 0.01
           ? `0 0 ${(28 + 38 * flash.current).toFixed(0)}px rgba(34,211,238,${(0.34 + 0.58 * flash.current).toFixed(2)}), inset 0 0 14px rgba(34,211,238,0.1)`
