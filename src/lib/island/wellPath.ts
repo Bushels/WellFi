@@ -22,7 +22,7 @@ export interface ToolAnchor {
 
 export const WELLFI_VIEW_IDS = ['below-pump', 'outside-intermediate', 'dual-wellfi'] as const;
 export type WellFiViewId = (typeof WELLFI_VIEW_IDS)[number];
-export const DEFAULT_WELLFI_VIEW: WellFiViewId = 'outside-intermediate';
+export const DEFAULT_WELLFI_VIEW: WellFiViewId = 'below-pump';
 
 export function isWellFiViewId(value: string | null): value is WellFiViewId {
   return WELLFI_VIEW_IDS.includes(value as WellFiViewId);

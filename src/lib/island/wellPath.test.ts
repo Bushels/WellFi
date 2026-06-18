@@ -90,7 +90,7 @@ describe('tool anchors', () => {
   });
 
   it('returns the expected visible tool set for each hero view', () => {
-    expect(DEFAULT_WELLFI_VIEW).toBe('outside-intermediate');
+    expect(DEFAULT_WELLFI_VIEW).toBe('below-pump');
     expect(getWellFiToolsForView(paths, 'below-pump')).toHaveLength(1);
     expect(getWellFiToolsForView(paths, 'outside-intermediate')).toHaveLength(1);
     expect(getWellFiToolsForView(paths, 'dual-wellfi')).toHaveLength(2);
