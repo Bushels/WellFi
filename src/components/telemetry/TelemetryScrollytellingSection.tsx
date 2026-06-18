@@ -77,7 +77,7 @@ export default function TelemetryScrollytellingSection() {
             ...Array.from(applications),
           ].filter((element): element is Element => Boolean(element));
 
-          if (reduceMotion || !isDesktop) {
+          const resetScrollytelling = () => {
             gsap.set(revealEls, {
               autoAlpha: 1,
               y: 0,
@@ -87,6 +87,15 @@ export default function TelemetryScrollytellingSection() {
               filter: 'none',
             });
             setMode(0);
+          };
+
+          if (reduceMotion) {
+            resetScrollytelling();
+            return;
+          }
+
+          if (!isDesktop) {
+            resetScrollytelling();
             return;
           }
 
@@ -106,8 +115,7 @@ export default function TelemetryScrollytellingSection() {
             },
           });
 
-          tl.addLabel('metrics')
-            .addLabel('belowPump', '+=0.35')
+          tl.addLabel('belowPump')
             .to(stageShell, { autoAlpha: 1, y: 0, scale: 1, duration: 0.7 }, 'belowPump')
             .addLabel('callouts')
             .to(pressureEls, { autoAlpha: 1, duration: 0.45 }, '+=0.25')
