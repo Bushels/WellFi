@@ -51,7 +51,7 @@ export default function TelemetryScrollytellingSection() {
           if (!stageShell) return;
 
           const introEls = section.querySelectorAll<HTMLElement>(
-            '.telemetry-intro, .telemetry-metric, .telemetry-deck-note',
+            '.telemetry-intro, .telemetry-metric',
           );
           const modes = section.querySelectorAll<HTMLElement>('.telemetry-mode');
           const pressureCallout = section.querySelector('.telemetry-callout-pressure');
@@ -203,7 +203,7 @@ export default function TelemetryScrollytellingSection() {
         <div className="telemetry-intro mx-auto max-w-3xl text-center">
           <h2
             id="telemetry-title"
-            className="font-heading text-[clamp(2.25rem,5vw,5rem)] font-semibold leading-[0.98] text-text-primary"
+            className="whitespace-nowrap font-heading text-[clamp(1.45rem,3.4vw,3.1rem)] font-semibold leading-none text-text-primary"
           >
             {telemetry.title}
           </h2>
@@ -212,9 +212,6 @@ export default function TelemetryScrollytellingSection() {
         <div className="telemetry-deck mt-8">
           <TelemetryMetricRow metrics={telemetry.metrics} />
         </div>
-        <p className="telemetry-deck-note mx-auto mt-5 max-w-2xl text-center text-sm leading-relaxed text-text-secondary sm:text-base">
-          {telemetry.description}
-        </p>
       </div>
 
       <div
