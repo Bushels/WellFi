@@ -153,7 +153,7 @@ export default function IslandHero({ animationOnly = false }: { animationOnly?: 
           </a>
         </div>
 
-        <div className="flex items-center justify-center pb-8">
+        <div className="hidden">
           <span
             className="text-[0.72rem] font-medium uppercase tracking-[0.32em] text-[#9bb5c7]"
             aria-hidden="true"
