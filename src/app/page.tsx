@@ -6,7 +6,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import IslandHero from '@/components/hero/island/IslandHero';
 import Navigation from '@/components/nav/Navigation';
-import TelemetryScrollytellingSection from '@/components/telemetry/TelemetryScrollytellingSection';
+import TelemetryIconCardsSection from '@/components/telemetry/TelemetryIconCardsSection';
 import OneEightTrillionAnchor from '@/components/anchor/OneEightTrillionAnchor';
 import SagdPresentationSection from '@/components/sagd-presentation/SagdPresentationSection';
 // Tool closeup image hidden 2026-05-22 — requested to be removed as incorrect.
@@ -100,7 +100,7 @@ export default function Home() {
     >
       <IslandHero />
       <Navigation />
-      <TelemetryScrollytellingSection />
+      <TelemetryIconCardsSection />
       <div className="section-divider" />
       <OneEightTrillionAnchor />
       {/* Hidden 2026-05-22 — requested to be removed as incorrect: <ToolRevealSection /> */}

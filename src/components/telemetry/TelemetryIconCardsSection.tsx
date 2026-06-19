@@ -1,7 +1,7 @@
 import { telemetry } from '@/lib/content';
 import TelemetryMetricRow from './TelemetryMetricRow';
 
-export default function TelemetryScrollytellingSection() {
+export default function TelemetryIconCardsSection() {
   return (
     <section
       id="telemetry"
