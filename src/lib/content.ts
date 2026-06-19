@@ -417,9 +417,9 @@ export const telemetry: TelemetryContent = {
       id: 'below-pump',
       label: 'Below Pump',
       eyebrow: 'Primary application',
-      title: 'Measure below the pump before changing the pump.',
+      title: 'Read the pump intake.',
       description:
-        'Below-pump WellFi gives engineers pressure, temperature, vibration, water-cut, and flow insight at the point where lift decisions are made.',
+        'Pressure, temperature, vibration, water cut, and flow insight at the lift point.',
       callouts: [
         {
           id: 'intake-pressure',
@@ -451,9 +451,9 @@ export const telemetry: TelemetryContent = {
       id: 'behind-casing',
       label: 'Behind Casing',
       eyebrow: 'Expansion application',
-      title: 'Move the same telemetry logic outside the intermediate.',
+      title: 'Track pressure outside the intermediate.',
       description:
-        'Behind-casing or intermediate placement supports reservoir-pressure trends and condition changes where a wired gauge is difficult to justify.',
+        'Reservoir response trends where a wired gauge is difficult to justify.',
       callouts: [
         {
           id: 'behind-casing-pressure',
@@ -477,9 +477,9 @@ export const telemetry: TelemetryContent = {
       id: 'dual-wellfi',
       label: 'Dual WellFi',
       eyebrow: 'Advanced layout',
-      title: 'Use paired tools to read interval behavior.',
+      title: 'Compare two tool depths.',
       description:
-        'Dual WellFi layouts compare pressure, temperature, and fluid-condition changes across an interval to show directional interval behavior.',
+        'Paired pressure and fluid-condition changes show directional interval behavior.',
       callouts: [
         {
           id: 'upper-tool',

@@ -58,16 +58,17 @@ export default function TelemetryScrollytellingSection() {
           const hydrostaticCallout = section.querySelector('.telemetry-callout-hydrostatic');
           const fluidColumn = section.querySelector('.telemetry-fluid-column');
           const hydrostaticRing = section.querySelector('.telemetry-hydrostatic-ring');
+          const pressureLeaders = section.querySelectorAll('.telemetry-leader-pressure');
+          const hydrostaticLeaders = section.querySelectorAll('.telemetry-leader-hydrostatic');
           const leaders = section.querySelectorAll('.telemetry-leader');
           const applications = section.querySelectorAll('.telemetry-application');
           const pressureEls = [
             pressureCallout,
-            ...Array.from(leaders),
+            ...Array.from(pressureLeaders),
           ].filter((element): element is Element => Boolean(element));
           const hydrostaticEls = [
-            fluidColumn,
-            hydrostaticRing,
             hydrostaticCallout,
+            ...Array.from(hydrostaticLeaders),
           ].filter((element): element is Element => Boolean(element));
           const revealEls = [
             stageShell,
