@@ -2,6 +2,10 @@ import { describe, expect, it } from 'vitest';
 import { navLinks, telemetry } from './content';
 
 describe('telemetry content', () => {
+  it('uses the approved second-section headline', () => {
+    expect(telemetry.title).toBe('Data Below, Insight Above');
+  });
+
   it('lists the five measurement families in engineer-facing order', () => {
     expect(telemetry.metrics.map((metric) => metric.label)).toEqual([
       'Pressure',

@@ -369,41 +369,41 @@ export const workflow: WorkflowContent = {
 // ---------------------------------------------------------------------------
 
 export const telemetry: TelemetryContent = {
-  eyebrow: 'Below-pump telemetry',
-  title: 'Wireless Data Where Lift Decisions Are Made',
+  eyebrow: 'Real-time wireless telemetry',
+  title: 'Data Below, Insight Above',
   description:
-    'Place WellFi below pump, behind casing, or across dual-tool intervals to monitor downhole conditions without running cable.',
+    'Pressure, temperature, vibration, water cut, and flow insight from downhole placements without running cable.',
   metricSummary: 'Pressure. Temperature. Vibration. Water cut. Flow insight.',
   metrics: [
     {
       icon: 'Gauge',
       label: 'Pressure',
       shortLabel: 'Pressure',
-      description: 'Track pump-intake and reservoir response pressure where the lift decision is made.',
+      description: 'Pump-intake and reservoir response pressure at the lift point.',
     },
     {
       icon: 'Thermometer',
       label: 'Temperature',
       shortLabel: 'Temp',
-      description: 'Watch temperature trends that show changing downhole conditions and operating state.',
+      description: 'Temperature trends at the tool depth and operating interval.',
     },
     {
       icon: 'Activity',
       label: 'Vibration',
       shortLabel: 'Vibration',
-      description: 'Use vibration changes as an early signal of pump stress, interference, or abnormal operation.',
+      description: 'Pump and string vibration changes before abnormal operation escalates.',
     },
     {
       icon: 'Droplets',
       label: 'Water Cut',
       shortLabel: 'Water Cut',
-      description: 'Track changing produced-fluid conditions from the tool location or dual-tool layouts.',
+      description: 'Produced-fluid condition changes from the tool location or paired layouts.',
     },
     {
       icon: 'TrendingUp',
       label: 'Flow Insight',
       shortLabel: 'Flow',
-      description: 'Use paired pressure, temperature, and fluid-condition changes to interpret interval behavior.',
+      description: 'Interval behavior interpreted from paired pressure and fluid-condition trends.',
     },
   ],
   hydrostaticHead: {

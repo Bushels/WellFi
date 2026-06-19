@@ -50,6 +50,9 @@ export default function TelemetryScrollytellingSection() {
           const stageShell = stage.querySelector('.telemetry-stage');
           if (!stageShell) return;
 
+          const introEls = section.querySelectorAll<HTMLElement>(
+            '.telemetry-intro, .telemetry-metric, .telemetry-deck-note',
+          );
           const modes = section.querySelectorAll<HTMLElement>('.telemetry-mode');
           const pressureCallout = section.querySelector('.telemetry-callout-pressure');
           const hydrostaticCallout = section.querySelector('.telemetry-callout-hydrostatic');
@@ -74,6 +77,7 @@ export default function TelemetryScrollytellingSection() {
             fluidColumn,
             hydrostaticRing,
             ...Array.from(leaders),
+            ...Array.from(introEls),
             ...Array.from(applications),
           ].filter((element): element is Element => Boolean(element));
 
@@ -100,8 +104,25 @@ export default function TelemetryScrollytellingSection() {
           }
 
           gsap.set(stageShell, { autoAlpha: 1, y: 0, x: 0, scale: 1 });
+          gsap.set(introEls, { autoAlpha: 0, y: 22 });
           gsap.set([...pressureEls, ...hydrostaticEls], { autoAlpha: 0 });
           gsap.set(applications, { autoAlpha: 0, y: 22 });
+
+          gsap.timeline({
+            defaults: { ease: 'power2.out' },
+            scrollTrigger: {
+              trigger: section,
+              start: 'top 78%',
+              end: 'top 18%',
+              scrub: 0.65,
+            },
+          })
+            .to(introEls, {
+              autoAlpha: 1,
+              y: 0,
+              duration: 0.7,
+              stagger: { each: 0.08, from: 'start' },
+            });
 
           const tl = gsap.timeline({
             defaults: { ease: 'power2.out' },
@@ -171,7 +192,7 @@ export default function TelemetryScrollytellingSection() {
       ref={sectionRef}
       id="telemetry"
       aria-labelledby="telemetry-title"
-      className="relative isolate scroll-mt-16 overflow-hidden bg-[#020408] px-4 py-[clamp(5rem,12vh,9rem)] sm:px-6 lg:px-8"
+      className="relative isolate overflow-hidden bg-[#020408] px-4 py-[clamp(3.5rem,8vh,6.5rem)] sm:px-6 lg:px-8"
     >
       <div
         aria-hidden="true"
@@ -179,29 +200,26 @@ export default function TelemetryScrollytellingSection() {
       />
 
       <div className="relative z-10 mx-auto max-w-7xl">
-        <div className="mx-auto max-w-3xl text-center">
-          <p className="tech-text text-xs font-semibold uppercase tracking-[0.22em] text-em-glow">
-            {telemetry.eyebrow}
-          </p>
+        <div className="telemetry-intro mx-auto max-w-3xl text-center">
           <h2
             id="telemetry-title"
-            className="mt-4 font-heading text-[clamp(2rem,4.4vw,4.5rem)] font-semibold leading-[1.02] text-text-primary"
+            className="font-heading text-[clamp(2.25rem,5vw,5rem)] font-semibold leading-[0.98] text-text-primary"
           >
             {telemetry.title}
           </h2>
-          <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-text-secondary sm:text-lg">
-            {telemetry.description}
-          </p>
         </div>
 
-        <div className="mt-10">
+        <div className="telemetry-deck mt-8">
           <TelemetryMetricRow metrics={telemetry.metrics} />
         </div>
+        <p className="telemetry-deck-note mx-auto mt-5 max-w-2xl text-center text-sm leading-relaxed text-text-secondary sm:text-base">
+          {telemetry.description}
+        </p>
       </div>
 
       <div
         ref={stageRef}
-        className="relative z-10 mx-auto mt-10 flex w-full max-w-7xl items-center lg:min-h-[100svh]"
+        className="relative z-10 mx-auto mt-8 flex w-full max-w-7xl items-center lg:min-h-[100svh]"
       >
         <div className="w-full">
           <TelemetryCutawayStage telemetry={telemetry} activeModeId={activeModeId} />
