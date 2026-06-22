@@ -15,6 +15,12 @@ This repo (`site/`, git `Bushels/WellFi`) is the **WellFi public marketing site*
 **The calculator is PARKED (do not un-park without Kyle's OK)**
 - The interactive ROI calculator is intentionally NOT deployed. Its route lives at `src/app/_calculator` (leading underscore = excluded from App Router routing). The numbers are unverified; don't surface them publicly until Kyle confirms. Re-enable by renaming the folder back to `calculator`.
 
+**Cutaway visual exploration is PARKED (2026-06-20)**
+- Image-generation exploration clarified the coupling, dogleg, and formation language, but failed as a reliable source of truth for the open-hole multilateral geometry.
+- Use `docs/plans/2026-06-20-cutaway-visual-exploration-handover.md` before restarting cutaway work.
+- Next cutaway work should be deterministic R3F/CAD-style geometry first, then visual polish. Do not treat the failed imagegen multilateral output as a reference to match.
+- Preserve the live island hero while prototyping any new cutaway route.
+
 **Gates before commit**
 - `npx tsc --noEmit`, `npm run lint`, `npm test` (40 unit tests). The pure-math modules under `src/lib/island/` must stay green, and `cycle.ts` must keep its seam invariant `state(12) ≡ state(0)`.
 
