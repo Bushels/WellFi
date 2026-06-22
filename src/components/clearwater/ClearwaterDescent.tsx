@@ -73,6 +73,11 @@ export default function ClearwaterDescent() {
         },
       });
 
+      // The section just grew from static height to 400vh; recompute ALL
+      // triggers (incl. page.tsx's bg ramps + dividers) against the new layout
+      // so they aren't pinned to stale pre-jump scroll positions on fast loads.
+      ScrollTrigger.refresh();
+
       return () => st.kill();
     },
     { scope: sectionRef, dependencies: [descent] },
@@ -149,7 +154,7 @@ export default function ClearwaterDescent() {
               </li>
             ))}
           </ul>
-          <div className="relative h-[60vh] w-full">
+          <div className="relative min-h-[80vh] w-full">
             <DeviceReveal />
           </div>
         </div>

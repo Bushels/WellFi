@@ -8,6 +8,13 @@ import { clearwater } from '@/lib/content';
  * wrapper is a normal block so it shows fully.
  */
 export default function DeviceReveal() {
+  // Render the tagline from the content single-source-of-truth, keeping the
+  // glow accent on the clause after the comma.
+  const comma = clearwater.revealTagline.indexOf(',');
+  const taglineHead =
+    comma === -1 ? clearwater.revealTagline : clearwater.revealTagline.slice(0, comma + 1) + ' ';
+  const taglineGlow = comma === -1 ? '' : clearwater.revealTagline.slice(comma + 1).trim();
+
   return (
     <div className="absolute inset-0 flex flex-col items-center justify-center gap-6">
       <div className="relative flex items-center justify-center">
@@ -32,7 +39,8 @@ export default function DeviceReveal() {
         id="clearwater-reveal-tagline"
         className="font-heading text-[clamp(1.6rem,4vw,3rem)] font-semibold tracking-[-0.02em] text-text-primary"
       >
-        Data Below, <span className="text-em-glow">Insight Above</span>
+        {taglineHead}
+        {taglineGlow && <span className="text-em-glow">{taglineGlow}</span>}
       </p>
     </div>
   );
