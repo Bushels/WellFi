@@ -20,7 +20,7 @@ export default function DeviceReveal() {
           }}
         />
         <Image
-          src="/renders/wellfi-device-reveal.png"
+          src="/wellfi/renders/wellfi-device-reveal.png"
           alt={clearwater.deviceAlt}
           width={1600}
           height={6000}
