@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { navLinks, telemetry } from './content';
 
 describe('telemetry content', () => {
-  it('uses the approved second-section headline', () => {
-    expect(telemetry.title).toBe('Data Below, Insight Above');
+  it('uses the relocated data-cards headline', () => {
+    expect(telemetry.title).toBe('Explore Your Data');
   });
 
   it('lists the five measurement families in engineer-facing order', () => {

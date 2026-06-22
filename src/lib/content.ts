@@ -29,6 +29,19 @@ export interface HighlightCard {
   description: string;
 }
 
+export interface ClearwaterBenefit {
+  label: string;
+  detail: string; // one supporting line
+}
+
+export interface ClearwaterContent {
+  introEyebrow: string;
+  introLine: string;
+  benefits: ClearwaterBenefit[]; // exactly 6, in descent order (surface → reservoir)
+  revealTagline: string;
+  deviceAlt: string;
+}
+
 export interface ToolComponent {
   name: string;
   description: string;
@@ -334,7 +347,7 @@ export const workflow: WorkflowContent = {
 // ---------------------------------------------------------------------------
 
 export const telemetry: TelemetryContent = {
-  title: 'Data Below, Insight Above',
+  title: 'Explore Your Data',
   metrics: [
     {
       icon: 'Gauge',
@@ -362,6 +375,25 @@ export const telemetry: TelemetryContent = {
       description: 'Interval behavior interpreted from paired pressure and fluid-condition trends.',
     },
   ],
+};
+
+// ---------------------------------------------------------------------------
+// Clearwater Descent (scroll-driven parallax section, replaces 1.8T anchor)
+// ---------------------------------------------------------------------------
+
+export const clearwater: ClearwaterContent = {
+  introEyebrow: 'The Clearwater',
+  introLine: 'Scroll down through the formation.',
+  benefits: [
+    { label: 'Extend Pump Life',    detail: 'Catch wear and abnormal operation before failure.' },
+    { label: 'Increase Production',  detail: 'Run closer to optimal without flying blind.' },
+    { label: 'Drawdown Management',  detail: 'Hold the right drawdown with live pressure.' },
+    { label: 'Reservoir Monitoring', detail: 'See reservoir response at the lift point.' },
+    { label: 'Water Cut Tracking',   detail: 'Spot produced-fluid changes as they happen.' },
+    { label: 'Well Optimization',    detail: 'Turn continuous data into better calls.' },
+  ],
+  revealTagline: 'Data Below, Insight Above',
+  deviceAlt: 'The WellFi downhole telemetry device, revealed in the Clearwater reservoir.',
 };
 
 // ---------------------------------------------------------------------------

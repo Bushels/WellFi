@@ -266,7 +266,7 @@ export default function ProofSection() {
       <div className="mx-auto max-w-6xl">
         {/* Section tagline */}
         <p className="proof-tagline mb-10 text-center font-heading text-sm font-medium uppercase tracking-[0.18em] text-text-secondary">
-          Data Below. <span className="text-em-glow">Insight Above.</span>
+          Decisions with <span className="text-em-glow">Proof.</span>
         </p>
 
         {/* ─── Image Spine: 3-column grid ─── */}
