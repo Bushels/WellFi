@@ -7,7 +7,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import IslandHero from '@/components/hero/island/IslandHero';
 import Navigation from '@/components/nav/Navigation';
 import TelemetryIconCardsSection from '@/components/telemetry/TelemetryIconCardsSection';
-import OneEightTrillionAnchor from '@/components/anchor/OneEightTrillionAnchor';
+import ClearwaterDescent from '@/components/clearwater/ClearwaterDescent';
 import SagdPresentationSection from '@/components/sagd-presentation/SagdPresentationSection';
 // Tool closeup image hidden 2026-05-22 — requested to be removed as incorrect.
 // import ToolRevealSection from '@/components/reveal/ToolRevealSection';
@@ -53,13 +53,13 @@ export default function Home() {
       );
     });
 
-    // Background gradient shift — scroll-linked color temperature
+    // Background stays cool/neutral through the Clearwater descent (no red ramp)
     if (anchor) {
       gsap.fromTo(main,
         { '--bg-red-intensity': 0.04, '--bg-amber-intensity': 0.02 },
         {
-          '--bg-red-intensity': 0.12,
-          '--bg-amber-intensity': 0.03,
+          '--bg-red-intensity': 0.03,
+          '--bg-amber-intensity': 0.02,
           ease: 'none',
           scrollTrigger: {
             trigger: anchor,
@@ -74,7 +74,7 @@ export default function Home() {
     // Warmer shift near proof section
     if (proof) {
       gsap.fromTo(main,
-        { '--bg-red-intensity': 0.12, '--bg-amber-intensity': 0.03 },
+        { '--bg-red-intensity': 0.03, '--bg-amber-intensity': 0.02 },
         {
           '--bg-red-intensity': 0.06,
           '--bg-amber-intensity': 0.08,
@@ -102,7 +102,7 @@ export default function Home() {
       <Navigation />
       <TelemetryIconCardsSection />
       <div className="section-divider" />
-      <OneEightTrillionAnchor />
+      <ClearwaterDescent />
       {/* Hidden 2026-05-22 — requested to be removed as incorrect: <ToolRevealSection /> */}
       <div className="section-divider" />
       <SagdPresentationSection />
