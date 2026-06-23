@@ -9,8 +9,6 @@ import Navigation from '@/components/nav/Navigation';
 import TelemetryIconCardsSection from '@/components/telemetry/TelemetryIconCardsSection';
 import ClearwaterDescent from '@/components/clearwater/ClearwaterDescent';
 import SagdPresentationSection from '@/components/sagd-presentation/SagdPresentationSection';
-// Tool closeup image hidden 2026-05-22 — requested to be removed as incorrect.
-// import ToolRevealSection from '@/components/reveal/ToolRevealSection';
 import ProofSection from '@/components/proof/ProofSection';
 // Calculator hidden 2026-05-09 — pivoted to curiosity-driven page.
 // Restore when ROI numbers are locked.
@@ -103,7 +101,6 @@ export default function Home() {
       <TelemetryIconCardsSection />
       <div className="section-divider" />
       <ClearwaterDescent />
-      {/* Hidden 2026-05-22 — requested to be removed as incorrect: <ToolRevealSection /> */}
       <div className="section-divider" />
       <SagdPresentationSection />
       <div className="section-divider" />
