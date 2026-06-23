@@ -30,6 +30,21 @@ const TOE = WELL[WELL.length - 1];
 const clamp01 = (x: number): number => (x < 0 ? 0 : x > 1 ? 1 : x);
 const seg = (p: number, a: number, b: number): number => clamp01((p - a) / (b - a));
 
+// Six benefits surface one at a time across this scroll window (trapezoidal).
+const B_START = 0.1;
+const B_END = 0.82;
+function benefitViz(p: number, i: number, n: number): number {
+  const slot = (B_END - B_START) / n;
+  const s = B_START + i * slot;
+  const e = s + slot;
+  if (p <= s || p >= e) return 0;
+  const local = (p - s) / slot;
+  const edge = 0.26; // fade-in / fade-out fraction of the slot
+  if (local < edge) return clamp01(local / edge);
+  if (local > 1 - edge) return clamp01((1 - local) / edge);
+  return 1;
+}
+
 export default function ClearwaterDescent() {
   const sectionRef = useRef<HTMLElement>(null);
   const drillRef = useRef<SVGPathElement>(null);
@@ -38,13 +53,15 @@ export default function ClearwaterDescent() {
   const glowRef = useRef<HTMLDivElement>(null);
   const introRef = useRef<HTMLDivElement>(null);
   const taglineRef = useRef<HTMLParagraphElement>(null);
+  const benefitRefs = useRef<Array<HTMLDivElement | null>>([]);
   const [on, setOn] = useState(false);
+
+  const benefits = clearwater.benefits;
 
   useGSAP(
     () => {
       if (typeof window === 'undefined') return;
 
-      // First pass (static DOM): decide whether to enhance into the scroll.
       if (!on) {
         const motionOk = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         const finePointer = window.matchMedia('(pointer: fine)').matches;
@@ -61,11 +78,18 @@ export default function ClearwaterDescent() {
         onUpdate: (self) => {
           const p = self.progress;
           // drill the bore in (surface -> toe)
-          if (drillRef.current) drillRef.current.style.strokeDashoffset = String(1 - seg(p, 0.05, 0.72));
-          // intro fades as drilling starts
-          if (introRef.current) introRef.current.style.opacity = String(1 - seg(p, 0.03, 0.14));
+          if (drillRef.current) drillRef.current.style.strokeDashoffset = String(1 - seg(p, 0.05, 0.66));
+          // opening line fades as the first benefit arrives
+          if (introRef.current) introRef.current.style.opacity = String(1 - seg(p, 0.03, 0.1));
+          // benefits surface one at a time
+          benefitRefs.current.forEach((el, i) => {
+            if (!el) return;
+            const v = benefitViz(p, i, benefits.length);
+            el.style.opacity = String(v);
+            el.style.transform = `translate(-50%, ${(1 - v) * 14}px)`;
+          });
           // device lands at the toe
-          const rev = seg(p, 0.7, 0.95);
+          const rev = seg(p, 0.72, 0.93);
           if (deviceRef.current) {
             deviceRef.current.style.opacity = String(rev);
             deviceRef.current.style.transform = `scale(${0.96 + 0.04 * rev})`;
@@ -75,14 +99,14 @@ export default function ClearwaterDescent() {
           if (signalRef.current) signalRef.current.style.strokeDashoffset = String(1 - seg(p, 0.82, 1.0));
           // tagline
           if (taglineRef.current) {
-            const t = seg(p, 0.86, 1.0);
+            const t = seg(p, 0.88, 1.0);
             taglineRef.current.style.opacity = String(t);
             taglineRef.current.style.transform = `translate(-50%, ${(1 - t) * 14}px)`;
           }
         },
       });
 
-      ScrollTrigger.refresh(); // section grew to its scroll height; recompute sibling triggers
+      ScrollTrigger.refresh();
       return () => st.kill();
     },
     { scope: sectionRef, dependencies: [on] },
@@ -94,7 +118,7 @@ export default function ClearwaterDescent() {
       id="anchor"
       aria-labelledby="clearwater-reveal-tagline"
       className="relative isolate bg-[#04060a]"
-      style={on ? { height: '320vh' } : undefined}
+      style={on ? { height: '380vh' } : undefined}
     >
       {on ? (
         <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden">
@@ -104,7 +128,7 @@ export default function ClearwaterDescent() {
             style={{ background: 'radial-gradient(125% 85% at 50% 42%, rgba(18,26,36,0.55), #04060a 72%)' }}
           />
 
-          {/* pixel-aligned cutaway stack (all layers share the 16:9 render framing) */}
+          {/* pixel-aligned cutaway stack */}
           <div className="relative w-[min(94vw,1180px)]" style={{ aspectRatio: '16 / 9' }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -113,7 +137,6 @@ export default function ClearwaterDescent() {
               aria-hidden="true"
               className="absolute inset-0 h-full w-full object-contain"
             />
-
             <svg
               viewBox={`0 0 ${VW} ${VH}`}
               preserveAspectRatio="xMidYMid meet"
@@ -143,7 +166,6 @@ export default function ClearwaterDescent() {
                 </filter>
               </defs>
               <image href={`${BASE}/pass_casing.png`} width={VW} height={VH} mask="url(#cw-drill)" />
-              {/* telemetry signal travelling up the bore */}
               <path
                 ref={signalRef}
                 d={SIGNAL_D}
@@ -158,7 +180,6 @@ export default function ClearwaterDescent() {
                 opacity={0.9}
               />
             </svg>
-
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               ref={deviceRef}
@@ -167,8 +188,6 @@ export default function ClearwaterDescent() {
               className="absolute inset-0 h-full w-full object-contain will-change-transform"
               style={{ opacity: 0 }}
             />
-
-            {/* blue coupling hue at the toe */}
             <div
               ref={glowRef}
               aria-hidden="true"
@@ -187,34 +206,59 @@ export default function ClearwaterDescent() {
             />
           </div>
 
-          {/* intro */}
-          <div
-            ref={introRef}
-            className="absolute left-1/2 top-[11%] w-[min(90vw,42rem)] -translate-x-1/2 text-center"
-          >
+          {/* opening line */}
+          <div ref={introRef} className="absolute left-1/2 top-[10%] w-[min(90vw,42rem)] -translate-x-1/2 text-center">
             <p className="text-xs uppercase tracking-[0.28em] text-text-muted">{clearwater.introEyebrow}</p>
             <p className="mt-2 font-heading text-2xl font-medium text-text-primary sm:text-3xl">
               {clearwater.introLine}
             </p>
           </div>
 
+          {/* benefits — surface one at a time, synced to the drill */}
+          {benefits.map((b, i) => (
+            <div
+              key={b.label}
+              ref={(el) => {
+                benefitRefs.current[i] = el;
+              }}
+              className="absolute left-1/2 top-[15%] w-[min(90vw,33rem)] rounded-xl border border-white/12 bg-[rgba(8,13,20,0.78)] px-6 py-4 text-center backdrop-blur-sm"
+              style={{ opacity: 0, transform: 'translate(-50%, 14px)', boxShadow: '0 0 30px -10px rgba(34,211,238,0.4)' }}
+            >
+              <h3 className="font-heading text-xl font-semibold tracking-[-0.01em] text-text-primary sm:text-2xl">
+                {b.label}
+              </h3>
+              <p className="mt-1 text-sm text-text-secondary sm:text-base">{b.detail}</p>
+            </div>
+          ))}
+
           {/* reveal tagline */}
           <p
             ref={taglineRef}
             id="clearwater-reveal-tagline"
-            className="absolute bottom-[11%] left-1/2 font-heading text-[clamp(1.5rem,4vw,2.8rem)] font-semibold tracking-[-0.02em] text-text-primary will-change-transform"
+            className="absolute bottom-[10%] left-1/2 font-heading text-[clamp(1.5rem,4vw,2.8rem)] font-semibold tracking-[-0.02em] text-text-primary will-change-transform"
             style={{ opacity: 0, transform: 'translate(-50%, 14px)' }}
           >
             Data Below, <span className="text-em-glow">Insight Above</span>
           </p>
         </div>
       ) : (
-        // static fallback (reduced-motion / touch / narrow): the finished cutaway still
+        // static fallback (reduced-motion / touch / narrow)
         <div className="mx-auto flex max-w-4xl flex-col items-center gap-8 px-6 py-20 text-center">
           <div>
             <p className="text-xs uppercase tracking-[0.28em] text-text-muted">{clearwater.introEyebrow}</p>
             <p className="mt-2 font-heading text-2xl font-medium text-text-primary">{clearwater.introLine}</p>
           </div>
+          <ul className="grid w-full grid-cols-2 gap-3 sm:grid-cols-3">
+            {benefits.map((b) => (
+              <li
+                key={b.label}
+                className="rounded-xl border border-white/10 bg-[rgba(8,13,20,0.7)] px-4 py-3 text-left"
+              >
+                <h3 className="font-heading text-sm font-semibold text-text-primary">{b.label}</h3>
+                <p className="mt-1 text-xs text-text-secondary">{b.detail}</p>
+              </li>
+            ))}
+          </ul>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={`${BASE}/hires_wide_02.png`}

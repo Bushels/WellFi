@@ -383,7 +383,7 @@ export const telemetry: TelemetryContent = {
 
 export const clearwater: ClearwaterContent = {
   introEyebrow: 'The Clearwater',
-  introLine: 'Watch the lateral reach the oilsand.',
+  introLine: 'Everything your well can tell you.',
   benefits: [
     { label: 'Extend Pump Life',    detail: 'Catch wear and abnormal operation before failure.' },
     { label: 'Increase Production',  detail: 'Run closer to optimal without flying blind.' },
