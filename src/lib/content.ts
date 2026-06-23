@@ -383,14 +383,14 @@ export const telemetry: TelemetryContent = {
 
 export const clearwater: ClearwaterContent = {
   introEyebrow: 'The Clearwater',
-  introLine: 'Everything your well can tell you.',
+  introLine: 'Unearth Your Data.',
   benefits: [
-    { label: 'Extend Pump Life',    detail: 'Catch wear and abnormal operation before failure.' },
+    { label: 'Extend Pump Life',    detail: 'Know your hydrostatic, understand vibration, avoid pump failure.' },
     { label: 'Increase Production',  detail: 'Run closer to optimal without flying blind.' },
-    { label: 'Drawdown Management',  detail: 'Hold the right drawdown with live pressure.' },
+    { label: 'Drawdown Management',  detail: 'Set notifications to ensure your drawdown stays consistent.' },
     { label: 'Reservoir Monitoring', detail: 'See reservoir response at the lift point.' },
-    { label: 'Water Cut Tracking',   detail: 'Spot produced-fluid changes as they happen.' },
-    { label: 'Well Optimization',    detail: 'Turn continuous data into better calls.' },
+    { label: 'Track Fluid Changes',  detail: 'Spot produced-fluid changes as they happen.' },
+    { label: 'Well Optimization',    detail: 'Reservoir-fluid monitoring that turns data into production efficiencies.' },
   ],
   revealTagline: 'Data Below, Insight Above',
   deviceAlt: 'The WellFi downhole telemetry device, revealed in the Clearwater reservoir.',

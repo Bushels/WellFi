@@ -8,7 +8,7 @@ describe('clearwater content', () => {
       'Increase Production',
       'Drawdown Management',
       'Reservoir Monitoring',
-      'Water Cut Tracking',
+      'Track Fluid Changes',
       'Well Optimization',
     ]);
   });
