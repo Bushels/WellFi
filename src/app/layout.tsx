@@ -30,19 +30,25 @@ export const metadata: Metadata = {
     canonical: "https://mpsgroup.energy/wellfi",
   },
   keywords: [
-    "PCP wells",
-    "production uplift",
-    "pump changeout",
-    "downhole pressure",
-    "wireless telemetry",
-    "heavy oil",
-    "Bluesky Formation",
-    "Clearwater Formation",
-    "Peace River",
     "WellFi",
     "MPS Group",
+    "downhole telemetry",
+    "electromagnetic telemetry",
+    "EM telemetry",
+    "wireless downhole pressure",
+    "downhole pressure gauge",
+    "PCP wells",
+    "progressive cavity pump",
+    "rod pump",
+    "pump changeout",
+    "reservoir monitoring",
+    "cold heavy oil",
+    "WCSB",
+    "Clearwater Formation",
+    "production optimization",
     "Know the Unknown",
   ],
+  category: "technology",
   authors: [{ name: "MPS Group", url: "https://mpsgroup.energy/" }],
   openGraph: {
     title: meta.title,
@@ -68,6 +74,28 @@ export const metadata: Metadata = {
   },
 };
 
+// Structured data — helps search engines understand WellFi (a product of MPS Group).
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://mpsgroup.energy/#organization",
+      name: "MPS Group",
+      url: "https://mpsgroup.energy/",
+    },
+    {
+      "@type": "Product",
+      name: "WellFi",
+      description: meta.description,
+      brand: { "@type": "Brand", name: "MPS Group" },
+      category: "Downhole wireless electromagnetic telemetry tool",
+      image: "https://mpsgroup.energy/wellfi/og-wellfi.png",
+      url: "https://mpsgroup.energy/wellfi",
+    },
+  ],
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -80,6 +108,10 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="antialiased">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
+        />
         {children}
         <Script src="https://accounts.google.com/gsi/client" strategy="afterInteractive" />
       </body>
