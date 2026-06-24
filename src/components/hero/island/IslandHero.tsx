@@ -5,7 +5,7 @@ import usePrefersReducedMotion from '@/lib/usePrefersReducedMotion';
 import WellFiLogo from '@/components/ui/WellFiLogo';
 import IslandCanvas from './IslandCanvas';
 
-const PROOF_CHIPS = ['130+ Installed Globally', 'Modbus Ready', 'Seamless Install'];
+const PROOF_CHIPS = ['130+ Installed Internationally', 'Modbus Ready', 'Seamless Install'];
 
 function useCompactViewport(): boolean {
   const [compact, setCompact] = useState(false);
