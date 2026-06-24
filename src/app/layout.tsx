@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
 import Script from "next/script";
 import { meta } from "@/lib/content";
+import ChatFiWidget from "@/components/assistant/ChatFiWidget";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -113,6 +114,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
         />
         {children}
+        <ChatFiWidget />
         <Script src="https://accounts.google.com/gsi/client" strategy="afterInteractive" />
       </body>
     </html>

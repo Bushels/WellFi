@@ -456,6 +456,19 @@ export const technology = {
 } as const;
 
 // ---------------------------------------------------------------------------
+// ChatFi (site AI assistant)
+// ---------------------------------------------------------------------------
+
+export const chatfi = {
+  title: 'ChatFi',
+  subtitle: 'WellFi assistant',
+  greeting:
+    "I’m ChatFi. Ask how WellFi works, what it reads, or whether it fits your wells.",
+  placeholder: 'Ask about WellFi…',
+  disclosure: 'ChatFi is an AI assistant — confirm anything that matters with MPS.',
+} as const;
+
+// ---------------------------------------------------------------------------
 // Footer / CTA
 // ---------------------------------------------------------------------------
 
