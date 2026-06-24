@@ -25,14 +25,13 @@ const pathD = (pts: ReadonlyArray<readonly [number, number]>) =>
   pts.map(([x, y], i) => `${i ? 'L' : 'M'} ${(x * VW).toFixed(1)} ${(y * VH).toFixed(1)}`).join(' ');
 const DRILL_D = pathD(WELL);
 const SIGNAL_D = pathD([...WELL].reverse()); // toe -> surface (signal rising)
-const TOE = WELL[WELL.length - 1];
 
 const clamp01 = (x: number): number => (x < 0 ? 0 : x > 1 ? 1 : x);
 const seg = (p: number, a: number, b: number): number => clamp01((p - a) / (b - a));
 
 // Six benefits surface one at a time across this scroll window (trapezoidal).
 const B_START = 0.1;
-const B_END = 0.82;
+const B_END = 0.70;
 function benefitViz(p: number, i: number, n: number): number {
   const slot = (B_END - B_START) / n;
   const s = B_START + i * slot;
@@ -49,8 +48,10 @@ export default function ClearwaterDescent() {
   const sectionRef = useRef<HTMLElement>(null);
   const drillRef = useRef<SVGPathElement>(null);
   const signalRef = useRef<SVGPathElement>(null);
+  const formationRef = useRef<HTMLImageElement>(null);
+  const cutawaySvgRef = useRef<SVGSVGElement>(null);
+  const arrivalRef = useRef<HTMLImageElement>(null);
   const deviceRef = useRef<HTMLImageElement>(null);
-  const glowRef = useRef<HTMLDivElement>(null);
   const introRef = useRef<HTMLDivElement>(null);
   const taglineRef = useRef<HTMLParagraphElement>(null);
   const benefitRefs = useRef<Array<HTMLDivElement | null>>([]);
@@ -78,7 +79,7 @@ export default function ClearwaterDescent() {
         onUpdate: (self) => {
           const p = self.progress;
           // drill the bore in (surface -> toe)
-          if (drillRef.current) drillRef.current.style.strokeDashoffset = String(1 - seg(p, 0.05, 0.66));
+          if (drillRef.current) drillRef.current.style.strokeDashoffset = String(1 - seg(p, 0.05, 0.58));
           // opening line fades as the first benefit arrives
           if (introRef.current) introRef.current.style.opacity = String(1 - seg(p, 0.03, 0.1));
           // benefits surface one at a time
@@ -88,18 +89,19 @@ export default function ClearwaterDescent() {
             el.style.opacity = String(v);
             el.style.transform = `translate(-50%, ${(1 - v) * 14}px)`;
           });
-          // device lands at the toe
-          const rev = seg(p, 0.72, 0.93);
-          if (deviceRef.current) {
-            deviceRef.current.style.opacity = String(rev);
-            deviceRef.current.style.transform = `scale(${0.96 + 0.04 * rev})`;
-          }
-          if (glowRef.current) glowRef.current.style.opacity = String(rev);
           // telemetry signal rises to surface
-          if (signalRef.current) signalRef.current.style.strokeDashoffset = String(1 - seg(p, 0.82, 1.0));
+          if (signalRef.current) signalRef.current.style.strokeDashoffset = String(1 - seg(p, 0.60, 0.80));
+          // slow arrive: cross-fade the cutaway out to the lit reservoir render
+          const arrive = seg(p, 0.86, 1.0);
+          const cutaway = String(1 - arrive);
+          if (formationRef.current) formationRef.current.style.opacity = cutaway;
+          if (cutawaySvgRef.current) cutawaySvgRef.current.style.opacity = cutaway;
+          // the WellFi pokes out past the intermediate after the drill lands, then fades as we arrive
+          if (deviceRef.current) deviceRef.current.style.opacity = String(seg(p, 0.58, 0.74) * (1 - arrive));
+          if (arrivalRef.current) arrivalRef.current.style.opacity = String(arrive);
           // tagline
           if (taglineRef.current) {
-            const t = seg(p, 0.88, 1.0);
+            const t = seg(p, 0.92, 1.0);
             taglineRef.current.style.opacity = String(t);
             taglineRef.current.style.transform = `translate(-50%, ${(1 - t) * 14}px)`;
           }
@@ -118,7 +120,7 @@ export default function ClearwaterDescent() {
       id="anchor"
       aria-labelledby="clearwater-reveal-tagline"
       className="relative isolate bg-[#04060a]"
-      style={on ? { height: '380vh' } : undefined}
+      style={on ? { height: '440vh' } : undefined}
     >
       {on ? (
         <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden">
@@ -132,15 +134,17 @@ export default function ClearwaterDescent() {
           <div className="relative w-[min(94vw,1180px)]" style={{ aspectRatio: '16 / 9' }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
+              ref={formationRef}
               src={`${BASE}/pass_formation.png`}
               alt=""
               aria-hidden="true"
-              className="absolute inset-0 h-full w-full object-contain"
+              className="absolute inset-0 h-full w-full object-contain will-change-[opacity]"
             />
             <svg
+              ref={cutawaySvgRef}
               viewBox={`0 0 ${VW} ${VH}`}
               preserveAspectRatio="xMidYMid meet"
-              className="absolute inset-0 h-full w-full"
+              className="absolute inset-0 h-full w-full will-change-[opacity]"
             >
               <defs>
                 <mask id="cw-drill">
@@ -180,35 +184,30 @@ export default function ClearwaterDescent() {
                 opacity={0.9}
               />
             </svg>
+            {/* WellFi device — pokes out past the intermediate at the end of the drill */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               ref={deviceRef}
               src={`${BASE}/pass_device.png`}
-              alt={clearwater.deviceAlt}
-              className="absolute inset-0 h-full w-full object-contain will-change-transform"
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-0 h-full w-full object-contain will-change-[opacity]"
               style={{ opacity: 0 }}
             />
-            <div
-              ref={glowRef}
-              aria-hidden="true"
-              className="pointer-events-none absolute"
-              style={{
-                opacity: 0,
-                left: `${TOE[0] * 100}%`,
-                top: `${TOE[1] * 100}%`,
-                width: '20%',
-                height: '34%',
-                transform: 'translate(-50%, -50%)',
-                background:
-                  'radial-gradient(circle, rgba(34,211,238,0.45), rgba(34,211,238,0.12) 42%, transparent 70%)',
-                filter: 'blur(8px)',
-              }}
+            {/* arrival: the descent lands on the lit reservoir render — blue bloom = WellFi transmitting */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              ref={arrivalRef}
+              src={`${BASE}/reservoir-arrival.png`}
+              alt={clearwater.deviceAlt}
+              className="absolute inset-0 h-full w-full object-cover will-change-[opacity]"
+              style={{ opacity: 0, objectPosition: 'center 60%' }}
             />
           </div>
 
           {/* opening line */}
           <div ref={introRef} className="absolute left-1/2 top-[10%] w-[min(90vw,42rem)] -translate-x-1/2 text-center">
-            <p className="text-xs uppercase tracking-[0.28em] text-text-muted">{clearwater.introEyebrow}</p>
+            {clearwater.introEyebrow && <p className="text-xs uppercase tracking-[0.28em] text-text-muted">{clearwater.introEyebrow}</p>}
             <p className="mt-2 font-heading text-2xl font-medium text-text-primary sm:text-3xl">
               {clearwater.introLine}
             </p>
@@ -245,7 +244,7 @@ export default function ClearwaterDescent() {
         // static fallback (reduced-motion / touch / narrow)
         <div className="mx-auto flex max-w-4xl flex-col items-center gap-8 px-6 py-20 text-center">
           <div>
-            <p className="text-xs uppercase tracking-[0.28em] text-text-muted">{clearwater.introEyebrow}</p>
+            {clearwater.introEyebrow && <p className="text-xs uppercase tracking-[0.28em] text-text-muted">{clearwater.introEyebrow}</p>}
             <p className="mt-2 font-heading text-2xl font-medium text-text-primary">{clearwater.introLine}</p>
           </div>
           <ul className="grid w-full grid-cols-2 gap-3 sm:grid-cols-3">
@@ -261,9 +260,9 @@ export default function ClearwaterDescent() {
           </ul>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={`${BASE}/hires_wide_02.png`}
+            src={`${BASE}/reservoir-arrival.png`}
             alt={clearwater.deviceAlt}
-            className="w-full rounded-xl border border-white/5"
+            className="mx-auto w-full max-w-xl rounded-xl border border-white/5"
           />
           <p
             id="clearwater-reveal-tagline"
