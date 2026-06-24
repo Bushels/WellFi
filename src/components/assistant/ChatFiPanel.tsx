@@ -11,7 +11,7 @@ function ThinkingDots() {
       {[0, 1, 2].map((i) => (
         <span
           key={i}
-          className="h-1.5 w-1.5 rounded-full bg-em-glow"
+          className="h-1.5 w-1.5 rounded-full bg-[#22D3EE]"
           style={{ animation: 'chatfi-think 1.2s ease-in-out infinite', animationDelay: `${i * 0.18}s` }}
         />
       ))}
@@ -65,8 +65,8 @@ export default function ChatFiPanel({ onClose }: { onClose: () => void }) {
       <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
         <div className="flex items-center gap-2.5">
           <span
-            className="h-2.5 w-2.5 rounded-full bg-em-glow"
-            style={{ boxShadow: '0 0 10px rgba(248,113,113,0.85)' }}
+            className="h-2.5 w-2.5 rounded-full bg-[#22D3EE]"
+            style={{ boxShadow: '0 0 10px rgba(34,211,238,0.85)' }}
             aria-hidden
           />
           <div>
@@ -78,7 +78,7 @@ export default function ChatFiPanel({ onClose }: { onClose: () => void }) {
           type="button"
           onClick={onClose}
           aria-label="Close ChatFi"
-          className="rounded-md p-1 text-text-secondary transition-colors hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-em-glow"
+          className="rounded-md p-1 text-text-secondary transition-colors hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#22D3EE]"
         >
           <X size={18} aria-hidden />
         </button>
@@ -122,7 +122,7 @@ export default function ChatFiPanel({ onClose }: { onClose: () => void }) {
             onClick={submit}
             disabled={!input.trim() || status === 'streaming'}
             aria-label="Send message"
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-em-cyan text-navy-void transition-opacity duration-200 disabled:opacity-30"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#06B6D4] text-navy-void transition-opacity duration-200 disabled:opacity-30"
           >
             <Send size={15} aria-hidden />
           </button>

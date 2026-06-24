@@ -5,8 +5,10 @@ import ChatFiLauncher from './ChatFiLauncher';
 import ChatFiPanel from './ChatFiPanel';
 
 /**
- * ChatFi — the WellFi site assistant. A warm red "ember" launcher (the candle)
- * that opens a glass chat panel. Mounted once, site-wide, in layout.tsx.
+ * ChatFi — the WellFi site assistant. A pulsing cyan "signal" launcher (the faint
+ * blue glow of EM transmission) that opens a glass chat panel. Mounted once,
+ * site-wide, in layout.tsx. Cyan (#06B6D4 / #22D3EE) matches the hero's signal
+ * palette, not the red CSS chrome.
  */
 export default function ChatFiWidget() {
   const [open, setOpen] = useState(false);
@@ -15,8 +17,8 @@ export default function ChatFiWidget() {
     <>
       <style>{`
         @keyframes chatfi-ember {
-          0%, 100% { box-shadow: 0 0 14px rgba(239,68,68,0.32), 0 0 34px rgba(239,68,68,0.16); }
-          50%      { box-shadow: 0 0 22px rgba(248,113,113,0.50), 0 0 50px rgba(239,68,68,0.26); }
+          0%, 100% { box-shadow: 0 0 14px rgba(34,211,238,0.32), 0 0 34px rgba(6,182,212,0.16); }
+          50%      { box-shadow: 0 0 22px rgba(34,211,238,0.50), 0 0 50px rgba(6,182,212,0.26); }
         }
         @keyframes chatfi-rise {
           from { opacity: 0; transform: translateY(14px) scale(0.985); }
