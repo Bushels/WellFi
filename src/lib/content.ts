@@ -90,12 +90,15 @@ export interface ProofPoint {
 
 export interface ProofContent {
   eyebrow: string;
+  headline: string;
+  intro: string;
   points: ProofPoint[];
   trustLine: string;
   trustSub: string;
   ctaHeading: string;
   ctaBody: string;
   ctaChips: string[];
+  applications: { icon: string; label: string }[];
 }
 
 export interface FooterContent {
@@ -224,7 +227,7 @@ export const hero: HeroContent = {
   brandWordmarkAlt: 'WellFi',
   headline: 'Know the Unknown',
   subheadline: '1.8 trillion barrels. Waiting.',
-  proofChips: ['100+ Installed Internationally', 'Modbus Ready', 'Planned Changeout'],
+  proofChips: ['130+ Installed Internationally', 'Modbus Ready', 'Planned Changeout'],
   ctaPrimary: 'See Closer',
   ctaPrimaryHref: 'mailto:kylegronning@mpsgroup.ca',
   ctaSecondary: 'Continue',
@@ -237,8 +240,7 @@ export const hero: HeroContent = {
 
 export const navLinks: NavLink[] = [
   { label: 'Telemetry', href: '#telemetry' },
-  { label: 'SAGD',      href: '#sagd-interactive' },
-  { label: 'Proof',     href: '#proof' },
+  { label: 'Insight', href: '#proof' },
 ];
 
 // ---------------------------------------------------------------------------
@@ -255,7 +257,7 @@ export const highlights: HighlightCard[] = [
   },
   {
     icon: 'Globe',
-    value: '100+',
+    value: '130+',
     unit: 'installed internationally',
     label: 'Field-proven base',
     description: 'Established hardware, not a concept render.',
@@ -366,8 +368,8 @@ export const telemetry: TelemetryContent = {
     },
     {
       icon: 'Droplets',
-      label: 'Water Cut',
-      description: 'Produced-fluid condition changes from the tool location or paired layouts.',
+      label: 'Fluid Composition',
+      description: 'Produced-fluid composition changes from the tool location or paired layouts.',
     },
     {
       icon: 'TrendingUp',
@@ -382,7 +384,7 @@ export const telemetry: TelemetryContent = {
 // ---------------------------------------------------------------------------
 
 export const clearwater: ClearwaterContent = {
-  introEyebrow: 'The Clearwater',
+  introEyebrow: '',
   introLine: 'Unearth Your Data.',
   benefits: [
     { label: 'Extend Pump Life',    detail: 'Know your hydrostatic, understand vibration, avoid pump failure.' },
@@ -401,20 +403,28 @@ export const clearwater: ClearwaterContent = {
 // ---------------------------------------------------------------------------
 
 export const proof: ProofContent = {
-  eyebrow: 'The tool',
+  eyebrow: '',
+  headline: 'WellFi Insight',
+  intro:
+    'WellFi attaches to the interior or exterior of the tubing, on new installs or pump changes. It provides various datapoints over wireless electromagnetic telemetry, eliminating the risk associated with cables.',
   points: [
     { icon: 'Radio',        value: 'MODBUS',  label: 'Straight to SCADA',    side: 'left' },
     { icon: 'BatteryFull',  value: '5+',      unit: 'yr',  label: 'Battery Life',  side: 'left' },
-    { icon: 'Wrench',       value: 'Same',    label: 'Changeout Window',     side: 'left' },
+    { icon: 'Wrench',       value: 'Seamless', label: 'Install',             side: 'left' },
     { icon: 'Gauge',        value: '10,000',  unit: 'psi', label: 'Pressure Rating', side: 'right' },
     { icon: 'Thermometer',  value: '150',     unit: '°C',  label: 'Temperature',    side: 'right' },
     { icon: 'Ruler',        value: '46',      unit: 'mm',  label: 'Tool OD',        side: 'right' },
   ],
-  trustLine: '100+ installed internationally',
+  trustLine: '130+ installed internationally',
   trustSub: 'No downhole cable run · MODBUS-ready surface handoff',
   ctaHeading: 'Review a candidate well.',
-  ctaBody: 'Talk directly with MPS Group about candidate wells, changeout timing, fit, and what data you need before a deployment decision.',
-  ctaChips: ['Candidate-well review', 'Planned PCP changeouts', 'MPS Group Canadian support'],
+  ctaBody: 'Talk directly with our team about candidate wells, changeout timing, fit, and what data you need before a deployment decision.',
+  ctaChips: ['Candidate-well review', 'Planned PCP changeouts', 'Field Service Support'],
+  applications: [
+    { icon: 'Droplet',  label: 'Light Oil' },
+    { icon: 'Droplets', label: 'Heavy Oil' },
+    { icon: 'Flame',    label: 'Gas' },
+  ],
 };
 
 // ---------------------------------------------------------------------------
@@ -428,11 +438,12 @@ export const specs: SpecRow[] = [
   { parameter: 'Pressure Accuracy',  value: '0.15% F.S. (Piezo) | 13.8 kPa [2.0 psi] (Quartz)' },
   { parameter: 'Battery Life',       value: '5+ years' },
   { parameter: 'Data Output',        value: 'MODBUS RS-485, dual 4\u201320 mA' },
-  { parameter: 'Surface Receiver',   value: '150 \u00D7 112 \u00D7 55 mm' },
+  { parameter: 'WellFi Access Point (WAP)', value: 'Data analytics and insight for WellFi' },
   { parameter: 'Power',              value: '24 V DC / ~3 W' },
-  { parameter: 'Storage',            value: '64 MB event SD' },
-  { parameter: 'Corrosion',          value: 'NACE MR-01-75 available' },
-  { parameter: 'Deployments',        value: '100+ tools installed internationally' },
+  { parameter: 'Storage',            value: '~7,700 events' },
+  { parameter: 'Corrosion',          value: '316 SS' },
+  { parameter: 'Telemetry Rate',     value: '4 Hz' },
+  { parameter: 'Deployments',        value: '130+ tools installed internationally' },
 ];
 
 // ---------------------------------------------------------------------------
@@ -652,5 +663,5 @@ export const stitchLab: StitchLabContent = {
 export const meta: MetaContent = {
   title: 'WellFi \u2014 Know the Unknown | MPS Group',
   description:
-    '1.8 trillion barrels locked in place. Waiting. Seeing is Believing. Install WellFi on the planned changeout and bring downhole pressure to surface with minimalist wireless telemetry.',
+    'WellFi installs on a planned pump changeout and brings downhole pressure, temperature, and vibration to surface with minimalist wireless telemetry. Know the unknown in your heavy-oil wells.',
 };

@@ -32,7 +32,7 @@ export default function ContactFooter() {
 
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <span className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-text-secondary">
-              100+ installed internationally
+              130+ installed internationally
             </span>
             <span className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-text-secondary">
               Exclusive Canadian distributor

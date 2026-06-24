@@ -55,7 +55,7 @@ export const metadata: Metadata = {
         url: "https://mpsgroup.energy/wellfi/og-wellfi.png",
         width: 1200,
         height: 630,
-        alt: "WellFi — 1.8 trillion barrels locked in place. Waiting. Seeing is Believing.",
+        alt: "WellFi by MPS Group — wireless downhole telemetry that brings pressure, temperature, and vibration to surface.",
         type: "image/png",
       },
     ],

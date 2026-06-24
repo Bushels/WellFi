@@ -8,8 +8,7 @@ import IslandHero from '@/components/hero/island/IslandHero';
 import Navigation from '@/components/nav/Navigation';
 import TelemetryIconCardsSection from '@/components/telemetry/TelemetryIconCardsSection';
 import ClearwaterDescent from '@/components/clearwater/ClearwaterDescent';
-import SagdPresentationSection from '@/components/sagd-presentation/SagdPresentationSection';
-import ProofSection from '@/components/proof/ProofSection';
+import ClosingSection from '@/components/closing/ClosingSection';
 // Calculator hidden 2026-05-09 — pivoted to curiosity-driven page.
 // Restore when ROI numbers are locked.
 // import CalculatorTeaserSection from '@/components/calculator/CalculatorTeaserSection';
@@ -102,9 +101,7 @@ export default function Home() {
       <div className="section-divider" />
       <ClearwaterDescent />
       <div className="section-divider" />
-      <SagdPresentationSection />
-      <div className="section-divider" />
-      <ProofSection />
+      <ClosingSection />
     </main>
   );
 }

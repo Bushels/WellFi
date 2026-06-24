@@ -95,7 +95,7 @@ export default function SpecsSection() {
 
           <div className="mt-8 flex flex-wrap gap-2">
             <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs text-text-secondary">
-              100+ installed internationally
+              130+ installed internationally
             </span>
             <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs text-text-secondary">
               Planned PCP changeout installs

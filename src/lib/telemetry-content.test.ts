@@ -11,7 +11,7 @@ describe('telemetry content', () => {
       'Pressure',
       'Temperature',
       'Vibration',
-      'Water Cut',
+      'Fluid Composition',
       'Flow Insight',
     ]);
   });
@@ -30,8 +30,7 @@ describe('telemetry content', () => {
   it('points the primary telemetry nav link at the new section', () => {
     expect(navLinks).toEqual([
       { label: 'Telemetry', href: '#telemetry' },
-      { label: 'SAGD', href: '#sagd-interactive' },
-      { label: 'Proof', href: '#proof' },
+      { label: 'Insight', href: '#proof' },
     ]);
   });
 });
