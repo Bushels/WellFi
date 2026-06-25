@@ -27,10 +27,12 @@ describe('telemetry content', () => {
     expect(Object.keys(telemetry).sort()).toEqual(['metrics', 'title']);
   });
 
-  it('points the primary telemetry nav link at the new section', () => {
+  it('offers quick jumps to every primary section', () => {
     expect(navLinks).toEqual([
       { label: 'Telemetry', href: '#telemetry' },
+      { label: 'Benefits', href: '#anchor' },
       { label: 'Insight', href: '#proof' },
+      { label: 'Contact', href: '#contact' },
     ]);
   });
 });

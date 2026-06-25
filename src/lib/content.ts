@@ -240,7 +240,9 @@ export const hero: HeroContent = {
 
 export const navLinks: NavLink[] = [
   { label: 'Telemetry', href: '#telemetry' },
+  { label: 'Benefits', href: '#anchor' },
   { label: 'Insight', href: '#proof' },
+  { label: 'Contact', href: '#contact' },
 ];
 
 // ---------------------------------------------------------------------------
@@ -385,7 +387,7 @@ export const telemetry: TelemetryContent = {
 
 export const clearwater: ClearwaterContent = {
   introEyebrow: '',
-  introLine: 'Unearth Your Data.',
+  introLine: 'Benefits of WellFi',
   benefits: [
     { label: 'Extend Pump Life',    detail: 'Know your hydrostatic, understand vibration, avoid pump failure.' },
     { label: 'Increase Production',  detail: 'Run closer to optimal without flying blind.' },
@@ -404,13 +406,13 @@ export const clearwater: ClearwaterContent = {
 
 export const proof: ProofContent = {
   eyebrow: '',
-  headline: 'WellFi Insight',
+  headline: 'Data Below, Insight Above',
   intro:
     'WellFi attaches to the interior or exterior of the tubing, on new installs or pump changes. It provides various datapoints over wireless electromagnetic telemetry, eliminating the risk associated with cables.',
   points: [
     { icon: 'Radio',        value: 'MODBUS',  label: 'Straight to SCADA',    side: 'left' },
     { icon: 'BatteryFull',  value: '5+',      unit: 'yr',  label: 'Battery Life',  side: 'left' },
-    { icon: 'Wrench',       value: 'Seamless', label: 'Install',             side: 'left' },
+    { icon: 'Wrench',       value: 'Rapid',   label: 'Deployment',          side: 'left' },
     { icon: 'Gauge',        value: '10,000',  unit: 'psi', label: 'Pressure Rating', side: 'right' },
     { icon: 'Thermometer',  value: '150',     unit: '°C',  label: 'Temperature',    side: 'right' },
     { icon: 'Ruler',        value: '46',      unit: 'mm',  label: 'Tool OD',        side: 'right' },
@@ -442,7 +444,6 @@ export const specs: SpecRow[] = [
   { parameter: 'Power',              value: '24 V DC / ~3 W' },
   { parameter: 'Storage',            value: '~7,700 events' },
   { parameter: 'Corrosion',          value: '316 SS' },
-  { parameter: 'Telemetry Rate',     value: '4 Hz' },
   { parameter: 'Deployments',        value: '130+ tools installed internationally' },
 ];
 

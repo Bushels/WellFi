@@ -43,7 +43,6 @@ const iconMap: Record<string, LucideIcon> = {
 const DEEP_SPEC_PARAMS = [
   'Pressure Accuracy',
   'Data Output',
-  'Telemetry Rate',
   'WellFi Access Point (WAP)',
   'Power',
   'Storage',
@@ -365,6 +364,18 @@ export default function ClosingSection() {
             <Mail size={18} aria-hidden="true" />
             Email Our Team
           </a>
+
+          {/* Visible address fallback — if no default mail client is set, the
+              button does nothing, so the address must be readable/copyable here. */}
+          <p className="mt-4 text-sm text-text-secondary">
+            or reach us directly at{' '}
+            <a
+              href={`mailto:${footer.email}`}
+              className="select-all font-medium text-em-glow underline decoration-em-cyan/40 underline-offset-2 transition-colors hover:text-text-primary"
+            >
+              {footer.email}
+            </a>
+          </p>
 
           <div className="mt-8 flex flex-wrap justify-center gap-2">
             {proof.ctaChips.map((chip) => (

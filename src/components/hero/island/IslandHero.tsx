@@ -5,7 +5,9 @@ import usePrefersReducedMotion from '@/lib/usePrefersReducedMotion';
 import WellFiLogo from '@/components/ui/WellFiLogo';
 import IslandCanvas from './IslandCanvas';
 
-const PROOF_CHIPS = ['130+ Installed Internationally', 'Modbus Ready', 'Seamless Install'];
+const PROOF_CHIPS = ['130+ Installed Internationally', 'Modbus Ready', 'Rapid Deployment'];
+
+const CONTACT_EMAIL = 'kylegronning@mpsgroup.ca';
 
 function useCompactViewport(): boolean {
   const [compact, setCompact] = useState(false);
@@ -146,11 +148,21 @@ export default function IslandHero({ animationOnly = false }: { animationOnly?: 
             ))}
           </div>
           <a
-            href="mailto:kylegronning@mpsgroup.ca?subject=WellFi%20Quote%20Request"
+            href={`mailto:${CONTACT_EMAIL}?subject=WellFi%20Quote%20Request`}
             className="pointer-events-auto mt-7 inline-block rounded-md bg-[#06B6D4] px-6 py-3 text-sm font-semibold uppercase tracking-[0.14em] text-[#04141a] transition-colors hover:bg-[#22D3EE]"
           >
             Request a Quote
           </a>
+          {/* Visible address fallback for users without a default mail client. */}
+          <p className="pointer-events-auto mt-3 text-sm text-[#9bb5c7]">
+            or email{' '}
+            <a
+              href={`mailto:${CONTACT_EMAIL}`}
+              className="select-all font-medium text-[#22D3EE] underline underline-offset-2 transition-colors hover:text-white"
+            >
+              {CONTACT_EMAIL}
+            </a>
+          </p>
         </div>
 
         <div className="hidden">

@@ -26,12 +26,16 @@ const pathD = (pts: ReadonlyArray<readonly [number, number]>) =>
 const DRILL_D = pathD(WELL);
 const SIGNAL_D = pathD([...WELL].reverse()); // toe -> surface (signal rising)
 
+// Transmission glow sits at the toe — the point the bore lands and the EM
+// signal originates ("a blue light coming out of the casing").
+const TOE = WELL[WELL.length - 1];
+
 const clamp01 = (x: number): number => (x < 0 ? 0 : x > 1 ? 1 : x);
 const seg = (p: number, a: number, b: number): number => clamp01((p - a) / (b - a));
 
 // Six benefits surface one at a time across this scroll window (trapezoidal).
-const B_START = 0.1;
-const B_END = 0.70;
+const B_START = 0.12;
+const B_END = 0.66;
 function benefitViz(p: number, i: number, n: number): number {
   const slot = (B_END - B_START) / n;
   const s = B_START + i * slot;
@@ -48,12 +52,8 @@ export default function ClearwaterDescent() {
   const sectionRef = useRef<HTMLElement>(null);
   const drillRef = useRef<SVGPathElement>(null);
   const signalRef = useRef<SVGPathElement>(null);
-  const formationRef = useRef<HTMLImageElement>(null);
-  const cutawaySvgRef = useRef<SVGSVGElement>(null);
-  const arrivalRef = useRef<HTMLImageElement>(null);
-  const deviceRef = useRef<HTMLImageElement>(null);
+  const glowRef = useRef<HTMLDivElement>(null);
   const introRef = useRef<HTMLDivElement>(null);
-  const taglineRef = useRef<HTMLParagraphElement>(null);
   const benefitRefs = useRef<Array<HTMLDivElement | null>>([]);
   const [on, setOn] = useState(false);
 
@@ -79,9 +79,9 @@ export default function ClearwaterDescent() {
         onUpdate: (self) => {
           const p = self.progress;
           // drill the bore in (surface -> toe)
-          if (drillRef.current) drillRef.current.style.strokeDashoffset = String(1 - seg(p, 0.05, 0.58));
+          if (drillRef.current) drillRef.current.style.strokeDashoffset = String(1 - seg(p, 0.05, 0.50));
           // opening line fades as the first benefit arrives
-          if (introRef.current) introRef.current.style.opacity = String(1 - seg(p, 0.03, 0.1));
+          if (introRef.current) introRef.current.style.opacity = String(1 - seg(p, 0.03, 0.12));
           // benefits surface one at a time
           benefitRefs.current.forEach((el, i) => {
             if (!el) return;
@@ -89,22 +89,11 @@ export default function ClearwaterDescent() {
             el.style.opacity = String(v);
             el.style.transform = `translate(-50%, ${(1 - v) * 14}px)`;
           });
-          // telemetry signal rises to surface
-          if (signalRef.current) signalRef.current.style.strokeDashoffset = String(1 - seg(p, 0.60, 0.80));
-          // slow arrive: cross-fade the cutaway out to the lit reservoir render
-          const arrive = seg(p, 0.86, 1.0);
-          const cutaway = String(1 - arrive);
-          if (formationRef.current) formationRef.current.style.opacity = cutaway;
-          if (cutawaySvgRef.current) cutawaySvgRef.current.style.opacity = cutaway;
-          // the WellFi pokes out past the intermediate after the drill lands, then fades as we arrive
-          if (deviceRef.current) deviceRef.current.style.opacity = String(seg(p, 0.58, 0.74) * (1 - arrive));
-          if (arrivalRef.current) arrivalRef.current.style.opacity = String(arrive);
-          // tagline
-          if (taglineRef.current) {
-            const t = seg(p, 0.92, 1.0);
-            taglineRef.current.style.opacity = String(t);
-            taglineRef.current.style.transform = `translate(-50%, ${(1 - t) * 14}px)`;
-          }
+          // once the casing is set, a blue transmission glow blooms at the toe
+          // (replaces the old WellFi poke-out) and holds to the end
+          if (glowRef.current) glowRef.current.style.opacity = String(seg(p, 0.52, 0.74));
+          // telemetry signal rises to surface — the finale
+          if (signalRef.current) signalRef.current.style.strokeDashoffset = String(1 - seg(p, 0.66, 0.92));
         },
       });
 
@@ -118,9 +107,9 @@ export default function ClearwaterDescent() {
     <section
       ref={sectionRef}
       id="anchor"
-      aria-labelledby="clearwater-reveal-tagline"
+      aria-label="Benefits of WellFi"
       className="relative isolate bg-[#04060a]"
-      style={on ? { height: '440vh' } : undefined}
+      style={on ? { height: '380vh' } : undefined}
     >
       {on ? (
         <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden">
@@ -134,17 +123,15 @@ export default function ClearwaterDescent() {
           <div className="relative w-[min(94vw,1180px)]" style={{ aspectRatio: '16 / 9' }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              ref={formationRef}
               src={`${BASE}/pass_formation.png`}
               alt=""
               aria-hidden="true"
-              className="absolute inset-0 h-full w-full object-contain will-change-[opacity]"
+              className="absolute inset-0 h-full w-full object-contain"
             />
             <svg
-              ref={cutawaySvgRef}
               viewBox={`0 0 ${VW} ${VH}`}
               preserveAspectRatio="xMidYMid meet"
-              className="absolute inset-0 h-full w-full will-change-[opacity]"
+              className="absolute inset-0 h-full w-full"
             >
               <defs>
                 <mask id="cw-drill">
@@ -184,25 +171,33 @@ export default function ClearwaterDescent() {
                 opacity={0.9}
               />
             </svg>
-            {/* WellFi device — pokes out past the intermediate at the end of the drill */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              ref={deviceRef}
-              src={`${BASE}/pass_device.png`}
-              alt=""
+
+            {/* Transmission glow — a blue light blooming out of the casing once it's
+                set (replaces the WellFi device poke-out). Centering lives on the
+                wrapper; the inner node breathes so the light feels alive. */}
+            <div
+              ref={glowRef}
               aria-hidden="true"
-              className="absolute inset-0 h-full w-full object-contain will-change-[opacity]"
-              style={{ opacity: 0 }}
-            />
-            {/* arrival: the descent lands on the lit reservoir render — blue bloom = WellFi transmitting */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              ref={arrivalRef}
-              src={`${BASE}/reservoir-arrival.png`}
-              alt={clearwater.deviceAlt}
-              className="absolute inset-0 h-full w-full object-cover will-change-[opacity]"
-              style={{ opacity: 0, objectPosition: 'center 60%' }}
-            />
+              className="pointer-events-none absolute will-change-[opacity]"
+              style={{
+                left: `${TOE[0] * 100}%`,
+                top: `${TOE[1] * 100}%`,
+                width: '34%',
+                aspectRatio: '1',
+                transform: 'translate(-50%, -50%)',
+                opacity: 0,
+                mixBlendMode: 'screen',
+              }}
+            >
+              <div
+                className="cw-glow-breathe h-full w-full rounded-full"
+                style={{
+                  background:
+                    'radial-gradient(circle, rgba(190,248,255,0.95) 0%, rgba(34,211,238,0.7) 16%, rgba(56,189,248,0.32) 40%, rgba(34,211,238,0) 72%)',
+                  filter: 'blur(4px)',
+                }}
+              />
+            </div>
           </div>
 
           {/* opening line */}
@@ -213,14 +208,14 @@ export default function ClearwaterDescent() {
             </p>
           </div>
 
-          {/* benefits — surface one at a time, synced to the drill */}
+          {/* benefits — surface one at a time, synced to the drill, seated over the formation */}
           {benefits.map((b, i) => (
             <div
               key={b.label}
               ref={(el) => {
                 benefitRefs.current[i] = el;
               }}
-              className="absolute left-1/2 top-[15%] w-[min(90vw,33rem)] rounded-xl border border-white/12 bg-[rgba(8,13,20,0.78)] px-6 py-4 text-center backdrop-blur-sm"
+              className="absolute left-1/2 top-[30%] w-[min(90vw,33rem)] rounded-xl border border-white/12 bg-[rgba(8,13,20,0.78)] px-6 py-4 text-center backdrop-blur-sm"
               style={{ opacity: 0, transform: 'translate(-50%, 14px)', boxShadow: '0 0 30px -10px rgba(34,211,238,0.4)' }}
             >
               <h3 className="font-heading text-xl font-semibold tracking-[-0.01em] text-text-primary sm:text-2xl">
@@ -230,15 +225,14 @@ export default function ClearwaterDescent() {
             </div>
           ))}
 
-          {/* reveal tagline */}
-          <p
-            ref={taglineRef}
-            id="clearwater-reveal-tagline"
-            className="absolute bottom-[10%] left-1/2 font-heading text-[clamp(1.5rem,4vw,2.8rem)] font-semibold tracking-[-0.02em] text-text-primary will-change-transform"
-            style={{ opacity: 0, transform: 'translate(-50%, 14px)' }}
-          >
-            Data Below, <span className="text-em-glow">Insight Above</span>
-          </p>
+          <style>{`
+            @keyframes cw-glow-breathe {
+              0%   { transform: scale(0.92); opacity: 0.82; }
+              100% { transform: scale(1.08); opacity: 1; }
+            }
+            .cw-glow-breathe { animation: cw-glow-breathe 3s ease-in-out infinite alternate; }
+            @media (prefers-reduced-motion: reduce) { .cw-glow-breathe { animation: none; } }
+          `}</style>
         </div>
       ) : (
         // static fallback (reduced-motion / touch / narrow)
@@ -258,18 +252,6 @@ export default function ClearwaterDescent() {
               </li>
             ))}
           </ul>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={`${BASE}/reservoir-arrival.png`}
-            alt={clearwater.deviceAlt}
-            className="mx-auto w-full max-w-xl rounded-xl border border-white/5"
-          />
-          <p
-            id="clearwater-reveal-tagline"
-            className="font-heading text-[clamp(1.4rem,4vw,2.4rem)] font-semibold tracking-[-0.02em] text-text-primary"
-          >
-            Data Below, <span className="text-em-glow">Insight Above</span>
-          </p>
         </div>
       )}
     </section>
