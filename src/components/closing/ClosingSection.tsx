@@ -46,6 +46,7 @@ const DEEP_SPEC_PARAMS = [
   'WellFi Access Point (WAP)',
   'Power',
   'Storage',
+  'Corrosion Resistance',
 ];
 const deepSpecs = DEEP_SPEC_PARAMS
   .map((p) => specs.find((s) => s.parameter === p))

@@ -443,7 +443,7 @@ export const specs: SpecRow[] = [
   { parameter: 'WellFi Access Point (WAP)', value: 'Data analytics and insight for WellFi' },
   { parameter: 'Power',              value: '24 V DC / ~3 W' },
   { parameter: 'Storage',            value: '~7,700 events' },
-  { parameter: 'Corrosion',          value: '316 SS' },
+  { parameter: 'Corrosion Resistance', value: '316 SS' },
   { parameter: 'Deployments',        value: '130+ tools installed internationally' },
 ];
 
