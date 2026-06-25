@@ -1,48 +1,33 @@
 'use client';
 
-import { useRef, useState } from 'react';
-import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useEffect, useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { navLinks } from '@/lib/content';
-import { zIndex, animation } from '@/lib/design-tokens';
+import { zIndex } from '@/lib/design-tokens';
 import { cn } from '@/lib/utils';
 import WellFiLogo from '@/components/ui/WellFiLogo';
 
-gsap.registerPlugin(ScrollTrigger);
-
 export default function Navigation() {
-  const navRef = useRef<HTMLElement>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
-  useGSAP(() => {
-    const nav = navRef.current;
-    const heroTrigger = document.getElementById('hero');
-    if (!nav || !heroTrigger) return;
-
-    // Start hidden above viewport
-    gsap.set(nav, { yPercent: -100 });
-
-    ScrollTrigger.create({
-      trigger: heroTrigger,
-      start: 'bottom 80px',
-      onEnter: () => {
-        gsap.to(nav, {
-          yPercent: 0,
-          duration: animation.navSlide.duration,
-          ease: animation.navSlide.ease,
-        });
-      },
-      onLeaveBack: () => {
-        gsap.to(nav, {
-          yPercent: -100,
-          duration: animation.navSlide.duration,
-          ease: 'power2.in',
-        });
-      },
-    });
-  }, { scope: navRef });
+  // The bar is always present so section links are reachable immediately.
+  // While over the hero it floats transparent (the hero shows its own logo);
+  // once scrolled past the hero it solidifies to glass and reveals its logo.
+  useEffect(() => {
+    const hero = document.getElementById('hero');
+    const compute = () => {
+      const threshold = hero ? hero.offsetHeight - 80 : 80;
+      setScrolled(window.scrollY > threshold);
+    };
+    compute();
+    window.addEventListener('scroll', compute, { passive: true });
+    window.addEventListener('resize', compute);
+    return () => {
+      window.removeEventListener('scroll', compute);
+      window.removeEventListener('resize', compute);
+    };
+  }, []);
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
@@ -53,9 +38,12 @@ export default function Navigation() {
 
   return (
     <nav
-      ref={navRef}
       aria-label="Main navigation"
-      className="glass-panel fixed top-0 left-0 w-full h-16 flex items-center px-6 lg:px-10"
+      className={cn(
+        'fixed top-0 left-0 w-full h-16 flex items-center px-6 lg:px-10',
+        'transition-[background-color,backdrop-filter,border-color] duration-300',
+        scrolled ? 'glass-panel' : 'bg-transparent border-transparent',
+      )}
       style={{
         zIndex: zIndex.nav,
         borderRadius: 0,
@@ -64,11 +52,17 @@ export default function Navigation() {
         borderRight: 'none',
       }}
     >
-      {/* Logo */}
+      {/* Logo — hidden while floating over the hero (hero shows its own), fades
+          in once the bar solidifies. Kept in layout so centered links don't shift. */}
       <a
         href="#hero"
         onClick={(e) => handleNavClick(e, '#hero')}
-        className="shrink-0"
+        className={cn(
+          'shrink-0 transition-opacity duration-300',
+          scrolled ? 'opacity-100' : 'opacity-0 pointer-events-none',
+        )}
+        aria-hidden={!scrolled}
+        tabIndex={scrolled ? 0 : -1}
       >
         <WellFiLogo className="h-7 w-auto" />
       </a>
