@@ -129,12 +129,18 @@ export default function TelemetryReadout({
   const dotEls = useRef<Array<HTMLSpanElement | null>>([]);
   const shownChannel = useRef(-2);
   const flash = useRef(0); // 0..1 arrival pop, set on channel change, decays
+  const prevVisible = useRef(0); // last frame's visibility — gates the hidden-frame skip
 
   // Default-priority useFrame runs after the scene clock (priority -1), so the
   // ref is fresh this frame. Mutate the DOM directly; no per-frame React state.
   useFrame((_, delta) => {
     const { intensity, channel } = readoutRef.current;
     const visible = Math.min(1, Math.max(0, intensity));
+
+    // Skip the per-frame DOM writes + toFixed churn while fully hidden — that's
+    // ~9 of every 12 s, and all of reduced motion. The falling-edge frame
+    // (prevVisible > 0) still runs the full body, parking opacity at 0.
+    if (visible < 0.001 && prevVisible.current < 0.001) return;
 
     if (shownChannel.current !== channel) {
       shownChannel.current = channel;
@@ -168,6 +174,8 @@ export default function TelemetryReadout({
       dot.style.background = active ? '#22D3EE' : 'rgba(155, 210, 225, 0.38)';
       dot.style.boxShadow = active ? `0 0 ${(8 + 14 * flash.current).toFixed(0)}px #22D3EE` : 'none';
     });
+
+    prevVisible.current = visible;
   });
 
   return (

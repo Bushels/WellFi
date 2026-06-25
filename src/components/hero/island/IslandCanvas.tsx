@@ -18,6 +18,7 @@ export default function IslandCanvas({ reducedMotion, compact, forcedTime, onRea
   // the Canvas subtree out of the static-export prerender entirely.
   const [tier, setTier] = useState<GpuTier | null>(null);
   const [visible, setVisible] = useState(true);
+  const [rmFrozen, setRmFrozen] = useState(false);
 
   useEffect(() => {
     // detectTier() is browser-only; the effect gate is load-bearing for SSR.
@@ -64,12 +65,26 @@ export default function IslandCanvas({ reducedMotion, compact, forcedTime, onRea
     return () => document.removeEventListener('wheel', handleCanvasWheel, { capture: true });
   }, [tier]);
 
+  // Reduced motion: the scene is a single static frame, so render a short burst
+  // (lets Bloom + ContactShadows bake while visible) then stop the loop via the
+  // already-trusted 'never' pause path — instead of redrawing the identical
+  // frame ~60x/s forever. Strictly gated on reducedMotion: the normal animated
+  // path (and the ?heroT scrubber) is unchanged. Once frozen it stays frozen;
+  // the last baked frame persists across visibility toggles.
+  useEffect(() => {
+    if (tier === null || !reducedMotion || forcedTime !== null || !visible || rmFrozen) return;
+    const id = setTimeout(() => setRmFrozen(true), 600);
+    return () => clearTimeout(id);
+  }, [tier, reducedMotion, forcedTime, visible, rmFrozen]);
+
   if (tier === null) return <div ref={container} className="absolute inset-0" />;
+
+  const frozen = reducedMotion && forcedTime === null && rmFrozen;
 
   return (
     <div ref={container} className="absolute inset-0">
       <Canvas
-        frameloop={visible ? 'always' : 'never'}
+        frameloop={visible && !frozen ? 'always' : 'never'}
         dpr={tier === 'high' ? [1, 2] : [1, 1.5]}
         gl={{ antialias: true, powerPreference: 'high-performance' }}
         onCreated={onReady}
