@@ -22,6 +22,9 @@ function ThinkingDots() {
 export default function ChatFiPanel({ onClose }: { onClose: () => void }) {
   const { messages, status, send } = useChatFi([{ role: 'assistant', content: chatfi.greeting }]);
   const [input, setInput] = useState('');
+  // On mobile, pin the panel to the VISUAL viewport so the input stays above the on-screen keyboard
+  // (a fixed bottom panel sized in vh otherwise hides the input behind the keyboard). Null = desktop.
+  const [kb, setKb] = useState<{ top: number; height: number } | null>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
@@ -41,6 +44,25 @@ export default function ChatFiPanel({ onClose }: { onClose: () => void }) {
     return () => window.removeEventListener('keydown', onKey);
   }, [onClose]);
 
+  // Track the visual viewport on mobile: when the keyboard opens it shrinks, so we resize/reposition
+  // the panel to the visible area, keeping the input row on screen. Desktop (>=640px) uses the card.
+  useEffect(() => {
+    const vv = window.visualViewport;
+    const apply = () => {
+      if (vv && window.innerWidth < 640) setKb({ top: vv.offsetTop, height: vv.height });
+      else setKb(null);
+    };
+    apply();
+    vv?.addEventListener('resize', apply);
+    vv?.addEventListener('scroll', apply);
+    window.addEventListener('orientationchange', apply);
+    return () => {
+      vv?.removeEventListener('resize', apply);
+      vv?.removeEventListener('scroll', apply);
+      window.removeEventListener('orientationchange', apply);
+    };
+  }, []);
+
   const submit = () => {
     if (!input.trim() || status === 'streaming') return;
     send(input);
@@ -58,8 +80,12 @@ export default function ChatFiPanel({ onClose }: { onClose: () => void }) {
     <div
       role="dialog"
       aria-label="ChatFi — WellFi assistant"
-      className="chatfi-rise glass-panel fixed bottom-6 right-6 z-[60] flex w-[min(380px,calc(100vw-2rem))] flex-col overflow-hidden"
-      style={{ height: 'min(560px, calc(100vh - 3rem))' }}
+      className="chatfi-rise glass-panel fixed z-[60] flex flex-col overflow-hidden left-2 right-2 bottom-2 sm:left-auto sm:right-6 sm:bottom-6 sm:w-[min(380px,calc(100vw-2rem))]"
+      style={
+        kb
+          ? { top: kb.top, height: kb.height, left: 8, right: 8, bottom: 'auto' }
+          : { height: 'min(560px, calc(100dvh - 3rem))' }
+      }
     >
       {/* Header */}
       <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
