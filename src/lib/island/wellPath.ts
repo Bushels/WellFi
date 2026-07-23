@@ -54,7 +54,9 @@ const v = (x: number, y: number, z: number) => new Vector3(x, y, z);
 const drape = (x: number, z: number, lift = 0.07) => v(x, floorY(x, z) + lift, z);
 
 export const KOP_PARAMS = [0.05, 0.08, 0.11, 0.14, 0.16] as const;
-export const WELLFI_BELOW_PUMP_CASING_PARAM = 0.5;
+// Centred in the visible intermediate-casing run. Larger values read as a
+// casing-shoe installation once the J-build turns into the horizontal section.
+export const WELLFI_BELOW_PUMP_CASING_PARAM = 0.34;
 export const WELLFI_OUTSIDE_INTERMEDIATE_PARAM = 0.03;
 export const WELLFI_LATERAL_PARAM = 0.75;
 export const WELLFI_UPLINK_CASING_PARAMS: Record<WellFiViewId, number> = {
