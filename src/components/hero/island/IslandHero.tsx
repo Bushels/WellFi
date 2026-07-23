@@ -8,6 +8,28 @@ import IslandCanvas from './IslandCanvas';
 const PROOF_CHIPS = ['130+ Installed Internationally', 'Modbus Ready', 'Rapid Deployment'];
 
 const CONTACT_EMAIL = 'kylegronning@mpsgroup.ca';
+const EMBED_READY = 'wellfi:r3f-ready';
+const EMBED_ACTIVITY = 'wellfi:set-active';
+const EMBED_HANDOFF_MS = 1300;
+
+function trustedYotinOrigin(value: string | null): string | null {
+  if (!value) return null;
+
+  try {
+    const url = new URL(value);
+    if (url.origin !== value) return null;
+
+    const publicYotin =
+      url.protocol === 'https:' &&
+      ['yotinenergy.com', 'www.yotinenergy.com', 'yotin-energy.vercel.app'].includes(url.hostname);
+    const localYotin =
+      url.protocol === 'http:' && ['127.0.0.1', 'localhost'].includes(url.hostname);
+
+    return publicYotin || localYotin ? url.origin : null;
+  } catch {
+    return null;
+  }
+}
 
 function useCompactViewport(): boolean {
   const [compact, setCompact] = useState(false);
@@ -61,6 +83,61 @@ function useHeroTimeOverride(): number | null {
   return heroTime;
 }
 
+function useYotinEmbed(canvasReady: boolean): { embedded: boolean; active: boolean } {
+  const [parentOrigin, setParentOrigin] = useState<string | null>(null);
+  const [embedded, setEmbedded] = useState(false);
+  const [active, setActive] = useState(true);
+
+  useEffect(() => {
+    const update = () => {
+      const params = new URLSearchParams(window.location.search);
+      const requested = params.get('embed') === 'yotin';
+      const trustedOrigin = requested ? trustedYotinOrigin(params.get('parentOrigin')) : null;
+
+      setEmbedded(Boolean(trustedOrigin));
+      setParentOrigin(trustedOrigin);
+    };
+
+    update();
+  }, []);
+
+  useEffect(() => {
+    if (!embedded || !parentOrigin) return;
+
+    const receiveParentMessage = (event: MessageEvent) => {
+      if (event.source !== window.parent || event.origin !== parentOrigin) return;
+      if (event.data?.type !== EMBED_ACTIVITY) return;
+      setActive(event.data.active !== false);
+    };
+
+    window.addEventListener('message', receiveParentMessage);
+    return () => window.removeEventListener('message', receiveParentMessage);
+  }, [embedded, parentOrigin]);
+
+  useEffect(() => {
+    if (!embedded || !parentOrigin || !canvasReady) return;
+
+    let repeatId = 0;
+    let stopId = 0;
+    const sendReady = () => {
+      window.parent.postMessage({ type: EMBED_READY, version: 1 }, parentOrigin);
+    };
+    const handoffId = window.setTimeout(() => {
+      sendReady();
+      repeatId = window.setInterval(sendReady, 500);
+      stopId = window.setTimeout(() => window.clearInterval(repeatId), 5000);
+    }, EMBED_HANDOFF_MS);
+
+    return () => {
+      window.clearTimeout(handoffId);
+      window.clearInterval(repeatId);
+      window.clearTimeout(stopId);
+    };
+  }, [canvasReady, embedded, parentOrigin]);
+
+  return { embedded, active };
+}
+
 /**
  * IslandHero — the living diorama. Poster paints immediately (LCP + no-WebGL
  * fallback); the canvas cross-fades in when the renderer is ready.
@@ -72,11 +149,13 @@ export default function IslandHero({ animationOnly = false }: { animationOnly?: 
   const compact = useCompactViewport();
   const [canvasReady, setCanvasReady] = useState(false);
   const reducedMotion = forceMotion ? false : prefersReducedMotion;
+  const yotinEmbed = useYotinEmbed(canvasReady);
 
   return (
     <section
       id="hero"
       className="relative isolate min-h-[100svh] overflow-hidden bg-[#020408] text-white"
+      data-yotin-embed={yotinEmbed.embedded ? '' : undefined}
     >
       {/* Poster = a still of this very scene, so the poster→canvas crossfade is invisible. */}
       {/* eslint-disable-next-line @next/next/no-img-element -- raw img matches the repo's basePath'd-asset convention; fetchPriority makes it the LCP */}
@@ -99,6 +178,8 @@ export default function IslandHero({ animationOnly = false }: { animationOnly?: 
           reducedMotion={reducedMotion}
           compact={compact}
           forcedTime={heroTime}
+          active={yotinEmbed.active}
+          maxDpr={yotinEmbed.embedded ? 1.35 : undefined}
           onReady={() => setCanvasReady(true)}
         />
       </div>

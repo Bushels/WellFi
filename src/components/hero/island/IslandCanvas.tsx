@@ -9,10 +9,19 @@ interface IslandCanvasProps {
   reducedMotion: boolean;
   compact: boolean;
   forcedTime: number | null;
+  active?: boolean;
+  maxDpr?: number;
   onReady: () => void;
 }
 
-export default function IslandCanvas({ reducedMotion, compact, forcedTime, onReady }: IslandCanvasProps) {
+export default function IslandCanvas({
+  reducedMotion,
+  compact,
+  forcedTime,
+  active = true,
+  maxDpr,
+  onReady,
+}: IslandCanvasProps) {
   const container = useRef<HTMLDivElement>(null);
   // null until client-mounted — the post-mount gate is load-bearing: it keeps
   // the Canvas subtree out of the static-export prerender entirely.
@@ -80,12 +89,17 @@ export default function IslandCanvas({ reducedMotion, compact, forcedTime, onRea
   if (tier === null) return <div ref={container} className="absolute inset-0" />;
 
   const frozen = reducedMotion && forcedTime === null && rmFrozen;
+  const dpr: [number, number] = maxDpr
+    ? [1, maxDpr]
+    : tier === 'high'
+      ? [1, 2]
+      : [1, 1.5];
 
   return (
     <div ref={container} className="absolute inset-0">
       <Canvas
-        frameloop={visible && !frozen ? 'always' : 'never'}
-        dpr={tier === 'high' ? [1, 2] : [1, 1.5]}
+        frameloop={active && visible && !frozen ? 'always' : 'never'}
+        dpr={dpr}
         gl={{ antialias: true, powerPreference: 'high-performance' }}
         onCreated={onReady}
       >
