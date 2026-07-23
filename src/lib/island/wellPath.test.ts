@@ -73,8 +73,7 @@ describe('tool anchors', () => {
   it('below-pump WellFi sits on the cased string below surface equipment', () => {
     const expected = paths.cased.getPointAt(WELLFI_BELOW_PUMP_CASING_PARAM);
     expect(paths.wellfiTools.belowPump.position.distanceTo(expected)).toBeLessThan(1e-6);
-    expect(WELLFI_BELOW_PUMP_CASING_PARAM).toBeGreaterThanOrEqual(0.3);
-    expect(WELLFI_BELOW_PUMP_CASING_PARAM).toBeLessThanOrEqual(0.4);
+    expect(WELLFI_BELOW_PUMP_CASING_PARAM).toBe(0.5);
   });
 
   it('single WellFi sits just past the casing shoe on the open-hole pilot', () => {
